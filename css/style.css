@@ -308,6 +308,36 @@ section { position: relative; }
   100% { top: 100%; }
 }
 
+/* ---------------- Hero wave ---------------- */
+
+.hero__wave {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1;
+  pointer-events: none;
+  height: 100px;
+  overflow: hidden;
+}
+
+.wave-layer {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 200%;
+  height: 100%;
+  will-change: transform;
+}
+
+.wave-layer--back  { animation: wave-roll 22s linear infinite; }
+.wave-layer--front { animation: wave-roll 14s linear infinite; }
+
+@keyframes wave-roll {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
 /* ---------------- Marquee ---------------- */
 
 .marquee-section {
@@ -1328,5 +1358,6 @@ footer {
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   .marquee { animation: none; }
+  .wave-layer { animation: none; }
   .hero__title span, .hero__sub, .hero__cta, .hero__eyebrow, .scroll-cue { animation: none !important; opacity: 1 !important; transform: none !important; }
 }
