@@ -789,6 +789,65 @@ body > * { position: relative; z-index: 1; }
   margin-bottom: 48px;
 }
 
+.btn-download {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  margin: 36px auto 48px;
+  padding: 16px 40px;
+  border: 1px solid var(--trek-cyan);
+  border-radius: 3px;
+  text-decoration: none;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  color: var(--trek-cyan);
+  background: rgba(0, 212, 255, 0.04);
+  box-shadow: 0 0 20px rgba(0,212,255,0.1), inset 0 0 20px rgba(0,212,255,0.03);
+  transition: background 0.25s ease, box-shadow 0.25s ease, color 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-download::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent 40%, rgba(0,212,255,0.06) 100%);
+  pointer-events: none;
+}
+
+.btn-download:hover {
+  background: rgba(0, 212, 255, 0.1);
+  box-shadow: 0 0 40px rgba(0,212,255,0.25), inset 0 0 30px rgba(0,212,255,0.06);
+  color: #fff;
+}
+
+.btn-download__icon {
+  font-size: 18px;
+  animation: dl-pulse 2s ease-in-out infinite;
+}
+
+@keyframes dl-pulse {
+  0%, 100% { transform: translateY(0); opacity: 0.7; }
+  50%       { transform: translateY(3px); opacity: 1; }
+}
+
+.btn-download__sub {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  font-weight: 400;
+  letter-spacing: 0.25em;
+  color: var(--text-dim);
+  margin-top: 2px;
+}
+
+.btn-download:hover .btn-download__sub {
+  color: var(--text-secondary);
+}
+
 .signoff__seals {
   display: flex;
   justify-content: center;
@@ -1449,6 +1508,12 @@ body > * { position: relative; z-index: 1; }
 
     <div class="signoff__phrase">Live Long and Prosper.</div>
     <div class="signoff__name">COMMANDER BRADLEY SERAPHIN // STARFLEET COMMAND // STARDATE 47634.2</div>
+
+    <a href="../assets/Bradley-Seraphin-Resume.pdf" download class="btn-download">
+      <span class="btn-download__icon">▼</span>
+      ACCESS SERVICE RECORD
+      <span class="btn-download__sub">STARFLEET PERSONNEL FILE // PDF</span>
+    </a>
 
     <div class="signoff__seals">
       <img class="signoff__seal"
