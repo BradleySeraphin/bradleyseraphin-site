@@ -290,6 +290,8 @@ body > * { position: relative; z-index: 1; }
   display: block;
   width: min(560px, 74vw);
   mix-blend-mode: screen;
+  -webkit-mask-image: radial-gradient(circle, black 50%, transparent 72%);
+  mask-image: radial-gradient(circle, black 50%, transparent 72%);
   animation:
     transmission-in 3s cubic-bezier(0.23, 1, 0.32, 1) 0.25s both,
     watermark-pulse  6s ease-in-out 3.5s infinite;
@@ -884,6 +886,8 @@ body > * { position: relative; z-index: 1; }
   mix-blend-mode: screen;
   opacity: 0;
   animation: tx-seal-appear 1.2s ease 0.8s forwards;
+  -webkit-mask-image: radial-gradient(circle, black 52%, transparent 72%);
+  mask-image: radial-gradient(circle, black 52%, transparent 72%);
 }
 
 @keyframes tx-seal-appear {
