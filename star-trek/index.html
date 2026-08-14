@@ -564,10 +564,12 @@ body > * { position: relative; z-index: 1; }
 /* Seal watermark on portrait card */
 .portrait-card__seal {
   display: block;
-  width: 72px;
+  width: 88px;
   margin: 16px auto 0;
-  opacity: 0.35;
-  filter: grayscale(20%);
+  opacity: 0.55;
+  mix-blend-mode: screen;
+  -webkit-mask-image: radial-gradient(circle, black 48%, transparent 70%);
+  mask-image: radial-gradient(circle, black 48%, transparent 70%);
 }
 
 /* ============================================================
