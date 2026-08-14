@@ -1,0 +1,1237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Commander Bradley Seraphin — Starfleet Personnel Dossier</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Rajdhani:wght@300;400;500;600;700&family=Share+Tech+Mono:wght@400&display=swap" rel="stylesheet">
+<style>
+
+/* ============================================================
+   DESIGN TOKENS
+   ============================================================ */
+:root {
+  --space:        #050912;
+  --deep-navy:    #080f1e;
+  --panel-bg:     #0a1628;
+  --panel-border: #0d2244;
+
+  --lcars-orange: #ff9900;
+  --lcars-amber:  #cc7700;
+  --lcars-gold:   #c8a84b;
+  --lcars-red:    #cc2200;
+  --lcars-violet: #9977cc;
+
+  --trek-cyan:    #00d4ff;
+  --trek-teal:    #009dbb;
+  --trek-blue:    #1a4a7a;
+
+  --text-primary:   #e8f4ff;
+  --text-secondary: #7da8c8;
+  --text-dim:       #3d6080;
+
+  --glow-cyan: 0 0 12px rgba(0, 212, 255, 0.4);
+  --glow-orange: 0 0 12px rgba(255, 153, 0, 0.5);
+}
+
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background-color: var(--space);
+  color: var(--text-primary);
+  font-family: 'Rajdhani', sans-serif;
+  font-weight: 400;
+  line-height: 1.7;
+  overflow-x: hidden;
+}
+
+/* Star field background */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    radial-gradient(1px 1px at 10% 15%, rgba(255,255,255,0.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 25% 60%, rgba(255,255,255,0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 40% 30%, rgba(255,255,255,0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 55% 80%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 70% 10%, rgba(255,255,255,0.5) 0%, transparent 100%),
+    radial-gradient(1px 1px at 82% 45%, rgba(255,255,255,0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 90% 70%, rgba(255,255,255,0.6) 0%, transparent 100%),
+    radial-gradient(1px 1px at 15% 85%, rgba(255,255,255,0.3) 0%, transparent 100%),
+    radial-gradient(1px 1px at 60% 55%, rgba(255,255,255,0.4) 0%, transparent 100%),
+    radial-gradient(1px 1px at 35% 92%, rgba(255,255,255,0.5) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 48% 8%,  rgba(180,220,255,0.7) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 77% 33%, rgba(180,220,255,0.6) 0%, transparent 100%),
+    radial-gradient(1.5px 1.5px at 5%  50%, rgba(180,220,255,0.5) 0%, transparent 100%),
+    radial-gradient(2px   2px   at 92% 88%, rgba(180,220,255,0.8) 0%, transparent 100%),
+    radial-gradient(2px   2px   at 20% 40%, rgba(200,168,75, 0.5) 0%, transparent 100%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+body > * { position: relative; z-index: 1; }
+
+/* ============================================================
+   TYPOGRAPHY HELPERS
+   ============================================================ */
+.orb   { font-family: 'Orbitron', sans-serif; }
+.mono  { font-family: 'Share Tech Mono', monospace; }
+.raj   { font-family: 'Rajdhani', sans-serif; }
+
+/* ============================================================
+   UTILITY
+   ============================================================ */
+.container {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 0 24px;
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+}
+
+/* ============================================================
+   LCARS PANEL SYSTEM
+   ============================================================ */
+
+/* Panel wrapper */
+.lcars-panel {
+  margin-bottom: 48px;
+  border-radius: 12px;
+  overflow: hidden;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  box-shadow: 0 0 40px rgba(0, 212, 255, 0.05), inset 0 1px 0 rgba(0,212,255,0.08);
+}
+
+/* Header bar */
+.lcars-header {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  background: transparent;
+}
+
+.lcars-header__pill {
+  flex-shrink: 0;
+  width: 64px;
+  height: 48px;
+  border-radius: 24px 0 0 0;
+}
+
+.lcars-header__label {
+  flex: 1;
+  padding: 0 20px;
+  font-family: 'Orbitron', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  line-height: 48px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.lcars-header__code {
+  flex-shrink: 0;
+  padding: 0 16px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  line-height: 48px;
+  opacity: 0.5;
+  letter-spacing: 0.1em;
+}
+
+.lcars-header__end {
+  flex-shrink: 0;
+  width: 32px;
+  height: 48px;
+  border-radius: 0 24px 0 0;
+}
+
+/* Color themes */
+.lcars-panel--cyan   .lcars-header__pill,
+.lcars-panel--cyan   .lcars-header__end  { background: var(--trek-cyan); }
+.lcars-panel--cyan   .lcars-header__label { background: var(--trek-cyan); color: var(--deep-navy); }
+.lcars-panel--cyan   .lcars-header__code  { background: var(--trek-cyan); color: var(--deep-navy); }
+
+.lcars-panel--orange .lcars-header__pill,
+.lcars-panel--orange .lcars-header__end  { background: var(--lcars-orange); }
+.lcars-panel--orange .lcars-header__label { background: var(--lcars-orange); color: var(--deep-navy); }
+.lcars-panel--orange .lcars-header__code  { background: var(--lcars-orange); color: var(--deep-navy); }
+
+.lcars-panel--gold   .lcars-header__pill,
+.lcars-panel--gold   .lcars-header__end  { background: var(--lcars-gold); }
+.lcars-panel--gold   .lcars-header__label { background: var(--lcars-gold); color: var(--deep-navy); }
+.lcars-panel--gold   .lcars-header__code  { background: var(--lcars-gold); color: var(--deep-navy); }
+
+.lcars-panel--violet .lcars-header__pill,
+.lcars-panel--violet .lcars-header__end  { background: var(--lcars-violet); }
+.lcars-panel--violet .lcars-header__label { background: var(--lcars-violet); color: #fff; }
+.lcars-panel--violet .lcars-header__code  { background: var(--lcars-violet); color: #fff; }
+
+.lcars-panel--teal   .lcars-header__pill,
+.lcars-panel--teal   .lcars-header__end  { background: var(--trek-teal); }
+.lcars-panel--teal   .lcars-header__label { background: var(--trek-teal); color: var(--deep-navy); }
+.lcars-panel--teal   .lcars-header__code  { background: var(--trek-teal); color: var(--deep-navy); }
+
+.lcars-panel--red    .lcars-header__pill,
+.lcars-panel--red    .lcars-header__end  { background: var(--lcars-red); }
+.lcars-panel--red    .lcars-header__label { background: var(--lcars-red); color: #fff; }
+.lcars-panel--red    .lcars-header__code  { background: var(--lcars-red); color: #fff; }
+
+/* Body */
+.lcars-body {
+  display: flex;
+}
+
+.lcars-sidebar {
+  flex-shrink: 0;
+  width: 10px;
+}
+
+.lcars-panel--cyan   .lcars-sidebar { background: var(--trek-cyan);    opacity: 0.4; }
+.lcars-panel--orange .lcars-sidebar { background: var(--lcars-orange);  opacity: 0.4; }
+.lcars-panel--gold   .lcars-sidebar { background: var(--lcars-gold);    opacity: 0.4; }
+.lcars-panel--violet .lcars-sidebar { background: var(--lcars-violet);  opacity: 0.4; }
+.lcars-panel--teal   .lcars-sidebar { background: var(--trek-teal);     opacity: 0.4; }
+.lcars-panel--red    .lcars-sidebar { background: var(--lcars-red);     opacity: 0.4; }
+
+.lcars-content {
+  flex: 1;
+  padding: 28px 32px;
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--text-primary);
+  line-height: 1.75;
+}
+
+.lcars-content p + p {
+  margin-top: 16px;
+}
+
+/* ============================================================
+   HERO / MASTHEAD
+   ============================================================ */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 24px 60px;
+  overflow: hidden;
+}
+
+/* Schematic background */
+.hero__schematic {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.hero__schematic img {
+  width: 70%;
+  max-width: 760px;
+  opacity: 0.18;
+  filter: blur(0.5px);
+  object-fit: contain;
+}
+
+/* Nebula glow */
+.hero::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse at 15% 50%, rgba(13, 33, 68, 0.9) 0%, transparent 55%),
+    radial-gradient(ellipse at 85% 20%, rgba(0, 60, 100, 0.4) 0%, transparent 45%),
+    radial-gradient(ellipse at 50% 90%, rgba(0, 212, 255, 0.07) 0%, transparent 40%);
+  pointer-events: none;
+}
+
+.hero__inner {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  max-width: 800px;
+}
+
+.hero__badge {
+  width: 140px;
+  height: 140px;
+  object-fit: contain;
+  margin-bottom: 32px;
+  filter: drop-shadow(0 0 24px rgba(0, 212, 255, 0.5));
+  animation: badge-pulse 4s ease-in-out infinite;
+}
+
+@keyframes badge-pulse {
+  0%, 100% { filter: drop-shadow(0 0 24px rgba(0, 212, 255, 0.5)); }
+  50%       { filter: drop-shadow(0 0 36px rgba(0, 212, 255, 0.8)) drop-shadow(0 0 60px rgba(0, 150, 200, 0.3)); }
+}
+
+.hero__classification {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.3em;
+  color: var(--lcars-orange);
+  margin-bottom: 20px;
+  opacity: 0.85;
+}
+
+.hero__org {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(10px, 2vw, 13px);
+  font-weight: 600;
+  letter-spacing: 0.25em;
+  color: var(--trek-cyan);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+
+.hero__title {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(26px, 5vw, 52px);
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  line-height: 1.1;
+  margin-bottom: 8px;
+  background: linear-gradient(135deg, #ffffff 0%, #b0d8f0 50%, var(--trek-cyan) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.hero__subtitle {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(12px, 2.5vw, 18px);
+  font-weight: 400;
+  letter-spacing: 0.18em;
+  color: var(--lcars-gold);
+  margin-bottom: 40px;
+  text-transform: uppercase;
+}
+
+/* Transmission metadata bar */
+.hero__meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0;
+  border: 1px solid rgba(0, 212, 255, 0.2);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 16px;
+  max-width: 680px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.hero__meta-item {
+  padding: 10px 20px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  color: var(--text-secondary);
+  border-right: 1px solid rgba(0, 212, 255, 0.15);
+  text-align: center;
+}
+
+.hero__meta-item:last-child { border-right: none; }
+
+.hero__meta-item span {
+  display: block;
+  color: var(--trek-cyan);
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  margin-bottom: 2px;
+  opacity: 0.7;
+}
+
+/* Scroll indicator */
+.hero__scroll {
+  position: absolute;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.25em;
+  color: var(--text-dim);
+}
+
+.hero__scroll-line {
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(to bottom, var(--trek-cyan), transparent);
+  animation: scroll-pulse 2s ease-in-out infinite;
+}
+
+@keyframes scroll-pulse {
+  0%, 100% { opacity: 0.3; }
+  50%       { opacity: 1; }
+}
+
+/* ============================================================
+   COMMANDER PROFILE SECTION
+   ============================================================ */
+.commander-section {
+  padding: 80px 0;
+}
+
+.commander-grid {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 32px;
+  align-items: start;
+}
+
+/* Portrait card */
+.portrait-card {
+  position: sticky;
+  top: 32px;
+  background: var(--panel-bg);
+  border: 1px solid var(--panel-border);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 0 60px rgba(0, 212, 255, 0.08);
+}
+
+.portrait-card__img-wrap {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  overflow: hidden;
+}
+
+.portrait-card__img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Scan line overlay */
+.portrait-card__img-wrap::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 3px,
+    rgba(0, 212, 255, 0.03) 3px,
+    rgba(0, 212, 255, 0.03) 4px
+  );
+  pointer-events: none;
+}
+
+/* Corner brackets */
+.portrait-card__img-wrap::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to right, var(--trek-cyan) 2px, transparent 2px) top left / 24px 24px no-repeat,
+    linear-gradient(to bottom, var(--trek-cyan) 2px, transparent 2px) top left / 24px 24px no-repeat,
+    linear-gradient(to left,  var(--trek-cyan) 2px, transparent 2px) top right / 24px 24px no-repeat,
+    linear-gradient(to bottom, var(--trek-cyan) 2px, transparent 2px) top right / 24px 24px no-repeat,
+    linear-gradient(to right, var(--trek-cyan) 2px, transparent 2px) bottom left / 24px 24px no-repeat,
+    linear-gradient(to top,   var(--trek-cyan) 2px, transparent 2px) bottom left / 24px 24px no-repeat,
+    linear-gradient(to left,  var(--trek-cyan) 2px, transparent 2px) bottom right / 24px 24px no-repeat,
+    linear-gradient(to top,   var(--trek-cyan) 2px, transparent 2px) bottom right / 24px 24px no-repeat;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.portrait-card__data {
+  padding: 20px 20px 24px;
+}
+
+.portrait-card__name {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: var(--text-primary);
+  margin-bottom: 4px;
+}
+
+.portrait-card__rank {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--lcars-gold);
+  margin-bottom: 20px;
+}
+
+.data-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(0, 212, 255, 0.07);
+  gap: 12px;
+}
+
+.data-row:last-child { border-bottom: none; }
+
+.data-row__label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: var(--text-dim);
+  flex-shrink: 0;
+  text-transform: uppercase;
+}
+
+.data-row__value {
+  font-family: 'Rajdhani', sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-secondary);
+  text-align: right;
+}
+
+.data-row__value--cyan  { color: var(--trek-cyan); }
+.data-row__value--gold  { color: var(--lcars-gold); }
+.data-row__value--green { color: #44cc88; }
+
+/* Status indicator */
+.status-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #44cc88;
+  box-shadow: 0 0 8px #44cc88;
+  margin-right: 6px;
+  animation: status-blink 2.5s ease-in-out infinite;
+}
+
+@keyframes status-blink {
+  0%, 90%, 100% { opacity: 1; }
+  95%            { opacity: 0.3; }
+}
+
+/* Seal watermark on portrait card */
+.portrait-card__seal {
+  display: block;
+  width: 72px;
+  margin: 16px auto 0;
+  opacity: 0.35;
+  filter: grayscale(20%);
+}
+
+/* ============================================================
+   MAIN CONTENT COLUMN
+   ============================================================ */
+.content-col {
+  min-width: 0;
+}
+
+/* ============================================================
+   MISSION BRIEF (opening section)
+   ============================================================ */
+.mission-brief p {
+  font-size: 17px;
+  font-weight: 400;
+  color: var(--text-primary);
+  line-height: 1.8;
+  margin-bottom: 16px;
+}
+
+.mission-brief p:first-child::first-letter {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 56px;
+  font-weight: 900;
+  float: left;
+  line-height: 0.85;
+  margin-right: 8px;
+  margin-top: 8px;
+  color: var(--trek-cyan);
+  filter: drop-shadow(0 0 10px rgba(0,212,255,0.6));
+}
+
+/* ============================================================
+   SCHEMATIC DIVIDER
+   ============================================================ */
+.schematic-divider {
+  width: 100%;
+  margin: 64px 0;
+  position: relative;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.schematic-divider img {
+  width: 100%;
+  display: block;
+  opacity: 0.7;
+  filter: brightness(0.9);
+}
+
+.schematic-divider__label {
+  position: absolute;
+  bottom: 12px;
+  left: 16px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.2em;
+  color: rgba(0, 212, 255, 0.5);
+}
+
+/* ============================================================
+   CAPABILITY SECTIONS
+   ============================================================ */
+.capability-sections {
+  padding: 48px 0;
+}
+
+.section-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.3em;
+  color: var(--lcars-orange);
+  margin-bottom: 32px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, rgba(255,153,0,0.4), transparent);
+}
+
+/* Inline emphasis */
+.lcars-content strong {
+  color: var(--trek-cyan);
+  font-weight: 600;
+}
+
+.lcars-content em {
+  color: var(--lcars-gold);
+  font-style: normal;
+  font-weight: 600;
+}
+
+/* ============================================================
+   DIAGNOSTIC TABLE
+   ============================================================ */
+.diagnostic-section {
+  padding: 48px 0 80px;
+}
+
+.diag-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Rajdhani', sans-serif;
+}
+
+.diag-table th {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 0.25em;
+  color: var(--text-dim);
+  text-align: left;
+  padding: 12px 20px;
+  border-bottom: 2px solid var(--trek-cyan);
+  background: rgba(0, 212, 255, 0.05);
+}
+
+.diag-table th:last-child { text-align: center; }
+
+.diag-table td {
+  padding: 14px 20px;
+  border-bottom: 1px solid rgba(0, 212, 255, 0.07);
+  font-size: 15px;
+  vertical-align: middle;
+}
+
+.diag-table tr:last-child td { border-bottom: none; }
+
+.diag-table tr:hover td {
+  background: rgba(0, 212, 255, 0.03);
+}
+
+.diag-table__requirement {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.diag-table__section {
+  font-size: 13px;
+  color: var(--text-secondary);
+  font-family: 'Share Tech Mono', monospace;
+  letter-spacing: 0.05em;
+}
+
+.diag-status {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: rgba(68, 204, 136, 0.1);
+  border: 1px solid rgba(68, 204, 136, 0.3);
+  border-radius: 4px;
+  padding: 4px 12px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.15em;
+  color: #44cc88;
+  white-space: nowrap;
+}
+
+.diag-status::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #44cc88;
+  box-shadow: 0 0 6px #44cc88;
+  animation: status-blink 2.5s ease-in-out infinite;
+}
+
+/* ============================================================
+   SIGN-OFF
+   ============================================================ */
+.signoff {
+  padding: 40px 0 100px;
+  text-align: center;
+}
+
+.signoff__rule {
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--trek-cyan), transparent);
+  margin-bottom: 64px;
+  opacity: 0.3;
+}
+
+.signoff__closing {
+  font-size: 18px;
+  color: var(--text-secondary);
+  line-height: 1.8;
+  max-width: 640px;
+  margin: 0 auto 48px;
+}
+
+.signoff__phrase {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(16px, 3vw, 24px);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  background: linear-gradient(135deg, var(--trek-cyan), var(--lcars-gold));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 8px;
+}
+
+.signoff__name {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.25em;
+  color: var(--text-dim);
+  margin-bottom: 48px;
+}
+
+.signoff__seals {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 48px;
+}
+
+.signoff__seal {
+  width: 100px;
+  opacity: 0.5;
+  filter: grayscale(15%);
+  transition: opacity 0.3s ease;
+}
+
+.signoff__seal:hover {
+  opacity: 0.85;
+}
+
+/* ============================================================
+   BACK LINK
+   ============================================================ */
+.back-link {
+  position: fixed;
+  top: 24px;
+  left: 24px;
+  z-index: 100;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  color: var(--text-dim);
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: color 0.2s ease;
+}
+
+.back-link:hover { color: var(--trek-cyan); }
+
+.back-link::before {
+  content: '◂';
+  font-size: 12px;
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 860px) {
+  .commander-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .portrait-card {
+    position: static;
+    max-width: 360px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .hero__meta { flex-direction: column; gap: 1px; }
+  .hero__meta-item { border-right: none; border-bottom: 1px solid rgba(0,212,255,0.1); }
+  .lcars-content { padding: 20px; }
+  .diag-table th, .diag-table td { padding: 10px 12px; }
+  .diag-table__section { display: none; }
+}
+
+</style>
+</head>
+<body>
+
+<a href="index.html" class="back-link">BRADLEY SERAPHIN</a>
+
+<!-- ============================================================
+     HERO / MASTHEAD
+     ============================================================ -->
+<section class="hero">
+
+  <!-- Enterprise schematic background -->
+  <div class="hero__schematic">
+    <img src="assets/star-trek/enterprise-schematic.png" alt="">
+  </div>
+
+  <div class="hero__inner">
+
+    <img class="hero__badge"
+         src="assets/star-trek/ufp-badge.png"
+         alt="United Federation of Planets — Starfleet Official Transmission Record">
+
+    <p class="hero__classification">CLASSIFICATION: PRIORITY ONE // TRANSMISSION RECORD // EYES ONLY</p>
+
+    <p class="hero__org">United Federation of Planets &mdash; Starfleet Command</p>
+
+    <h1 class="hero__title orb">Commander<br>Bradley Seraphin</h1>
+
+    <p class="hero__subtitle">Starfleet Personnel Dossier</p>
+
+    <div class="hero__meta">
+      <div class="hero__meta-item">
+        <span>INTERGALACTIC DATE</span>
+        47634.2
+      </div>
+      <div class="hero__meta-item">
+        <span>AUTHORIZATION</span>
+        ADMIRAL J. KIRK
+      </div>
+      <div class="hero__meta-item">
+        <span>ASSIGNMENT</span>
+        STFC / SCOPELY
+      </div>
+      <div class="hero__meta-item">
+        <span>SPECIALIZATION</span>
+        PRODUCT MARKETING
+      </div>
+      <div class="hero__meta-item">
+        <span>STATUS</span>
+        <span style="color:#44cc88; font-size:10px;">● REPORTING FOR DUTY</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="hero__scroll">
+    <div class="hero__scroll-line"></div>
+    SCROLL TO REVIEW
+  </div>
+
+</section>
+
+
+<!-- ============================================================
+     COMMANDER PROFILE
+     ============================================================ -->
+<section class="commander-section">
+  <div class="container">
+
+    <div class="section-label">PERSONNEL FILE // STARDATE 47634.2</div>
+
+    <div class="commander-grid">
+
+      <!-- Portrait -->
+      <div class="portrait-card">
+        <div class="portrait-card__img-wrap">
+          <img src="assets/star-trek/commander-portrait.png"
+               alt="Commander Bradley Seraphin at the bridge of the USS Enterprise">
+        </div>
+        <div class="portrait-card__data">
+          <div class="portrait-card__name">BRADLEY SERAPHIN</div>
+          <div class="portrait-card__rank">COMMANDER // STARFLEET COMMAND</div>
+
+          <div class="data-row">
+            <span class="data-row__label">RANK</span>
+            <span class="data-row__value data-row__value--gold">Commander</span>
+          </div>
+          <div class="data-row">
+            <span class="data-row__label">ASSIGNMENT</span>
+            <span class="data-row__value data-row__value--cyan">Star Trek Fleet Command</span>
+          </div>
+          <div class="data-row">
+            <span class="data-row__label">DIVISION</span>
+            <span class="data-row__value">Product Marketing</span>
+          </div>
+          <div class="data-row">
+            <span class="data-row__label">SERVICE YRS</span>
+            <span class="data-row__value">20 Years</span>
+          </div>
+          <div class="data-row">
+            <span class="data-row__label">PRIOR POST</span>
+            <span class="data-row__value">Proof of Play</span>
+          </div>
+          <div class="data-row">
+            <span class="data-row__label">STATUS</span>
+            <span class="data-row__value data-row__value--green">
+              <span class="status-dot"></span>ACTIVE
+            </span>
+          </div>
+
+          <img class="portrait-card__seal"
+               src="assets/star-trek/starfleet-seal.png"
+               alt="Starfleet Command Seal">
+        </div>
+      </div>
+
+      <!-- Mission Brief -->
+      <div class="content-col">
+
+        <div class="lcars-panel lcars-panel--cyan">
+          <div class="lcars-header">
+            <div class="lcars-header__pill"></div>
+            <div class="lcars-header__label">MISSION BRIEF</div>
+            <div class="lcars-header__code">SEC-1 // MB-001</div>
+            <div class="lcars-header__end"></div>
+          </div>
+          <div class="lcars-body">
+            <div class="lcars-sidebar"></div>
+            <div class="lcars-content mission-brief">
+              <p>Brad Seraphin is a Product Marketing Manager reporting for duty to the Star Trek Fleet Command team. A seasoned product marketing veteran, having recently returned from a GTM and Growth tour of duty with a small a16z-backed gaming studio, <strong>Proof of Play</strong>, and having launched <em>Shiba Story Go!</em> on iOS and Android, is ready to boldly go into product marketing with one of mobile gaming's deepest, most enduring, and most community-driven live-service experiences in the Galaxy.</p>
+
+              <p>This role sits at the intersection of Product, Live Operations, Marketing, Community, Campaigns, and Player Experience — familiar space for Brad to navigate. At HP, he held the captain's chair for exactly this kind of multi-department mission, steering GTM for the <strong>HP Smart app</strong> across a stakeholder crew numbering in the hundreds, while the app warped from <em>6 million to 66 million monthly active users</em> — a fleet size not unlike the one Star Trek Fleet Command commands today.</p>
+
+              <p>This is where the mission profile matches Brad's actual service record. Positioning, go-to-market ownership, messaging frameworks, launch materials, creative direction, cross-functional coordination. It's the job he's done at every post. At Proof of Play, recruited as the studio's sole marketing hire, he owned it end to end for Shiba Story Go!, pivoting from underperforming "fake gameplay" ads to cinematic trailers built in hours instead of days, and managing the UA and creative partners behind a TikTok run from <strong>zero to 291,000 followers in seven weeks</strong>.</p>
+
+              <p>Star Trek Fleet Command is one of the most sophisticated strategy games in mobile. Full disclosure: Fleet Command itself is downloading on Brad's phone right now, for the first time. He's the new recruit here, and he knows it. But he's spent two decades training for exactly this kind of mission: translating complex systems into clear player value, keeping cross-functional crews moving together, turning ambitious ideas into things people actually want. Star Trek has been part of his life since long before this download bar finished. <em>The game is new. The mission is not.</em></p>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- ============================================================
+     SCHEMATIC DIVIDER
+     ============================================================ -->
+<div class="container">
+  <div class="schematic-divider">
+    <img src="assets/star-trek/prometheus-schematic.png"
+         alt="USS Prometheus Experimental Prototype — Starfleet Engineering Schematic">
+    <div class="schematic-divider__label">USS PROMETHEUS — EXPERIMENTAL PROTOTYPE // ENGINEERING SCHEMATIC // STARFLEET R&D</div>
+  </div>
+</div>
+
+
+<!-- ============================================================
+     CAPABILITY ASSESSMENTS
+     ============================================================ -->
+<section class="capability-sections">
+  <div class="container">
+
+    <div class="section-label">CAPABILITY ASSESSMENT // MISSION-CRITICAL COMPETENCIES // 7 OF 7</div>
+
+    <!-- 01 -->
+    <div class="lcars-panel lcars-panel--orange">
+      <div class="lcars-header">
+        <div class="lcars-header__pill"></div>
+        <div class="lcars-header__label">01 // OWN THE PLAYER-FACING NARRATIVE</div>
+        <div class="lcars-header__code">CA-001</div>
+        <div class="lcars-header__end"></div>
+      </div>
+      <div class="lcars-body">
+        <div class="lcars-sidebar"></div>
+        <div class="lcars-content">
+          <p>Own the player-facing narrative for Star Trek Fleet Command, translating product strategy into clear, compelling experiences that help players understand not just <em>what's</em> being built, but <em>why it matters</em>. This is the part of the job Brad has spent 20 years getting right. Fluent in the language of technology and technology teams, he has a particular aptitude for precision: finding the ambiguity in a requirement and defining it exactly, in terms that serve both the customer and the business. From there, the real work begins — turning that definition into frameworks, messaging, positioning, content, and assets through creativity, ideation, and disciplined project execution.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 02 -->
+    <div class="lcars-panel lcars-panel--teal">
+      <div class="lcars-header">
+        <div class="lcars-header__pill"></div>
+        <div class="lcars-header__label">02 // TRANSLATE PRODUCT STRATEGY INTO PLAYER VALUE</div>
+        <div class="lcars-header__code">CA-002</div>
+        <div class="lcars-header__end"></div>
+      </div>
+      <div class="lcars-body">
+        <div class="lcars-sidebar"></div>
+        <div class="lcars-content">
+          <p>Translate product strategy into player value by partnering with Product, Design, Economy, Live Operations, Analytics, and Creative teams throughout feature development. Brad has logged this exact mission on five different ships.</p>
+          <p><strong>Veoh:</strong> a downloadable client warped into a web platform — he charted that shift into the growth story that won venture backing. <strong>Curious Minds:</strong> as CMO, he translated early-stage bets across a fleet of portfolio companies into positioning that closed acquisitions. <strong>HP:</strong> he translated Smart app engineering roadmaps into go-to-market plans that grew a feature into a franchise. <strong>Shutterstock:</strong> he translated an AI creative tool's capabilities into the positioning behind CreativeFlow's launch. <strong>Proof of Play:</strong> he translated Shiba Story Go!'s game systems into a launch built for players from day one. <em>Five ships. Five crews. One constant heading: turn the complex into a clear course.</em></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 03 -->
+    <div class="lcars-panel lcars-panel--gold">
+      <div class="lcars-header">
+        <div class="lcars-header__pill"></div>
+        <div class="lcars-header__label">03 // LEAD GO-TO-MARKET STRATEGY</div>
+        <div class="lcars-header__code">CA-003</div>
+        <div class="lcars-header__end"></div>
+      </div>
+      <div class="lcars-body">
+        <div class="lcars-sidebar"></div>
+        <div class="lcars-content">
+          <p>Lead go-to-market strategy for major features, seasonal arcs, and franchise partnerships. Brad has flown this exact formation before — just with a lot less fuel in the tank. At Proof of Play, running Shiba Story Go!'s launch across site, paid, social, and Discord on a budget of zero, as the studio's only marketing hire, he kept the ship pointed at one instrument panel: <strong>retention, engagement, and player ratings.</strong></p>
+          <p>That same discipline ran at a much bigger scale at HP, where launch plans spanned everything from routine product updates to full feature and solution launches, backed by the Learn, Manage, and Create segmentation research he helped build. Scopely offers what Proof of Play's budget never could: the crew and resources to run that same instinct at Fleet Command's scale. And Brad won't be studying the player base from the bridge alone — an avid mobile gamer himself, he expects to be one of Fleet Command's most active players, advocating from inside the ranks, with a <em>PMP-backed process</em> for setting objectives and success criteria across Product, Marketing, and Analytics.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 04 -->
+    <div class="lcars-panel lcars-panel--cyan">
+      <div class="lcars-header">
+        <div class="lcars-header__pill"></div>
+        <div class="lcars-header__label">04 // DRIVE CROSS-FUNCTIONAL LAUNCH READINESS</div>
+        <div class="lcars-header__code">CA-004</div>
+        <div class="lcars-header__end"></div>
+      </div>
+      <div class="lcars-body">
+        <div class="lcars-sidebar"></div>
+        <div class="lcars-content">
+          <p>Drive cross-functional launch readiness, serving as the central marketing partner connecting Product, Community, Campaign Marketing, CRM, Creative, Analytics, Player Experience, Publishing, and external partners — coordinating launch readiness so <em>nothing ships until every function is locked in.</em></p>
+          <p>At Proof of Play, Brad was that connective node for Shiba Story Go!, running point between the CTO, the UA agency, and the creative studio to keep timing, assets, and approvals moving in formation before anything reached a player. At HP, he led the Create segment — the customer-facing hub for everything from major feature launches to routine product updates — catching the risks and closing the gaps between teams before they ever reached a user.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 05 -->
+    <div class="lcars-panel lcars-panel--violet">
+      <div class="lcars-header">
+        <div class="lcars-header__pill"></div>
+        <div class="lcars-header__label">05 // OWN PRODUCT MESSAGING &amp; CREATIVE STEWARDSHIP</div>
+        <div class="lcars-header__code">CA-005</div>
+        <div class="lcars-header__end"></div>
+      </div>
+      <div class="lcars-body">
+        <div class="lcars-sidebar"></div>
+        <div class="lcars-content">
+          <p>Own product messaging and creative stewardship — creating creative briefs, messaging frameworks, and marketing guidance that keep execution aligned across the organization, reviewing and approving assets for consistency with product strategy and brand standards. This has never been a solo mission for Brad.</p>
+          <p>At HP, he partnered closely with design architect <strong>Chris Rives</strong> and product owner <strong>David Athay</strong> to keep the Smart app's creative and messaging in lockstep with the roadmap. At Proof of Play, that partnership ran directly through the studio's CTO, <strong>Matt Van Veenendaal</strong>, who recruited Brad specifically to own this function. <em>Paramount itself isn't unfamiliar territory either:</em> as CEO of Spot.Coach, Brad built and launched the service with a slate of movie studio pilot customers — Paramount among them. Different business, same instinct: earn trust with the people who own the product, and keep every asset on-brand and on-strategy.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 06 -->
+    <div class="lcars-panel lcars-panel--orange">
+      <div class="lcars-header">
+        <div class="lcars-header__pill"></div>
+        <div class="lcars-header__label">06 // MEASURE ADOPTION &amp; OPTIMIZE PERFORMANCE</div>
+        <div class="lcars-header__code">CA-006</div>
+        <div class="lcars-header__end"></div>
+      </div>
+      <div class="lcars-body">
+        <div class="lcars-sidebar"></div>
+        <div class="lcars-content">
+          <p>Measure product adoption and optimize performance — monitoring feature adoption, player engagement, sentiment, and commercial outcomes following launches, then translating that signal into recommendations that actually change the next launch.</p>
+          <p>At Proof of Play, Brad was hands-on in the instrumentation itself: integrating <strong>AppsFlyer</strong> for attribution, working directly in <strong>Amplitude</strong> for behavioral data, and pulling performance signal straight from DSPs and major ad networks. <em>Not just reading dashboards after the fact — building the ones that mattered.</em></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- 07 -->
+    <div class="lcars-panel lcars-panel--gold">
+      <div class="lcars-header">
+        <div class="lcars-header__pill"></div>
+        <div class="lcars-header__label">07 // LEAD THE PRODUCT MARKETING FUNCTION</div>
+        <div class="lcars-header__code">CA-007</div>
+        <div class="lcars-header__end"></div>
+      </div>
+      <div class="lcars-body">
+        <div class="lcars-sidebar"></div>
+        <div class="lcars-content">
+          <p>Lead the product marketing function — managing, coaching, and building the trusted relationships across Product, Creative, Publishing, Licensing, and executive leadership that make the whole operation run.</p>
+          <p>Twenty years in, Brad leads the way the good captains always have. <em>Kirk. Picard. Sisko. Janeway.</em> And now, presumably, <strong>Seraphin</strong>: people who took some hits along the way — personally and professionally — and came out the other side steadier for it. That's not a résumé line. It's the reason people find him easy to work for and even easier to work with — an empathetic hand on a steady wheel, more interested in solving the problem in front of him than being right about it.</p>
+          <p>And should a Klingon ship decloak mid-launch, Brad knows the protocol: hail first. Klingons respect someone who tells it straight. And so does he.</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ============================================================
+     PRE-LAUNCH DIAGNOSTIC
+     ============================================================ -->
+<section class="diagnostic-section">
+  <div class="container">
+
+    <div class="section-label">PRE-LAUNCH DIAGNOSTIC // SYSTEMS CHECK // 7 OF 7 ONLINE</div>
+
+    <div class="lcars-panel lcars-panel--red">
+      <div class="lcars-header">
+        <div class="lcars-header__pill"></div>
+        <div class="lcars-header__label">MISSION READINESS — SYSTEMS STATUS</div>
+        <div class="lcars-header__code">DIAG-PRE-LAUNCH</div>
+        <div class="lcars-header__end"></div>
+      </div>
+      <div class="lcars-body">
+        <div class="lcars-sidebar"></div>
+        <div class="lcars-content" style="padding: 0;">
+          <table class="diag-table">
+            <thead>
+              <tr>
+                <th>REQUIREMENT</th>
+                <th>COVERED IN</th>
+                <th style="text-align:center;">STATUS</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>
+                  <div class="diag-table__requirement">Translate complex products into compelling player stories</div>
+                </td>
+                <td><div class="diag-table__section">Own the Player-Facing Narrative</div></td>
+                <td style="text-align:center;"><span class="diag-status">ONLINE</span></td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="diag-table__requirement">Led integrated product launches across Product / Creative / Community / Analytics / partners</div>
+                </td>
+                <td><div class="diag-table__section">Drive Cross-Functional Launch Readiness</div></td>
+                <td style="text-align:center;"><span class="diag-status">ONLINE</span></td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="diag-table__requirement">Influenced product direction through player insights</div>
+                </td>
+                <td><div class="diag-table__section">Measure Product Adoption & Optimize Performance</div></td>
+                <td style="text-align:center;"><span class="diag-status">ONLINE</span></td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="diag-table__requirement">Built scalable marketing frameworks and playbooks</div>
+                </td>
+                <td><div class="diag-table__section">Own Product Messaging & Creative Stewardship</div></td>
+                <td style="text-align:center;"><span class="diag-status">ONLINE</span></td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="diag-table__requirement">Partnered cross-functionally in fast-paced live-service environments</div>
+                </td>
+                <td><div class="diag-table__section">Translate Product Strategy into Player Value</div></td>
+                <td style="text-align:center;"><span class="diag-status">ONLINE</span></td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="diag-table__requirement">Mentored marketers, fostered high-performing teams</div>
+                </td>
+                <td><div class="diag-table__section">Lead the Product Marketing Function</div></td>
+                <td style="text-align:center;"><span class="diag-status">ONLINE</span></td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="diag-table__requirement">5+ years PMM / GTM in games, entertainment, tech</div>
+                </td>
+                <td><div class="diag-table__section">Twenty years. Five companies. Throughout.</div></td>
+                <td style="text-align:center;"><span class="diag-status">ONLINE</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ============================================================
+     SIGN-OFF
+     ============================================================ -->
+<section class="signoff">
+  <div class="container">
+    <div class="signoff__rule"></div>
+
+    <p class="signoff__closing">
+      Brad is ready to report for duty, whenever Starfleet — or Scopely — gives the order.<br>
+      Thank you for considering him for the mission.<br>
+      He'd welcome the chance to talk through how two decades on the bridge<br>translate directly onto the crew of Fleet Command.
+    </p>
+
+    <div class="signoff__phrase">Live Long and Prosper.</div>
+    <div class="signoff__name">COMMANDER BRADLEY SERAPHIN // STARFLEET COMMAND // STARDATE 47634.2</div>
+
+    <div class="signoff__seals">
+      <img class="signoff__seal"
+           src="assets/star-trek/ufp-badge.png"
+           alt="United Federation of Planets">
+      <img class="signoff__seal"
+           src="assets/star-trek/starfleet-seal.png"
+           alt="Starfleet Command">
+    </div>
+
+  </div>
+</section>
+
+</body>
+</html>
