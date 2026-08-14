@@ -1055,6 +1055,94 @@ body > * { position: relative; z-index: 1; }
 }
 
 /* ============================================================
+   PERSISTENT TICKER
+   ============================================================ */
+.ticker {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 90;
+  height: 34px;
+  display: flex;
+  align-items: stretch;
+  background: rgba(4, 8, 18, 0.96);
+  border-top: 1px solid rgba(0, 212, 255, 0.18);
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+}
+
+.ticker__label {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  padding: 0 18px;
+  background: var(--lcars-orange);
+  font-family: 'Orbitron', sans-serif;
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  color: var(--deep-navy);
+  white-space: nowrap;
+  gap: 8px;
+}
+
+.ticker__label-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--deep-navy);
+  opacity: 0.5;
+  animation: status-blink 1.5s ease-in-out infinite;
+}
+
+.ticker__track {
+  flex: 1;
+  overflow: hidden;
+  position: relative;
+  mask-image: linear-gradient(to right, transparent 0%, black 3%, black 97%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 3%, black 97%, transparent 100%);
+}
+
+.ticker__inner {
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+  height: 100%;
+  animation: ticker-roll 70s linear infinite;
+}
+
+.ticker__inner:hover { animation-play-state: paused; }
+
+@keyframes ticker-roll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.ticker__item {
+  padding: 0 28px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  color: var(--trek-cyan);
+  white-space: nowrap;
+}
+
+.ticker__item--hype {
+  color: #e8f4ff;
+}
+
+.ticker__sep {
+  color: var(--lcars-orange);
+  opacity: 0.7;
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+/* Push page content above ticker */
+body { padding-bottom: 34px; }
+
+/* ============================================================
    BACK LINK
    ============================================================ */
 .back-link {
@@ -1526,6 +1614,67 @@ body > * { position: relative; z-index: 1; }
 
   </div>
 </section>
+
+<!-- PERSISTENT TICKER -->
+<div class="ticker">
+  <div class="ticker__label">
+    <div class="ticker__label-dot"></div>
+    STARFLEET COMMAND // LIVE TRANSMISSION
+  </div>
+  <div class="ticker__track">
+    <div class="ticker__inner" id="tickerInner">
+      <span class="ticker__item">OFFICIAL STARFLEET TRANSMISSION // AUTHORIZED PERSONNEL ONLY // PRIORITY ONE</span>
+      <span class="ticker__sep">◈</span>
+      <span class="ticker__item ticker__item--hype">COMMANDER SERAPHIN HAS GROWN A USER BASE FROM 6M TO 66M MONTHLY ACTIVES // HP SMART APP</span>
+      <span class="ticker__sep">◈</span>
+      <span class="ticker__item">IMMUTABLE DIGITAL WATERMARK // INTERGALACTIC DATE STAMP: 47634.2 // AUTHORIZATION: ADMIRAL J. KIRK</span>
+      <span class="ticker__sep">◈</span>
+      <span class="ticker__item ticker__item--hype">TIKTOK SECTOR: ZERO TO 291,000 CREW MEMBERS IN SEVEN WEEKS // SHIBA STORY GO! CAMPAIGN</span>
+      <span class="ticker__sep">◈</span>
+      <span class="ticker__item">THIS TRANSMISSION IS CLASSIFIED // FOR SCOPELY EYES ONLY // STAR TREK FLEET COMMAND DIVISION</span>
+      <span class="ticker__sep">◈</span>
+      <span class="ticker__item ticker__item--hype">FIVE SHIPS. FIVE CREWS. ONE CONSTANT HEADING: TURN THE COMPLEX INTO A CLEAR COURSE.</span>
+      <span class="ticker__sep">◈</span>
+      <span class="ticker__item">CANDIDATE STATUS: PRIORITY ONE // PRODUCT MARKETING MANAGER // REPORTING FOR DUTY</span>
+      <span class="ticker__sep">◈</span>
+      <span class="ticker__item ticker__item--hype">PMP-CERTIFIED // APPSFLYER // AMPLITUDE // DSP MANAGEMENT // CROSS-FUNCTIONAL COMMAND // ALL SYSTEMS ONLINE</span>
+      <span class="ticker__sep">◈</span>
+      <span class="ticker__item">SECURE CHANNEL ESTABLISHED // STARFLEET PERSONNEL DOSSIER // COMMANDER B. SERAPHIN</span>
+      <span class="ticker__sep">◈</span>
+      <span class="ticker__item ticker__item--hype">20 YEARS. VEOH. CURIOUS MINDS. HP. SHUTTERSTOCK. PROOF OF PLAY. THE MISSION CONTINUES.</span>
+      <span class="ticker__sep">◈</span>
+      <span class="ticker__item">TRANSMISSION RECORD VERIFIED // SCOPELY STRATEGIC OPERATIONS // FLEET COMMAND AWAITS</span>
+      <span class="ticker__sep">◈</span>
+      <span class="ticker__item ticker__item--hype">THE GAME IS NEW. THE MISSION IS NOT. COMMANDER SERAPHIN IS READY TO REPORT FOR DUTY.</span>
+      <span class="ticker__sep">◈</span>
+      <!-- duplicate for seamless loop -->
+      <span class="ticker__item">OFFICIAL STARFLEET TRANSMISSION // AUTHORIZED PERSONNEL ONLY // PRIORITY ONE</span>
+      <span class="ticker__sep">◈</span>
+      <span class="ticker__item ticker__item--hype">COMMANDER SERAPHIN HAS GROWN A USER BASE FROM 6M TO 66M MONTHLY ACTIVES // HP SMART APP</span>
+      <span class="ticker__sep">◈</span>
+      <span class="ticker__item">IMMUTABLE DIGITAL WATERMARK // INTERGALACTIC DATE STAMP: 47634.2 // AUTHORIZATION: ADMIRAL J. KIRK</span>
+      <span class="ticker__sep">◈</span>
+      <span class="ticker__item ticker__item--hype">TIKTOK SECTOR: ZERO TO 291,000 CREW MEMBERS IN SEVEN WEEKS // SHIBA STORY GO! CAMPAIGN</span>
+      <span class="ticker__sep">◈</span>
+      <span class="ticker__item">THIS TRANSMISSION IS CLASSIFIED // FOR SCOPELY EYES ONLY // STAR TREK FLEET COMMAND DIVISION</span>
+      <span class="ticker__sep">◈</span>
+      <span class="ticker__item ticker__item--hype">FIVE SHIPS. FIVE CREWS. ONE CONSTANT HEADING: TURN THE COMPLEX INTO A CLEAR COURSE.</span>
+      <span class="ticker__sep">◈</span>
+      <span class="ticker__item">CANDIDATE STATUS: PRIORITY ONE // PRODUCT MARKETING MANAGER // REPORTING FOR DUTY</span>
+      <span class="ticker__sep">◈</span>
+      <span class="ticker__item ticker__item--hype">PMP-CERTIFIED // APPSFLYER // AMPLITUDE // DSP MANAGEMENT // CROSS-FUNCTIONAL COMMAND // ALL SYSTEMS ONLINE</span>
+      <span class="ticker__sep">◈</span>
+      <span class="ticker__item">SECURE CHANNEL ESTABLISHED // STARFLEET PERSONNEL DOSSIER // COMMANDER B. SERAPHIN</span>
+      <span class="ticker__sep">◈</span>
+      <span class="ticker__item ticker__item--hype">20 YEARS. VEOH. CURIOUS MINDS. HP. SHUTTERSTOCK. PROOF OF PLAY. THE MISSION CONTINUES.</span>
+      <span class="ticker__sep">◈</span>
+      <span class="ticker__item">TRANSMISSION RECORD VERIFIED // SCOPELY STRATEGIC OPERATIONS // FLEET COMMAND AWAITS</span>
+      <span class="ticker__sep">◈</span>
+      <span class="ticker__item ticker__item--hype">THE GAME IS NEW. THE MISSION IS NOT. COMMANDER SERAPHIN IS READY TO REPORT FOR DUTY.</span>
+      <span class="ticker__sep">◈</span>
+    </div>
+  </div>
+</div>
 
 <script>
 (function () {
