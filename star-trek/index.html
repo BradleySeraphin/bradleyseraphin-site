@@ -274,18 +274,40 @@ body > * { position: relative; z-index: 1; }
   max-width: 800px;
 }
 
-.hero__badge {
-  width: 140px;
-  height: 140px;
-  object-fit: contain;
-  margin-bottom: 32px;
-  filter: drop-shadow(0 0 24px rgba(0, 212, 255, 0.5));
-  animation: badge-pulse 4s ease-in-out infinite;
+/* Watermark wrapper — handles absolute centering + JS parallax */
+.hero__watermark-wrap {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  pointer-events: none;
+  will-change: transform;
 }
 
-@keyframes badge-pulse {
-  0%, 100% { filter: drop-shadow(0 0 24px rgba(0, 212, 255, 0.5)); }
-  50%       { filter: drop-shadow(0 0 36px rgba(0, 212, 255, 0.8)) drop-shadow(0 0 60px rgba(0, 150, 200, 0.3)); }
+/* Watermark image — handles scale animation + blend */
+.hero__watermark {
+  display: block;
+  width: min(560px, 74vw);
+  mix-blend-mode: screen;
+  animation:
+    transmission-in 3s cubic-bezier(0.23, 1, 0.32, 1) 0.25s both,
+    watermark-pulse  6s ease-in-out 3.5s infinite;
+}
+
+@keyframes transmission-in {
+  0%   { opacity: 0;    transform: scale(0.65); filter: brightness(0)   blur(12px); }
+  20%  { opacity: 0.95; transform: scale(1.07); filter: brightness(7)   blur(0px);  }
+  30%  { opacity: 0.06; transform: scale(1.03); filter: brightness(0.3);             }
+  42%  { opacity: 0.9;                          filter: brightness(3.5);             }
+  52%  { opacity: 0.04;                         filter: brightness(0.1);             }
+  68%  { opacity: 0.8;  transform: scale(1.01); filter: brightness(1.8);             }
+  100% { opacity: 0.17; transform: scale(1);    filter: brightness(1);               }
+}
+
+@keyframes watermark-pulse {
+  0%, 100% { opacity: 0.17; filter: brightness(1);   }
+  50%       { opacity: 0.24; filter: brightness(1.35); }
 }
 
 .hero__classification {
@@ -782,6 +804,143 @@ body > * { position: relative; z-index: 1; }
 }
 
 /* ============================================================
+   TRANSMISSION OVERLAY
+   ============================================================ */
+#tx-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: #020507;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Scanlines */
+#tx-overlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 3px,
+    rgba(0, 212, 255, 0.022) 3px,
+    rgba(0, 212, 255, 0.022) 4px
+  );
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Edge vignette */
+#tx-overlay::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 35%, rgba(0, 3, 10, 0.85) 100%);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Horizontal scan line sweep */
+.tx-scan {
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(to right, transparent 0%, var(--trek-cyan) 50%, transparent 100%);
+  opacity: 0.5;
+  animation: tx-sweep 1.8s linear infinite;
+  z-index: 2;
+}
+
+@keyframes tx-sweep {
+  from { top: -2px; }
+  to   { top: 100%; }
+}
+
+.tx-inner {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 20px;
+  padding: 40px 24px;
+}
+
+.tx-header {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(9px, 1.5vw, 11px);
+  letter-spacing: 0.35em;
+  color: var(--lcars-orange);
+  opacity: 0;
+  animation: tx-fade-in 0.5s ease 0.4s forwards;
+}
+
+.tx-seal {
+  width: min(340px, 55vw);
+  mix-blend-mode: screen;
+  opacity: 0;
+  animation: tx-seal-appear 1.2s ease 0.8s forwards;
+}
+
+@keyframes tx-seal-appear {
+  0%   { opacity: 0; filter: brightness(0) blur(10px); transform: scale(0.85); }
+  60%  { opacity: 1; filter: brightness(1.4) blur(0px); transform: scale(1.02); }
+  100% { opacity: 1; filter: brightness(1.1); transform: scale(1); }
+}
+
+.tx-status {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(9px, 1.4vw, 11px);
+  letter-spacing: 0.22em;
+  color: var(--trek-cyan);
+  opacity: 0;
+  min-height: 1.2em;
+  transition: opacity 0.3s ease;
+}
+
+.tx-countdown {
+  font-family: 'Orbitron', sans-serif;
+  font-size: clamp(56px, 12vw, 96px);
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  color: var(--trek-cyan);
+  line-height: 1;
+  opacity: 0;
+  min-height: 1.1em;
+  text-shadow: 0 0 20px rgba(0,212,255,0.9), 0 0 60px rgba(0,212,255,0.4);
+  transition: opacity 0.2s ease;
+}
+
+.tx-auth {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: clamp(8px, 1.2vw, 10px);
+  letter-spacing: 0.2em;
+  color: var(--text-dim);
+  opacity: 0;
+  animation: tx-fade-in 0.5s ease 1.6s forwards;
+}
+
+@keyframes tx-fade-in {
+  to { opacity: 1; }
+}
+
+/* CRT-off collapse */
+#tx-overlay.tx-closing {
+  animation: tx-collapse 0.65s ease-in forwards;
+}
+
+@keyframes tx-collapse {
+  0%   { opacity: 1; transform: scaleY(1)   scaleX(1);    }
+  40%  { opacity: 1; transform: scaleY(0.04) scaleX(1.01); }
+  60%  { opacity: 1; transform: scaleY(0.04) scaleX(0.6);  }
+  100% { opacity: 0; transform: scaleY(0)   scaleX(0);    }
+}
+
+/* ============================================================
    BACK LINK
    ============================================================ */
 .back-link {
@@ -834,6 +993,18 @@ body > * { position: relative; z-index: 1; }
 </head>
 <body>
 
+<!-- TRANSMISSION OVERLAY -->
+<div id="tx-overlay">
+  <div class="tx-scan"></div>
+  <div class="tx-inner">
+    <div class="tx-header">INCOMING TRANSMISSION &nbsp;//&nbsp; STARFLEET COMMAND &nbsp;//&nbsp; PRIORITY ONE</div>
+    <img class="tx-seal" src="../assets/star-trek/starfleet-seal.jpg" alt="Starfleet Command">
+    <div class="tx-status" id="txStatus">&nbsp;</div>
+    <div class="tx-countdown" id="txCountdown">&nbsp;</div>
+    <div class="tx-auth">STARDATE 47634.2 &nbsp;//&nbsp; AUTHORIZATION: ADMIRAL J. KIRK &nbsp;//&nbsp; EYES ONLY</div>
+  </div>
+</div>
+
 <a href="../index.html" class="back-link">BRADLEY SERAPHIN</a>
 
 <!-- ============================================================
@@ -846,11 +1017,14 @@ body > * { position: relative; z-index: 1; }
     <img src="../assets/star-trek/enterprise-schematic.jpg" alt="">
   </div>
 
-  <div class="hero__inner">
+  <!-- Watermark seal — floats behind content, parallax on scroll -->
+  <div class="hero__watermark-wrap">
+    <img class="hero__watermark"
+         src="../assets/star-trek/starfleet-seal.jpg"
+         alt="">
+  </div>
 
-    <img class="hero__badge"
-         src="../assets/star-trek/ufp-badge.jpg"
-         alt="United Federation of Planets — Starfleet Official Transmission Record">
+  <div class="hero__inner">
 
     <p class="hero__classification">CLASSIFICATION: PRIORITY ONE // TRANSMISSION RECORD // EYES ONLY</p>
 
@@ -1233,5 +1407,56 @@ body > * { position: relative; z-index: 1; }
   </div>
 </section>
 
+<script>
+(function () {
+  var overlay   = document.getElementById('tx-overlay');
+  var statusEl  = document.getElementById('txStatus');
+  var countEl   = document.getElementById('txCountdown');
+
+  function show(el, text, delay) {
+    setTimeout(function () { el.style.opacity = '1'; el.textContent = text; }, delay);
+  }
+  function hide(el, delay) {
+    setTimeout(function () { el.style.opacity = '0'; }, delay);
+  }
+
+  // --- Countdown sequence ---
+  show(statusEl, 'ESTABLISHING SECURE CHANNEL...', 1800);
+
+  show(countEl,  '03', 2600);
+  hide(countEl,         3300);
+  show(countEl,  '02', 3450);
+  hide(countEl,         4150);
+  show(countEl,  '01', 4300);
+  hide(countEl,         4900);
+
+  // Authorized flash
+  setTimeout(function () {
+    statusEl.style.opacity = '1';
+    statusEl.textContent   = 'TRANSMISSION AUTHORIZED — ACCESSING DOSSIER';
+    statusEl.style.color   = '#44cc88';
+    countEl.style.opacity  = '1';
+    countEl.textContent    = '▶';
+    countEl.style.color    = '#44cc88';
+    countEl.style.textShadow = '0 0 20px rgba(68,204,136,0.9), 0 0 50px rgba(68,204,136,0.4)';
+    countEl.style.fontSize = '48px';
+  }, 5050);
+
+  // Collapse overlay
+  setTimeout(function () {
+    overlay.classList.add('tx-closing');
+    setTimeout(function () { overlay.style.display = 'none'; }, 680);
+  }, 5700);
+
+  // --- Parallax for hero watermark ---
+  var wrap = document.querySelector('.hero__watermark-wrap');
+  if (wrap) {
+    window.addEventListener('scroll', function () {
+      var y = window.scrollY * 0.28;
+      wrap.style.transform = 'translate(-50%, calc(-50% + ' + y + 'px))';
+    }, { passive: true });
+  }
+}());
+</script>
 </body>
 </html>
