@@ -806,6 +806,55 @@ body > * { position: relative; z-index: 1; }
 }
 
 /* ============================================================
+   DYNAMIC STAR FIELD
+   ============================================================ */
+.star-field {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* Glimmer pulse */
+@keyframes glimmer {
+  0%,100% { opacity: var(--lo, 0.1);  transform: scale(1);   filter: none; }
+  50%      { opacity: var(--hi, 0.95); transform: scale(1.8); filter: drop-shadow(0 0 2px rgba(180,220,255,0.9)); }
+}
+
+/* Falling drift */
+@keyframes fall {
+  0%   { transform: translateY(var(--sy, 0)); opacity: 0; }
+  6%   { opacity: var(--op, 0.45); }
+  94%  { opacity: var(--op, 0.45); }
+  100% { transform: translateY(calc(var(--sy, 0) + 115vh)); opacity: 0; }
+}
+
+/* Approach — drift outward from near-center as if flying through space */
+@keyframes approach {
+  0%   { opacity: 0;   transform: translate(0,0)                   scale(0.3); }
+  10%  { opacity: 0.5; }
+  88%  { opacity: 0.55; }
+  100% { opacity: 0;   transform: translate(var(--ex),var(--ey))   scale(2.4); }
+}
+
+/* Shooting star */
+.shoot {
+  position: absolute;
+  height: 1.5px;
+  border-radius: 100px;
+  background: linear-gradient(90deg, transparent 0%, rgba(200,232,255,0.5) 25%, white 100%);
+  transform-origin: right center;
+  pointer-events: none;
+  opacity: 0;
+}
+@keyframes shoot-anim {
+  0%   { opacity: 0;   transform: translate(0,0)                         rotate(var(--ang,25deg)); }
+  6%   { opacity: 0.9; }
+  100% { opacity: 0;   transform: translate(var(--sx,300px),var(--sy2,150px)) rotate(var(--ang,25deg)); }
+}
+
+/* ============================================================
    TRANSMISSION OVERLAY
    ============================================================ */
 #tx-overlay {
@@ -1413,6 +1462,121 @@ body > * { position: relative; z-index: 1; }
 
 <script>
 (function () {
+
+  /* ---- STAR FIELD ---- */
+  function rand(a, b) { return a + Math.random() * (b - a); }
+
+  function initStars() {
+    var field = document.createElement('div');
+    field.className = 'star-field';
+    document.body.prepend(field);
+
+    var W = window.innerWidth;
+    var H = window.innerHeight;
+    var cx = W / 2, cy = H / 2;
+
+    function dot(x, y, sz, cssExtra) {
+      var el = document.createElement('div');
+      el.style.cssText = 'position:absolute;border-radius:50%;background:#fff;'
+        + 'left:' + x + 'px;top:' + y + 'px;width:' + sz + 'px;height:' + sz + 'px;' + cssExtra;
+      field.appendChild(el);
+      return el;
+    }
+
+    // 1 — Static distant (very small, fixed)
+    for (var i = 0; i < 110; i++) {
+      var sz = Math.random() < 0.65 ? 1 : 1.5;
+      dot(rand(0,W), rand(0,H), sz, 'opacity:' + rand(0.08,0.28) + ';');
+    }
+
+    // 2 — Glimmering (blue-tinted twinkle, all different timing)
+    for (var i = 0; i < 32; i++) {
+      var sz = rand(1, 2.5);
+      var el = document.createElement('div');
+      el.style.cssText = 'position:absolute;border-radius:50%;background:#c8e8ff;'
+        + 'left:' + rand(0,W) + 'px;top:' + rand(0,H) + 'px;'
+        + 'width:' + sz + 'px;height:' + sz + 'px;'
+        + 'animation:glimmer ' + rand(1.8,5.5) + 's ease-in-out ' + rand(0,8) + 's infinite;'
+        + '--lo:' + rand(0.04,0.18) + ';--hi:' + rand(0.65,1) + ';';
+      field.appendChild(el);
+    }
+
+    // 3 — Falling (slow downward drift, starts above viewport)
+    for (var i = 0; i < 22; i++) {
+      var sz = rand(0.8, 1.6);
+      var el = document.createElement('div');
+      var startY = rand(-80, -4);
+      el.style.cssText = 'position:absolute;border-radius:50%;background:#e8f4ff;'
+        + 'left:' + rand(0,W) + 'px;top:0;'
+        + 'width:' + sz + 'px;height:' + sz + 'px;'
+        + 'animation:fall ' + rand(10,22) + 's linear ' + rand(0,18) + 's infinite;'
+        + '--sy:' + startY + 'px;--op:' + rand(0.2,0.5) + ';';
+      field.appendChild(el);
+    }
+
+    // 4 — Approaching (expand from center outward — warp-travel feel)
+    for (var i = 0; i < 20; i++) {
+      var angle   = rand(0, Math.PI * 2);
+      var startR  = rand(0.04, 0.18);
+      var x = cx + Math.cos(angle) * startR * W;
+      var y = cy + Math.sin(angle) * startR * H;
+      var ex = (x - cx) * rand(2.5, 4);
+      var ey = (y - cy) * rand(2.5, 4);
+      var sz = rand(0.8, 1.4);
+      var el = document.createElement('div');
+      el.style.cssText = 'position:absolute;border-radius:50%;background:#fff;'
+        + 'left:' + x + 'px;top:' + y + 'px;'
+        + 'width:' + sz + 'px;height:' + sz + 'px;'
+        + 'animation:approach ' + rand(7,16) + 's linear ' + rand(0,12) + 's infinite;'
+        + '--ex:' + ex + 'px;--ey:' + ey + 'px;';
+      field.appendChild(el);
+    }
+
+    // 5 — Parallax depth layers (3 speeds, scroll-reactive)
+    [0.05, 0.12, 0.2].forEach(function(speed, li) {
+      var wrap = document.createElement('div');
+      wrap.style.cssText = 'position:absolute;inset:0;will-change:transform;';
+      var sz  = li + 1;
+      var op  = 0.22 + li * 0.14;
+      for (var i = 0; i < 22; i++) {
+        var s = document.createElement('div');
+        s.style.cssText = 'position:absolute;border-radius:50%;background:#fff;'
+          + 'width:' + sz + 'px;height:' + sz + 'px;'
+          + 'left:' + rand(0,100) + '%;top:' + rand(-5,110) + '%;'
+          + 'opacity:' + (op + rand(0,0.12)) + ';';
+        wrap.appendChild(s);
+      }
+      field.appendChild(wrap);
+      window.addEventListener('scroll', function() {
+        wrap.style.transform = 'translateY(' + (window.scrollY * speed) + 'px)';
+      }, { passive: true });
+    });
+
+    // 6 — Shooting stars (random interval, occasionally)
+    function spawnShoot() {
+      var el = document.createElement('div');
+      el.className = 'shoot';
+      var ang = rand(18, 38);
+      var len = rand(60, 160);
+      var rad = ang * Math.PI / 180;
+      var dist = rand(280, 580);
+      var sx = Math.cos(rad) * dist;
+      var sy2 = Math.sin(rad) * dist;
+      var dur = rand(0.65, 1.2);
+      el.style.cssText = 'width:' + len + 'px;'
+        + 'left:' + rand(0, W * 0.65) + 'px;top:' + rand(0, H * 0.55) + 'px;'
+        + '--sx:' + sx + 'px;--sy2:' + sy2 + 'px;--ang:' + ang + 'deg;'
+        + 'animation:shoot-anim ' + dur + 's ease-out forwards;';
+      field.appendChild(el);
+      setTimeout(function() { el.remove(); }, dur * 1000 + 250);
+      setTimeout(spawnShoot, rand(2800, 7000));
+    }
+    setTimeout(spawnShoot, rand(1500, 4000));
+  }
+
+  initStars();
+
+  /* ---- TRANSMISSION SEQUENCE ---- */
   var overlay   = document.getElementById('tx-overlay');
   var statusEl  = document.getElementById('txStatus');
   var countEl   = document.getElementById('txCountdown');
