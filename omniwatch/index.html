@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>OmniWatch Fit Summary — Brad Seraphin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+/* ---- OmniWatch fit-summary: table component ---- */
+
+.fit-table-wrap {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  overflow: hidden;
+  margin-top: 32px;
+}
+
+.fit-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.fit-table thead th {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  text-align: left;
+  padding: 14px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.13);
+  background: var(--bg-alt);
+  font-weight: 400;
+}
+
+.fit-table td {
+  padding: 22px 20px;
+  border-bottom: 1px solid var(--line);
+  vertical-align: top;
+  font-size: 15px;
+  line-height: 1.75;
+}
+
+.fit-table tr:last-child td {
+  border-bottom: none;
+}
+
+.fit-table .col-label {
+  width: 30%;
+  color: var(--ink);
+  font-weight: 500;
+  font-size: 14.5px;
+  line-height: 1.6;
+}
+
+.fit-table .col-detail {
+  color: var(--ink-dim);
+  border-left: 1px solid var(--line);
+}
+
+.fit-table tr.gap-row td {
+  background: rgba(255, 255, 255, 0.018);
+}
+
+.fit-table .req-title {
+  display: block;
+  margin-bottom: 8px;
+}
+
+.gap-badge {
+  display: inline-block;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  padding: 2px 7px;
+}
+
+.col-detail ul {
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.col-detail ul li {
+  position: relative;
+  padding: 4px 0 4px 16px;
+  font-size: 14.5px;
+  color: var(--ink-dim);
+  line-height: 1.65;
+}
+
+.col-detail ul li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 11px;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--accent-dim);
+}
+
+.kpi-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 12px;
+}
+
+.kpi-item {
+  font-family: var(--mono);
+  font-size: 12.5px;
+  color: var(--ink-faint);
+}
+
+.kpi-item b {
+  color: var(--ink-dim);
+  font-weight: 500;
+}
+
+@media (max-width: 760px) {
+  .fit-table-wrap { overflow-x: auto; }
+  .fit-table .col-label { width: auto; min-width: 180px; }
+}
+
+@media (max-width: 560px) {
+  .fit-table { display: block; min-width: 520px; }
+}
+</style>
+</head>
+<body>
+
+<div class="cursor-glow"></div>
+
+<nav class="nav scrolled">
+  <a href="../index.html" class="nav__mark"><span class="nav__dot"></span>BRADLEY SERAPHIN</a>
+  <div class="nav__links" style="font-size: 12px;">
+    <a href="tel:8086470628">808.647.0628</a>
+    <a href="mailto:Brad.Seraphin@gmail.com">Brad.Seraphin@gmail.com</a>
+    <a href="../index.html">bradleyseraphin.com</a>
+  </div>
+</nav>
+
+<main>
+  <div class="wrap">
+
+    <!-- ---- Header ---- -->
+    <header class="page-hero reveal">
+      <div class="mono-tag" style="margin-bottom: 18px;">Senior Director, Growth Product Management &middot; OmniWatch (PeopleConnect)</div>
+      <h1 style="font-family: var(--sans); font-weight: 600; font-size: clamp(32px, 5vw, 58px); letter-spacing: -0.02em; line-height: 1.05; max-width: 820px;">Matching my experience to this role</h1>
+      <div class="page-hero__role" style="margin-top: 18px; font-size: 15px;">Needed: ownership and hands-on execution of both marketing and product.</div>
+      <div style="font-family: var(--mono); font-size: 12px; color: var(--ink-faint); margin-top: 14px; display: flex; flex-wrap: wrap; gap: 4px 0;">
+        <span style="margin-right: 16px;">Brad Seraphin</span>
+        <a href="tel:8086470628" style="color: var(--ink-faint); margin-right: 16px; transition: color 0.2s;">808.647.0628</a>
+        <a href="mailto:Brad.Seraphin@gmail.com" style="color: var(--ink-faint); margin-right: 16px; transition: color 0.2s;">Brad.Seraphin@gmail.com</a>
+        <a href="../index.html" style="color: var(--ink-faint); transition: color 0.2s;">bradleyseraphin.com</a>
+      </div>
+    </header>
+
+    <!-- ---- Must-Haves ---- -->
+    <section class="chapter reveal">
+      <div class="chapter__label">
+        <span class="num" style="font-family: var(--mono); font-size: 12px; color: var(--ink-faint);">01</span>
+        <span class="mono-tag">Must-Haves</span>
+      </div>
+      <h2 class="chapter__title">What they're asking for, and what I bring</h2>
+      <p>In the client's stated priority order.</p>
+
+      <div class="fit-table-wrap">
+        <table class="fit-table">
+          <thead>
+            <tr>
+              <th class="col-label">What they're asking for</th>
+              <th class="col-detail">What I bring</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            <tr>
+              <td class="col-label">Dual threat: marketing and product</td>
+              <td class="col-detail">
+                <ul>
+                  <li>Managed the HP Smart roadmap, rolling up 3 customer-segment roadmaps into one cohesive plan</li>
+                  <li>Built the intake process for 100+ stakeholders across business units, standardizing requests so the business why and value were clear, feeding prioritization, sequencing, and SAFe sprint planning</li>
+                  <li>Drove GTM strategy and execution: long-form written strategy, executive-level presentations, project plans, kanban sprints with weekly progress demos</li>
+                  <li>Owned the Create customer segment roadmap: shipped print path improvements, Duplex Photo Printing, and the Memories AI photobook, all launched with hands-on collaboration with design and engineering</li>
+                </ul>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="col-label">Hands-on social media marketing experience</td>
+              <td class="col-detail">
+                <ul>
+                  <li>Built Proof of Play's social channels from zero (2025-2026)</li>
+                  <li>TikTok 290,000+, Instagram 9,000+, YouTube 8,000+</li>
+                </ul>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="col-label">High EQ, influence across departments with zero direct authority</td>
+              <td class="col-detail">
+                <ul>
+                  <li>HP Robotics: multiple rounds of stage-gated investment, partnered with HP Healthcare outside my own team, influenced their population health roadmap; won HP's Bill and Dave Award for innovation</li>
+                  <li>Attained executive sponsorship for the Create roadmap from HP Print's president</li>
+                  <li>Built an HP-specific Lean Methodology practice for testing ad creatives, informed by earlier Curious Minds work; shaped how HP validated innovation investments</li>
+                  <li>Attained executive sponsorship for the Shutterstock CreativeFlow GTM strategy</li>
+                  <li>Established HP Smart Analytics 101 training and monthly reporting that shaped business decisions and prioritization</li>
+                  <li>Ran a 12-user ethnographic study on photo printer usability that directly informed the Create roadmap</li>
+                </ul>
+              </td>
+            </tr>
+
+            <tr class="gap-row">
+              <td class="col-label">
+                <span class="req-title">Consumer subscription business experience; identity protection, digital safety, or people-search a differentiator</span>
+                <span class="gap-badge">Honest gap</span>
+              </td>
+              <td class="col-detail">
+                <ul>
+                  <li>Shutterstock: led GTM for CreativeFlow (consumer SaaS product)</li>
+                  <li>Freemium-to-paid conversion 3% to 12% in five months via message-matched landing pages, registration flow, onboarding, and content marketing</li>
+                  <li>No direct identity-protection or digital-safety experience; 20 years and 12+ startups of ramping into new industries fast</li>
+                </ul>
+              </td>
+            </tr>
+
+            <tr class="gap-row">
+              <td class="col-label">
+                <span class="req-title">$10M+ paid acquisition spend at a single company, profitably, personally accountable for CAC and payback</span>
+                <span class="gap-badge">Honest gap</span>
+              </td>
+              <td class="col-detail">
+                <ul>
+                  <li>Proof of Play: ~$800K paid spend, eight-month international launch, across Meta, Google, Apple Search Ads, Unity, TikTok, AppLovin, Mintegral</li>
+                  <li>Built CAC and LTV:ROAS-by-channel-and-cohort infrastructure from zero, wired to Amplitude and MMP revenue events, used to optimize based on results and strategically expand channels once performance stabilized</li>
+                  <li>Haven't run a program at $10-15M; most of my acquisition work has been building new programs rather than optimizing an existing one. I'd start with a full audit of OmniWatch's current spend, then develop recommendations and go-forward strategy</li>
+                </ul>
+              </td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ---- Key Responsibilities ---- -->
+    <section class="chapter reveal">
+      <div class="chapter__label">
+        <span class="num" style="font-family: var(--mono); font-size: 12px; color: var(--ink-faint);">02</span>
+        <span class="mono-tag">Key Responsibilities</span>
+      </div>
+      <h2 class="chapter__title">What the role owns, and where I've done it</h2>
+
+      <div class="fit-table-wrap">
+        <table class="fit-table">
+          <thead>
+            <tr>
+              <th class="col-label">What the role owns</th>
+              <th class="col-detail">Relevant experience</th>
+            </tr>
+          </thead>
+          <tbody>
+
+            <tr>
+              <td class="col-label">Growth strategy across acquisition, conversion, onboarding, monetization, retention</td>
+              <td class="col-detail">
+                Shutterstock: content marketing for acquisition, optimized registration flows for conversion, improved onboarding and education, lifting monetization and retention.
+                <br><br>
+                Proof of Play: owned UA and growth strategy for a multi-tier launch, T3 to T1 geos, running ad creative and multivariate testing to optimize install cost, retention, and monetization using product and paid data.
+              </td>
+            </tr>
+
+            <tr>
+              <td class="col-label">Channel economics: CAC by source, LTV:CAC, payback</td>
+              <td class="col-detail">
+                Proof of Play: tracked CAC, LTV:ROAS, and payback by channel and cohort using AppsFlyer, Amplitude, and Looker.
+              </td>
+            </tr>
+
+            <tr>
+              <td class="col-label">Commercialization: pricing, packaging, GTM for subscription products</td>
+              <td class="col-detail">
+                Shutterstock: contributed pricing and packaging research for CreativeFlow's bundled offering, benchmarking competitor models, alongside the PMMs leading bundle strategy.
+              </td>
+            </tr>
+
+            <tr>
+              <td class="col-label">In-product activation with Product and Engineering</td>
+              <td class="col-detail">
+                HP: led onboarding for printer set-up, guiding users to their first print and first photo print, and for Instant Ink subscription activation, from first ink shipment through reorder education, in partnership with design and engineering.
+              </td>
+            </tr>
+
+            <tr>
+              <td class="col-label">Growth roadmap end to end, specs and experiment briefs other teams execute against</td>
+              <td class="col-detail">
+                HP: wrote user stories, requirements, and specs for Duplex Photo Printing and Memories, both launched successfully. Duplex Photo Printing drew attention at CES the year it launched for bringing emotional design into a traditionally utilitarian category. Also wrote the requirements that closed HP's analytics instrumentation gaps, enabling reliable reporting.
+              </td>
+            </tr>
+
+            <tr>
+              <td class="col-label">Disciplined experimentation: hypotheses, guardrails, decision rules</td>
+              <td class="col-detail">
+                Grounded in Eric Ries's Lean Startup and Steve Blank's customer discovery work, applied at Curious Minds to validate new ventures. The practice: identify the assumption behind why a concept or campaign should win, then design a low-cost experiment that isolates one variable and returns a pass or fail. Carried that same discipline into HP, Shutterstock, and Proof of Play.
+              </td>
+            </tr>
+
+            <tr>
+              <td class="col-label">Funnel KPIs: CVR, CAC, LTV, ARPU, activation, retention, churn</td>
+              <td class="col-detail">
+                I've owned and driven each of these KPIs directly across multiple companies and business models:
+                <div class="kpi-list">
+                  <div class="kpi-item"><b>CVR</b>: Shutterstock, Proof of Play</div>
+                  <div class="kpi-item"><b>CAC</b>: Shutterstock, TryWhistle</div>
+                  <div class="kpi-item"><b>CPI / LTV:ROAS</b>: Proof of Play</div>
+                  <div class="kpi-item"><b>ARPU</b>: HP Instant Ink</div>
+                  <div class="kpi-item"><b>Retention</b>: HP, Proof of Play</div>
+                  <div class="kpi-item"><b>Churn</b>: Instant Ink, TryWhistle, HP photo print users</div>
+                </div>
+              </td>
+            </tr>
+
+            <tr>
+              <td class="col-label">Present results and a clear point of view to executive leadership</td>
+              <td class="col-detail">
+                HP: the Create roadmap's point of view was that photos get taken, then sit forgotten in a library, rarely revisited. The product's job was to turn them back into something people actually cherish. Used AI to remove the tedious parts of building a photo product, while keeping real user choice in the process, the same principle behind Betty Crocker adding "add an egg" to cake mix so bakers still felt like they'd made it themselves. That thesis shaped the roadmap and earned sponsorship from HP Print's president.
+              </td>
+            </tr>
+
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- ---- Closing ---- -->
+    <section class="chapter reveal" style="padding-bottom: 120px;">
+      <p>I'd welcome the chance to talk through any of this in more depth.</p>
+    </section>
+
+  </div>
+</main>
+
+<script src="../js/main.js"></script>
+</body>
+</html>
