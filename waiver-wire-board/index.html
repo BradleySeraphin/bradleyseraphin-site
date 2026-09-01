@@ -1295,6 +1295,82 @@ tbody td:last-child{
 }
 .settings-save:hover{ filter:brightness(1.1); }
 
+/* ---------- Upload Data modal ---------- */
+.upload-zone{
+  border:2px dashed var(--border);
+  border-radius:10px;
+  padding:24px 16px;
+  text-align:center;
+  cursor:pointer;
+  transition:border-color .15s, background .15s;
+  background:var(--surface-2);
+}
+.upload-zone:hover, .upload-zone.drag-over{
+  border-color:var(--accent);
+  background:var(--accent-soft);
+}
+.upload-zone input[type="file"]{ display:none; }
+.upload-zone-label{
+  font-size:13.5px;
+  color:var(--text-dim);
+  line-height:1.5;
+}
+.upload-zone-label b{ color:var(--text); }
+.upload-preview{
+  margin-top:14px;
+  font-size:12.5px;
+  color:var(--text-dim);
+  background:var(--surface-2);
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:12px 14px;
+  line-height:1.7;
+}
+.upload-preview.error{ color:var(--crit); border-color:var(--crit); background:var(--crit-soft); }
+.upload-preview.ok{ color:var(--accent); border-color:var(--accent); background:var(--accent-soft); }
+.upload-source{
+  font-size:12px;
+  color:var(--text-faint);
+  margin-bottom:16px;
+  line-height:1.5;
+}
+.upload-source b{ color:var(--text-dim); }
+.settings-divider{
+  border:none;
+  border-top:1px solid var(--border);
+  margin:20px 0;
+}
+.settings-danger{
+  width:100%;
+  font-family:"IBM Plex Sans",sans-serif;
+  font-size:13px;
+  font-weight:600;
+  padding:9px;
+  border-radius:8px;
+  border:1.5px solid var(--crit);
+  background:none;
+  color:var(--crit);
+  cursor:pointer;
+  transition:background .1s, color .1s;
+}
+.settings-danger:hover{ background:var(--crit-soft); }
+.settings-import{
+  width:100%;
+  margin-top:10px;
+  font-family:"IBM Plex Sans",sans-serif;
+  font-size:14px;
+  font-weight:700;
+  padding:11px;
+  border-radius:8px;
+  border:none;
+  background:var(--accent);
+  color:#fff;
+  cursor:pointer;
+  transition:filter .1s, opacity .1s;
+}
+.settings-import:hover:not(:disabled){ filter:brightness(1.1); }
+.settings-import:disabled{ opacity:0.4; cursor:default; }
+
 @media (max-width: 640px){
   .masthead{flex-direction:column;align-items:flex-start;}
 }
@@ -1311,6 +1387,7 @@ tbody td:last-child{
       <div class="sub" id="weekLabel"></div>
     </div>
     <div class="masthead-actions">
+      <button class="settings-btn" id="uploadDataBtn">&#8593; Player data</button>
       <button class="settings-btn" id="settingsBtn">&#9881; League settings</button>
       <button class="draft-back" id="draftBackBtn" title="Undo the last pick and jump to it" disabled>&larr; Back</button>
       <button class="draft-reset" id="mastReset">Reset draft</button>
@@ -1401,6 +1478,25 @@ tbody td:last-child{
     </div>
     <div>Click a column header to sort &middot; dash = no stat recorded</div>
   </footer>
+</div>
+
+<div class="settings-overlay" id="uploadOverlay">
+  <div class="settings-modal">
+    <h2>Player Data</h2>
+    <div class="upload-source" id="uploadSourceLabel"></div>
+    <div class="upload-zone" id="uploadZone">
+      <input type="file" id="uploadFileInput" accept=".csv,.tsv,.txt">
+      <label class="upload-zone-label" for="uploadFileInput">
+        <b>Click to choose a CSV file</b> or drag and drop here.<br>
+        Required columns: <b>Name, Pos, Team, Bye, FPTS, AuctionValue</b><br>
+        Add a <b>Rec</b> column for PPR adjustments to work.
+      </label>
+    </div>
+    <div class="upload-preview" id="uploadPreview" hidden></div>
+    <button class="settings-import" id="uploadImportBtn" disabled>Select a file to import</button>
+    <hr class="settings-divider">
+    <button class="settings-danger" id="uploadResetBtn">Reset to built-in player data</button>
+  </div>
 </div>
 
 <div class="settings-overlay" id="settingsOverlay">
@@ -1639,7 +1735,7 @@ function escAttr(s){
 // and untiered players are close enough to replacement level that their
 // depletion isn't a strategically meaningful signal, so leaving them out keeps
 // the radar's alerts high-signal instead of noisy.
-const TIER_GROUPS = (() => {
+function buildTierGroups(){
   const out = {};
   function bucket(pos, label){
     if(!out[pos]) out[pos] = {};
@@ -1659,7 +1755,8 @@ const TIER_GROUPS = (() => {
     bucket('DEF', r.tierLabel).push(playerId('defense', r));
   });
   return out;
-})();
+}
+let TIER_GROUPS = buildTierGroups();
 const RADAR_POS_ORDER = ['QB','RB','WR','TE','K','DEF'];
 const SUBTIER_RANK = {A:1, B:2, C:3};
 
@@ -1680,6 +1777,83 @@ function recomputeReplacement(){
   });
 }
 recomputeReplacement();
+
+function updateTabCounts(){
+  const tabs = document.querySelectorAll('.section-tab .n');
+  const counts = [OFFENSE.length, KICKERS.length, DEFENSE.length];
+  tabs.forEach((el, i) => { if(counts[i] != null) el.textContent = counts[i]; });
+}
+
+// Rebuilds every derived data structure after OFFENSE/KICKERS/DEFENSE are
+// mutated in-place. Called both at startup (if custom data is loaded from
+// localStorage) and after a CSV import.
+function rebuildPlayerCatalog(){
+  // Re-register new row objects in ROW_INDEX
+  OFFENSE.forEach((r, i) => ROW_INDEX.set(r, 'offense|' + i));
+  KICKERS.forEach((r, i) => ROW_INDEX.set(r, 'kickers|' + i));
+  DEFENSE.forEach((r, i) => ROW_INDEX.set(r, 'defense|' + i));
+
+  // Clear and rebuild ALL_PLAYERS
+  Object.keys(ALL_PLAYERS).forEach(k => delete ALL_PLAYERS[k]);
+  OFFENSE.forEach(r => {
+    const id = playerId('offense', r);
+    ALL_PLAYERS[id] = {id, section:'offense', pos:r.pos, name:r.player, team:r.team, bye:r.bye,
+      fpts_base: r.fpts, fpts: r.fpts, rec: r.rec ?? null, cost: Math.max(1, r.auctionValue||1)};
+  });
+  KICKERS.forEach(r => {
+    const id = playerId('kickers', r);
+    ALL_PLAYERS[id] = {id, section:'kickers', pos:'K', name:r.player, team:r.team, bye:r.bye,
+      fpts_base: r.fpts, fpts: r.fpts, rec: null, cost: Math.max(1, r.auctionValue||1)};
+  });
+  DEFENSE.forEach(r => {
+    const id = playerId('defense', r);
+    ALL_PLAYERS[id] = {id, section:'defense', pos:'DEF', name:r.team, team:r.team, bye:r.bye,
+      fpts_base: r.fpts, fpts: r.fpts, rec: null, cost: Math.max(1, r.auctionValue||1)};
+  });
+
+  // Stamp fpts_base on raw rows for table/chart rendering
+  [...OFFENSE, ...KICKERS, ...DEFENSE].forEach(r => { r.fpts_base = r.fpts; });
+
+  // Recompute everything derived
+  recomputeFpts();
+  LEAGUE.replRank = derivedReplRank(LEAGUE.numTeams);
+  recomputeReplacement();
+  TIER_GROUPS = buildTierGroups();
+  TIER_BOUNDARIES = buildTierBoundaries();
+  updateTabCounts();
+}
+
+/* ---- Custom player data persistence ---- */
+const CUSTOM_DATA_KEY = 'ff2026-custom-players';
+let DATA_SOURCE_LABEL = 'Built-in data';
+
+function saveCustomPlayerData(off, kick, def, label){
+  try{
+    localStorage.setItem(CUSTOM_DATA_KEY, JSON.stringify({offense:off, kickers:kick, defense:def, label}));
+  }catch(e){ alert('Could not save: ' + e.message); }
+}
+function clearCustomPlayerData(){
+  localStorage.removeItem(CUSTOM_DATA_KEY);
+  DATA_SOURCE_LABEL = 'Built-in data';
+}
+
+// On page load: if custom player data is in localStorage, splice it into the
+// arrays and rebuild. This runs AFTER the initial build so the default data
+// is always in a clean state first (guards against stale/corrupt stored data).
+(function applyStoredCustomData(){
+  try{
+    const raw = localStorage.getItem(CUSTOM_DATA_KEY);
+    if(!raw) return;
+    const saved = JSON.parse(raw);
+    if(!saved || !saved.offense) return;
+    OFFENSE.splice(0, OFFENSE.length, ...saved.offense);
+    KICKERS.splice(0, KICKERS.length, ...saved.kickers);
+    DEFENSE.splice(0, DEFENSE.length, ...saved.defense);
+    DATA_SOURCE_LABEL = saved.label || 'Custom upload';
+    rebuildPlayerCatalog();
+  }catch(e){ clearCustomPlayerData(); }
+})();
+
 function vorpOf(p){ return Math.max(0, p.fpts - REPLACEMENT[p.pos]); }
 
 let draftState = { mine:{}, opp:{}, nextSeq:1 };
@@ -2801,7 +2975,7 @@ const POS_COLOR_VAR = {QB:'--qb', RB:'--rb', WR:'--wr', TE:'--te', K:'--k', DEF:
 // Structural tier cliffs per position -- computed once from the full (unfiltered)
 // pool, held fixed regardless of search/chip filters, since a tier boundary is a
 // property of the position's talent curve, not of whatever subset is on screen.
-const TIER_BOUNDARIES = (() => {
+function buildTierBoundaries(){
   const groups = {
     QB: OFFENSE.filter(r => r.pos === 'QB'),
     RB: OFFENSE.filter(r => r.pos === 'RB'),
@@ -2820,7 +2994,8 @@ const TIER_BOUNDARIES = (() => {
     out[pos] = b;
   });
   return out;
-})();
+}
+let TIER_BOUNDARIES = buildTierBoundaries();
 
 function silvermanBandwidth(values){
   const n = values.length;
@@ -3555,6 +3730,282 @@ document.getElementById('draftBackBtn').addEventListener('click', undoLast);
 
 switchSection('offense');
 
+/* ===================== Upload Data UI ===================== */
+
+// Flexible column-name mapping: strips non-alphanumeric chars, lowercases,
+// then maps to the internal field name. Covers common export formats from
+// ESPN, Sleeper, FantasyPros, and general spreadsheet exports.
+const CSV_COL_MAP = {
+  name:'player', player:'player',
+  pos:'pos', position:'pos',
+  team:'team',
+  bye:'bye', byeweek:'bye',
+  fpts:'fpts', proj:'fpts', pts:'fpts', points:'fpts', projpts:'fpts', projectedpts:'fpts', fprojectedpts:'fpts',
+  auctionvalue:'auctionValue', auction:'auctionValue', value:'auctionValue', cost:'auctionValue', auctionval:'auctionValue',
+  rec:'rec', receptions:'rec',
+  tar:'tar', targets:'tar',
+  recyd:'recYd', recyards:'recYd', receivingyd:'recYd', receivingyards:'recYd',
+  rectd:'recTd', receivingtd:'recTd',
+  ratt:'rAtt', rushatt:'rAtt', rushingattempts:'rAtt',
+  ryd:'rYd', rushyd:'rYd', rushingyards:'rYd',
+  rtd:'rTd', rushtd:'rTd', rushingtd:'rTd',
+  pcmp:'pCmp', completions:'pCmp', cmp:'pCmp',
+  patt:'pAtt', passatt:'pAtt', passattempts:'pAtt',
+  pyd:'pYd', passyd:'pYd', passingyards:'pYd',
+  ptd:'pTd', passtd:'pTd', passingtd:'pTd',
+  tier:'tier',
+  tierlabel:'tierLabel',
+  subtier:'subtier',
+  adp:'adp',
+  status:'status',
+  game:'game', matchup:'game',
+  opp:'opp', opponent:'opp',
+  flag:'flag',
+  fgm3039:'fgm3039', fg3039:'fgm3039',
+  fgm5059:'fgm5059', fg5059:'fgm5059',
+  xpa:'xpa',
+  abbr:'abbr',
+  intc:'intc', int:'intc', interceptions:'intc',
+  sack:'sack', sacks:'sack',
+  fumrec:'fumRec', fumblerecoveries:'fumRec',
+};
+
+function parseCSVText(text){
+  const nl = text.replace(/\r\n/g,'\n').replace(/\r/g,'\n');
+  const lines = nl.split('\n');
+  const rows = [];
+  let headers = null;
+
+  function parseLine(line){
+    const fields = [];
+    let i = 0;
+    while(i <= line.length){
+      let field = '';
+      if(line[i] === '"'){
+        i++;
+        while(i < line.length){
+          if(line[i] === '"' && line[i+1] === '"'){ field += '"'; i += 2; }
+          else if(line[i] === '"'){ i++; break; }
+          else { field += line[i++]; }
+        }
+        if(line[i] === ',' || line[i] === '\t') i++;
+      } else {
+        const sep = line.indexOf(',', i) !== -1
+          ? (line.indexOf('\t', i) !== -1 ? Math.min(line.indexOf(',',i), line.indexOf('\t',i)) : line.indexOf(',',i))
+          : (line.indexOf('\t',i) !== -1 ? line.indexOf('\t',i) : line.length);
+        field = line.slice(i, sep).trim();
+        i = sep < line.length ? sep + 1 : line.length + 1;
+      }
+      fields.push(field);
+    }
+    return fields;
+  }
+
+  for(const line of lines){
+    if(!line.trim()) continue;
+    const fields = parseLine(line);
+    if(!headers){
+      headers = fields.map(h => {
+        const key = h.toLowerCase().replace(/[^a-z0-9]/g,'');
+        return CSV_COL_MAP[key] || key;
+      });
+      continue;
+    }
+    if(fields.every(f => !f)) continue;
+    const row = {};
+    headers.forEach((h, i) => { row[h] = (fields[i] ?? '').trim() || null; });
+    rows.push(row);
+  }
+  return rows;
+}
+
+function num(v){ const n = parseFloat(v); return isNaN(n) ? null : n; }
+
+function normalizePlayerRow(row){
+  const name = (row.player || '').trim();
+  if(!name) return null;
+  const rawPos = (row.pos || '').trim().toUpperCase();
+  const pos = (rawPos === 'DST' || rawPos === 'D/ST' || rawPos === 'DEF') ? 'DEF' : rawPos;
+  if(!['QB','RB','WR','TE','K','DEF'].includes(pos)) return null;
+  const fpts = num(row.fpts);
+  if(fpts == null) return null;
+
+  const auctionValue = Math.max(1, Math.round(num(row.auctionValue) || 1));
+  const tier = num(row.tier) ? Math.round(num(row.tier)) : null;
+  const subtier = num(row.subtier) ? Math.round(num(row.subtier)) : null;
+  let tierLabel = row.tierLabel || null;
+  if(tier && !tierLabel){
+    const letter = subtier === 2 ? 'B' : subtier === 3 ? 'C' : 'A';
+    tierLabel = tier + letter;
+  }
+
+  const out = {
+    player: name,
+    pos,
+    team: (row.team || '').trim().toUpperCase() || name,
+    bye: row.bye != null ? String(row.bye) : '',
+    fpts,
+    auctionValue,
+    ptsPerDollar: parseFloat((fpts / auctionValue).toFixed(2)),
+    adp: num(row.adp),
+    status: row.status || '',
+    game: row.game || '',
+    opp: row.opp || '',
+    flag: row.flag === 'true' || row.flag === '1',
+    tier, subtier, tierLabel,
+    rec: num(row.rec),
+    tar: num(row.tar),
+    recYd: num(row.recYd),
+    recTd: num(row.recTd),
+    rAtt: num(row.rAtt),
+    rYd: num(row.rYd),
+    rTd: num(row.rTd),
+    pCmp: num(row.pCmp),
+    pAtt: num(row.pAtt),
+    pYd: num(row.pYd),
+    pTd: num(row.pTd),
+    fgm3039: num(row.fgm3039),
+    fgm5059: num(row.fgm5059),
+    xpa: num(row.xpa),
+    abbr: row.abbr || (row.team || name).slice(0,3).toUpperCase(),
+    intc: num(row.intc),
+    sack: num(row.sack),
+    fumRec: num(row.fumRec),
+  };
+  return out;
+}
+
+function parseAndValidateCSV(text){
+  const raw = parseCSVText(text);
+  if(!raw.length) return { error: 'No rows found in file.' };
+
+  // Check for minimum required fields in first row
+  const first = raw[0];
+  if(first.player == null) return { error: 'Missing required column: Name (or Player)' };
+  if(first.pos == null)    return { error: 'Missing required column: Pos' };
+  if(first.fpts == null)   return { error: 'Missing required column: FPTS (or Proj / Points)' };
+  if(first.auctionValue == null) return { error: 'Missing required column: AuctionValue (or Auction / Value / Cost)' };
+
+  const off = [], kick = [], def = [];
+  let skipped = 0;
+  for(const row of raw){
+    const p = normalizePlayerRow(row);
+    if(!p){ skipped++; continue; }
+    if(p.pos === 'K') kick.push(p);
+    else if(p.pos === 'DEF') def.push(p);
+    else off.push(p);
+  }
+
+  const total = off.length + kick.length + def.length;
+  if(total === 0) return { error: 'No valid player rows found. Check that Pos values are QB/RB/WR/TE/K/DEF and FPTS is numeric.' };
+
+  return { off, kick, def, skipped, total };
+}
+
+(function setupUploadModal(){
+  const overlay   = document.getElementById('uploadOverlay');
+  const openBtn   = document.getElementById('uploadDataBtn');
+  const fileInput = document.getElementById('uploadFileInput');
+  const zone      = document.getElementById('uploadZone');
+  const preview   = document.getElementById('uploadPreview');
+  const importBtn = document.getElementById('uploadImportBtn');
+  const resetBtn  = document.getElementById('uploadResetBtn');
+  const srcLabel  = document.getElementById('uploadSourceLabel');
+
+  let pendingOff = null, pendingKick = null, pendingDef = null, pendingLabel = null;
+
+  function updateSourceLabel(){
+    const isCustom = !!localStorage.getItem(CUSTOM_DATA_KEY);
+    if(isCustom){
+      srcLabel.innerHTML = `<b>Current source:</b> ${escAttr(DATA_SOURCE_LABEL)} &mdash; ${OFFENSE.length} offense &middot; ${KICKERS.length} kickers &middot; ${DEFENSE.length} defense`;
+    } else {
+      srcLabel.innerHTML = `<b>Current source:</b> Built-in data &mdash; ${OFFENSE.length} offense &middot; ${KICKERS.length} kickers &middot; ${DEFENSE.length} defense`;
+    }
+    resetBtn.style.display = isCustom ? '' : 'none';
+  }
+
+  function openModal(){ updateSourceLabel(); resetPending(); overlay.classList.add('open'); }
+  function closeModal(){ overlay.classList.remove('open'); }
+
+  function resetPending(){
+    pendingOff = pendingKick = pendingDef = pendingLabel = null;
+    preview.hidden = true;
+    preview.className = 'upload-preview';
+    preview.textContent = '';
+    importBtn.disabled = true;
+    importBtn.textContent = 'Select a file to import';
+    fileInput.value = '';
+  }
+
+  function handleFile(file){
+    if(!file) return;
+    pendingLabel = file.name;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const result = parseAndValidateCSV(e.target.result);
+      preview.hidden = false;
+      if(result.error){
+        preview.className = 'upload-preview error';
+        preview.textContent = '⚠ ' + result.error;
+        importBtn.disabled = true;
+        importBtn.textContent = 'Select a file to import';
+        pendingOff = null;
+      } else {
+        preview.className = 'upload-preview ok';
+        const skipNote = result.skipped ? ` (${result.skipped} rows skipped — bad pos or missing fpts)` : '';
+        preview.innerHTML =
+          `<b>${result.total} players parsed</b>${skipNote}<br>` +
+          `Offense: ${result.off.length} &nbsp;&middot;&nbsp; Kickers: ${result.kick.length} &nbsp;&middot;&nbsp; Defense: ${result.def.length}` +
+          (result.off[0]?.rec != null ? '<br>✓ Rec column found — PPR adjustments will work.' : '<br>⚠ No Rec column — PPR switching will have no effect on these players.');
+        pendingOff  = result.off;
+        pendingKick = result.kick;
+        pendingDef  = result.def;
+        importBtn.disabled = false;
+        importBtn.textContent = `Import ${result.total} players`;
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  openBtn.addEventListener('click', openModal);
+  overlay.addEventListener('click', (e) => { if(e.target === overlay) closeModal(); });
+
+  fileInput.addEventListener('change', () => handleFile(fileInput.files[0]));
+
+  zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('drag-over'); });
+  zone.addEventListener('dragleave', () => zone.classList.remove('drag-over'));
+  zone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    zone.classList.remove('drag-over');
+    handleFile(e.dataTransfer.files[0]);
+  });
+
+  importBtn.addEventListener('click', () => {
+    if(!pendingOff) return;
+    if(!confirm(`Replace all player data with "${pendingLabel}"?\n\nThis will clear your current draft picks.`)) return;
+    OFFENSE.splice(0, OFFENSE.length, ...pendingOff);
+    KICKERS.splice(0, KICKERS.length, ...pendingKick);
+    DEFENSE.splice(0, DEFENSE.length, ...pendingDef);
+    DATA_SOURCE_LABEL = pendingLabel;
+    saveCustomPlayerData(pendingOff, pendingKick, pendingDef, pendingLabel);
+    rebuildPlayerCatalog();
+    performReset(); // clears draft state
+    updateSubLabel();
+    renderDraftPanel();
+    render();
+    renderNomination();
+    closeModal();
+  });
+
+  resetBtn.addEventListener('click', () => {
+    if(!confirm('Reset to built-in player data? This will clear your current draft picks.')) return;
+    // Restore default data from the hardcoded arrays isn't possible directly since
+    // they were mutated. Clearing localStorage and reloading is the cleanest approach.
+    clearCustomPlayerData();
+    location.reload();
+  });
+})();
+
 /* ===================== League Settings UI ===================== */
 
 function updateSubLabel(){
@@ -3647,6 +4098,7 @@ function applyLeagueSettings(numTeams, benchSlots, ppr){
 
 // Initialise the sub-label after all JS has run
 updateSubLabel();
+updateTabCounts();
 </script>
 
 </body>
