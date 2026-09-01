@@ -1494,6 +1494,7 @@ tbody td:last-child{
     </div>
     <div class="upload-preview" id="uploadPreview" hidden></div>
     <button class="settings-import" id="uploadImportBtn" disabled>Select a file to import</button>
+    <div style="text-align:center; margin-top:10px;"><a id="downloadTemplateBtn" href="#" style="font-size:12px; color:var(--text-faint); text-decoration:underline;">Download template CSV</a></div>
     <hr class="settings-divider">
     <button class="settings-danger" id="uploadResetBtn">Reset to built-in player data</button>
   </div>
@@ -4003,6 +4004,28 @@ function parseAndValidateCSV(text){
     // they were mutated. Clearing localStorage and reloading is the cleanest approach.
     clearCustomPlayerData();
     location.reload();
+  });
+
+  document.getElementById('downloadTemplateBtn').addEventListener('click', (e) => {
+    e.preventDefault();
+    const header = 'Name,Pos,Team,Bye,FPTS,AuctionValue,Rec,Tier,TierLabel,ADP,Status,rAtt,rYd,rTd,tar,recYd,recTd,pCmp,pAtt,pYd,pTd';
+    const rows = [
+      'Patrick Mahomes,QB,KC,10,340,30,,1,1A,15,,35,280,4,,,,,430,490,4100,38',
+      'Bijan Robinson,RB,ATL,11,290,65,60,1,1A,3,,270,1300,10,80,,4,,,,,',
+      'CeeDee Lamb,WR,DAL,7,295,60,110,1,1A,2,,,,,120,1400,10,,,,,',
+      'Sam LaPorta,TE,DET,6,175,25,75,1,1A,22,,,,,85,850,8,,,,,',
+      'Harrison Butker,K,KC,10,155,15,,1,1A,30,,,,,,,,,,,,',
+      'San Francisco,DEF,SF,8,145,14,,1,1A,8,,,,,,,,,,,,',
+    ];
+    const csv = [header, ...rows].join('
+');
+    const blob = new Blob([csv], {type:'text/csv'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'waiver-wire-board-template.csv';
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
   });
 })();
 
