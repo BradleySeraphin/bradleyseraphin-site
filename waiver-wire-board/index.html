@@ -1395,10 +1395,10 @@ tbody td:last-child{
   </div>
 
   <div class="section-tabs" role="tablist">
+    <button class="section-tab" data-section="draft" role="tab" aria-selected="false">My Draft</button>
     <button class="section-tab" data-section="offense" role="tab" aria-selected="true">Offense <span class="n">343</span></button>
     <button class="section-tab" data-section="kickers" role="tab" aria-selected="false">Kickers <span class="n">31</span></button>
     <button class="section-tab" data-section="defense" role="tab" aria-selected="false">Defense/ST <span class="n">32</span></button>
-    <button class="section-tab" data-section="draft" role="tab" aria-selected="false">My Draft</button>
   </div>
 
   <div class="nominate-panel" id="nominatePanel">
@@ -1552,6 +1552,7 @@ const SECTIONS = {
       {key:'status', label:'Status', al:true, sortable:true},
       {key:'fpts', label:'FPTS', sortable:true, grp:''},
       {key:'auctionValue', label:'Auction $', sortable:true, grp:''},
+      {key:'draft', label:'Draft', sortable:false, grp:''},
       {key:'ptsPerDollar', label:'Pts/$', sortable:true, grp:''},
       {key:'rAtt', label:'Att', sortable:true, grp:'Rushing'},
       {key:'rYd', label:'Yd', sortable:true, grp:'Rushing'},
@@ -1564,7 +1565,6 @@ const SECTIONS = {
       {key:'pAtt', label:'Att', sortable:true, grp:'Passing'},
       {key:'pYd', label:'Yd', sortable:true, grp:'Passing'},
       {key:'pTd', label:'TD', sortable:true, grp:'Passing'},
-      {key:'draft', label:'Draft', sortable:false, grp:''},
     ],
   },
   kickers: {
@@ -1578,11 +1578,11 @@ const SECTIONS = {
       {key:'status', label:'Status', al:true, sortable:true},
       {key:'fpts', label:'FPTS', sortable:true},
       {key:'auctionValue', label:'Auction $', sortable:true},
+      {key:'draft', label:'Draft', sortable:false},
       {key:'ptsPerDollar', label:'Pts/$', sortable:true},
       {key:'fgm3039', label:'FGM 30-39', sortable:true},
       {key:'fgm5059', label:'FGM 50-59', sortable:true},
       {key:'xpa', label:'XPA', sortable:true},
-      {key:'draft', label:'Draft', sortable:false},
     ],
   },
   defense: {
@@ -1595,11 +1595,11 @@ const SECTIONS = {
       {key:'tier', label:'Tier', sortable:true},
       {key:'fpts', label:'FPTS', sortable:true},
       {key:'auctionValue', label:'Auction $', sortable:true},
+      {key:'draft', label:'Draft', sortable:false},
       {key:'ptsPerDollar', label:'Pts/$', sortable:true},
       {key:'intc', label:'INT', sortable:true},
       {key:'sack', label:'Sack', sortable:true},
       {key:'fumRec', label:'Fum Rec', sortable:true},
-      {key:'draft', label:'Draft', sortable:false},
     ],
   },
 };
