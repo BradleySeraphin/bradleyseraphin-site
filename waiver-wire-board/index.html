@@ -1601,16 +1601,30 @@ DEFENSE.forEach(r => {
     fpts_base: r.fpts, fpts: r.fpts, rec: null, cost:Math.max(1, r.auctionValue||1)};
 });
 
+// Stamp fpts_base onto every raw source row at init time so recomputeFpts()
+// can write adjusted values back to them. The raw arrays (OFFENSE/KICKERS/
+// DEFENSE) are what the table cells, chart, and tooltip rendering all read
+// from -- ALL_PLAYERS.fpts alone isn't enough.
+[...OFFENSE, ...KICKERS, ...DEFENSE].forEach(r => { r.fpts_base = r.fpts; });
+
 // Adjusts every player's fpts from the stored 0.5-PPR base to the current
-// LEAGUE.ppr setting. Only skill positions with reception data are affected;
-// QBs, kickers, and defenses have rec=null so they pass through unchanged.
+// LEAGUE.ppr setting. Updates both ALL_PLAYERS (used by pricing/optimizer)
+// AND the raw source rows (used by table/chart/tooltip rendering).
 function recomputeFpts(){
   const delta = LEAGUE.ppr - 0.5;
+  // Update ALL_PLAYERS entries
   Object.values(ALL_PLAYERS).forEach(p => {
     if(p.fpts_base == null){ p.fpts = null; return; }
     p.fpts = (p.rec != null && delta !== 0)
       ? Math.round(p.fpts_base + p.rec * delta)
       : p.fpts_base;
+  });
+  // Update raw source rows so table cells / chart / tooltips reflect the change
+  [...OFFENSE, ...KICKERS, ...DEFENSE].forEach(r => {
+    if(r.fpts_base == null) return;
+    r.fpts = (r.rec != null && delta !== 0)
+      ? Math.round(r.fpts_base + r.rec * delta)
+      : r.fpts_base;
   });
 }
 // Apply once on load (handles the case where saved PPR ≠ 0.5)
