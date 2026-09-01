@@ -1190,6 +1190,7 @@ tbody td:last-child{
 .nominate-stats .label{font-size:10.5px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-faint);}
 .nominate-stats .value{font-family:"IBM Plex Mono",monospace; font-size:17px; font-weight:700; color:var(--text);}
 .nominate-stats .value.warn{color:var(--warn);}
+.nominate-actions{display:flex; gap:8px; margin-top:14px;}
 
 @media (max-width: 640px){
   .masthead{flex-direction:column;align-items:flex-start;}
@@ -2395,16 +2396,20 @@ function renderNomination(){
       <div class="nominate-note">Already off the board &mdash; ${status === 'mine' ? 'you drafted' : 'an opponent drafted'} them for ${fmtMoney(evalResult.price)}.</div>`;
     return;
   }
+  const nomBtns = `<div class="nominate-actions"><button class="draft-btn draft-btn-me" data-nom-action="me">Mine</button><button class="draft-btn draft-btn-opp" data-nom-action="opp">Theirs</button></div>`;
+
   if(status === 'no-projection'){
     resultEl.className = 'nominate-result';
     resultEl.innerHTML = `<div class="nominate-name-row"><span class="nominate-name">${player.name}</span><span class="nominate-sub">${sub}</span></div>
-      <div class="nominate-note">No projection on file for this player &mdash; not enough data to price them.</div>`;
+      <div class="nominate-note">No projection on file for this player &mdash; not enough data to price them.</div>
+      ${nomBtns}`;
     return;
   }
   if(status === 'no-need'){
     resultEl.className = 'nominate-result';
     resultEl.innerHTML = `<div class="nominate-name-row"><span class="nominate-name">${player.name}</span><span class="nominate-sub">${sub}</span></div>
-      <div class="nominate-note">You have no open starting slot at ${player.pos} right now, so no price would change your projected starting total. Check Recommended Bench if you want them as a handcuff or value stash instead.</div>`;
+      <div class="nominate-note">You have no open starting slot at ${player.pos} right now, so no price would change your projected starting total. Check Recommended Bench if you want them as a handcuff or value stash instead.</div>
+      ${nomBtns}`;
     return;
   }
 
@@ -2415,6 +2420,7 @@ function renderNomination(){
       <div class="stat"><span class="label">Live market value</span><span class="value">${fmtMoney(evalResult.liveCost)}</span></div>
       <div class="stat"><span class="label">Walk-away price</span><span class="value warn">${fmtMoney(evalResult.walkAwayPrice)}</span></div>
     </div>
+    ${nomBtns}
   `;
 }
 
@@ -3262,6 +3268,16 @@ document.getElementById('draftBackBtn').addEventListener('click', undoLast);
 
   // deferred so a dropdown-row mousedown lands first
   input.addEventListener('blur', () => { setTimeout(closeDropdown, 0); });
+
+  // Mine / Theirs buttons inside the nomination result panel
+  document.getElementById('nominateResult').addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-nom-action]');
+    if(!btn || !CURRENT_NOMINATION_ID) return;
+    const action = btn.dataset.nomAction;
+    if(action === 'me') markMine(CURRENT_NOMINATION_ID);
+    else if(action === 'opp') markOpp(CURRENT_NOMINATION_ID);
+    renderNomination();
+  });
 })();
 
 switchSection('offense');
