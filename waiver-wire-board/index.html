@@ -1838,22 +1838,11 @@ function clearCustomPlayerData(){
   DATA_SOURCE_LABEL = 'Built-in data';
 }
 
-// On page load: if custom player data is in localStorage, splice it into the
-// arrays and rebuild. This runs AFTER the initial build so the default data
-// is always in a clean state first (guards against stale/corrupt stored data).
-(function applyStoredCustomData(){
-  try{
-    const raw = localStorage.getItem(CUSTOM_DATA_KEY);
-    if(!raw) return;
-    const saved = JSON.parse(raw);
-    if(!saved || !saved.offense) return;
-    OFFENSE.splice(0, OFFENSE.length, ...saved.offense);
-    KICKERS.splice(0, KICKERS.length, ...saved.kickers);
-    DEFENSE.splice(0, DEFENSE.length, ...saved.defense);
-    DATA_SOURCE_LABEL = saved.label || 'Custom upload';
-    rebuildPlayerCatalog();
-  }catch(e){ clearCustomPlayerData(); }
-})();
+// Snapshots of the hardcoded default arrays — allows restoring without a
+// page reload and lets applyStoredCustomData() roll back cleanly on error.
+const OFFENSE_DEFAULT = OFFENSE.slice();
+const KICKERS_DEFAULT = KICKERS.slice();
+const DEFENSE_DEFAULT = DEFENSE.slice();
 
 function vorpOf(p){ return Math.max(0, p.fpts - REPLACEMENT[p.pos]); }
 
@@ -3922,7 +3911,6 @@ function parseAndValidateCSV(text){
     } else {
       srcLabel.innerHTML = `<b>Current source:</b> Built-in data &mdash; ${OFFENSE.length} offense &middot; ${KICKERS.length} kickers &middot; ${DEFENSE.length} defense`;
     }
-    resetBtn.style.display = isCustom ? '' : 'none';
   }
 
   function openModal(){ updateSourceLabel(); resetPending(); overlay.classList.add('open'); }
@@ -3999,11 +3987,20 @@ function parseAndValidateCSV(text){
   });
 
   resetBtn.addEventListener('click', () => {
-    if(!confirm('Reset to built-in player data? This will clear your current draft picks.')) return;
-    // Restore default data from the hardcoded arrays isn't possible directly since
-    // they were mutated. Clearing localStorage and reloading is the cleanest approach.
+    if(!confirm('Load built-in player data? This will clear your current draft picks.')) return;
+    OFFENSE.splice(0, OFFENSE.length, ...OFFENSE_DEFAULT);
+    KICKERS.splice(0, KICKERS.length, ...KICKERS_DEFAULT);
+    DEFENSE.splice(0, DEFENSE.length, ...DEFENSE_DEFAULT);
+    DATA_SOURCE_LABEL = 'Built-in data';
     clearCustomPlayerData();
-    location.reload();
+    rebuildPlayerCatalog();
+    performReset();
+    updateSubLabel();
+    renderDraftPanel();
+    render();
+    renderNomination();
+    updateSourceLabel();
+    closeModal();
   });
 
   document.getElementById('downloadTemplateBtn').addEventListener('click', (e) => {
@@ -4122,6 +4119,29 @@ function applyLeagueSettings(numTeams, benchSlots, ppr){
 // Initialise the sub-label after all JS has run
 updateSubLabel();
 updateTabCounts();
+
+function applyStoredCustomData(){
+  try{
+    const raw = localStorage.getItem(CUSTOM_DATA_KEY);
+    if(!raw) return;
+    const saved = JSON.parse(raw);
+    if(!saved || !saved.offense) return;
+    OFFENSE.splice(0, OFFENSE.length, ...saved.offense);
+    KICKERS.splice(0, KICKERS.length, ...saved.kickers);
+    DEFENSE.splice(0, DEFENSE.length, ...saved.defense);
+    DATA_SOURCE_LABEL = saved.label || 'Custom upload';
+    rebuildPlayerCatalog();
+    renderDraftPanel();
+    render();
+    renderNomination();
+  }catch(e){
+    console.warn('Could not restore custom player data:', e);
+    OFFENSE.splice(0, OFFENSE.length, ...OFFENSE_DEFAULT);
+    KICKERS.splice(0, KICKERS.length, ...KICKERS_DEFAULT);
+    DEFENSE.splice(0, DEFENSE.length, ...DEFENSE_DEFAULT);
+  }
+}
+applyStoredCustomData();
 </script>
 
 </body>
