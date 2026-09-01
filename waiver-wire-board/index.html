@@ -1192,6 +1192,109 @@ tbody td:last-child{
 .nominate-stats .value.warn{color:var(--warn);}
 .nominate-actions{display:flex; gap:8px; margin-top:14px;}
 
+/* ---------- League Settings modal ---------- */
+.settings-btn{
+  font-family:"IBM Plex Sans",sans-serif;
+  font-size:11.5px;
+  font-weight:600;
+  color:var(--text-dim);
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:7px;
+  padding:6px 12px;
+  cursor:pointer;
+  transition:border-color .1s, color .1s;
+}
+.settings-btn:hover{ border-color:var(--accent); color:var(--accent); }
+.settings-overlay{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.5);
+  z-index:200;
+  align-items:center;
+  justify-content:center;
+}
+.settings-overlay.open{ display:flex; }
+.settings-modal{
+  background:var(--surface);
+  border:1.5px solid var(--border);
+  border-radius:14px;
+  padding:28px 28px 24px;
+  width:min(420px, calc(100vw - 32px));
+  box-shadow:var(--shadow);
+}
+.settings-modal h2{
+  font-family:"Big Shoulders Display","Arial Narrow",sans-serif;
+  font-size:22px;
+  font-weight:700;
+  margin:0 0 5px;
+  color:var(--text);
+}
+.settings-modal .settings-desc{
+  font-size:12.5px;
+  color:var(--text-dim);
+  margin:0 0 22px;
+  line-height:1.5;
+}
+.settings-field{ margin-bottom:18px; }
+.settings-field > label{
+  display:block;
+  font-size:10.5px;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+  color:var(--text-faint);
+  margin-bottom:7px;
+}
+.settings-select{
+  width:100%;
+  font-family:"IBM Plex Sans",sans-serif;
+  font-size:14px;
+  padding:9px 12px;
+  border:1.5px solid var(--border);
+  border-radius:8px;
+  background:var(--surface);
+  color:var(--text);
+  appearance:none;
+  -webkit-appearance:none;
+  cursor:pointer;
+}
+.settings-select:focus{ outline:none; border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); }
+.ppr-options{ display:flex; gap:10px; }
+.ppr-option{
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:10px 8px;
+  border:1.5px solid var(--border);
+  border-radius:8px;
+  cursor:pointer;
+  font-size:14px;
+  font-weight:600;
+  color:var(--text-dim);
+  transition:border-color .1s, color .1s, background .1s;
+  user-select:none;
+}
+.ppr-option input[type="radio"]{ display:none; }
+.ppr-option.checked{ border-color:var(--accent); color:var(--accent); background:var(--accent-soft); }
+.settings-save{
+  width:100%;
+  margin-top:8px;
+  font-family:"IBM Plex Sans",sans-serif;
+  font-size:14px;
+  font-weight:700;
+  padding:11px;
+  border-radius:8px;
+  border:none;
+  background:var(--accent);
+  color:#fff;
+  cursor:pointer;
+  transition:filter .1s;
+}
+.settings-save:hover{ filter:brightness(1.1); }
+
 @media (max-width: 640px){
   .masthead{flex-direction:column;align-items:flex-start;}
 }
@@ -1205,9 +1308,10 @@ tbody td:last-child{
   <div class="masthead">
     <div class="title-group">
       <h1>Waiver Wire Board</h1>
-      <div class="sub" id="weekLabel">12-team &middot; $200 auction &middot; 0.5 PPR &middot; 1QB/2RB/2WR/FLEX/TE/K/DEF</div>
+      <div class="sub" id="weekLabel"></div>
     </div>
     <div class="masthead-actions">
+      <button class="settings-btn" id="settingsBtn">&#9881; League settings</button>
       <button class="draft-back" id="draftBackBtn" title="Undo the last pick and jump to it" disabled>&larr; Back</button>
       <button class="draft-reset" id="mastReset">Reset draft</button>
     </div>
@@ -1384,8 +1488,48 @@ const hideOutWrap = document.getElementById('hideOutWrap');
 
 /* ===================== Draft Tracker ===================== */
 
-const BUDGET_TOTAL = 200;
-const BENCH_SLOTS = 6;
+// League configuration — all constants that affect pricing, scarcity, and
+// roster math live here. Populated from localStorage by loadLeagueSettings()
+// before any derived calculations run. Functions that need these values read
+// from LEAGUE directly so a single applyLeagueSettings() call propagates
+// everything without hunting down individual magic numbers.
+const LEAGUE = {
+  numTeams: 12,
+  budgetPerTeam: 200,
+  benchSlots: 6,
+  ppr: 0.5,
+  totalLeagueBudget: 2400,
+  replRank: {QB:14, RB:50, WR:50, TE:14, K:12, DEF:12},
+};
+
+function derivedReplRank(numTeams){
+  return {
+    QB:  Math.round(numTeams * 14 / 12),
+    RB:  Math.round(numTeams * 50 / 12),
+    WR:  Math.round(numTeams * 50 / 12),
+    TE:  Math.round(numTeams * 14 / 12),
+    K:   numTeams,
+    DEF: numTeams,
+  };
+}
+
+function loadLeagueSettings(){
+  try{
+    const raw = localStorage.getItem('ff2026-league-config');
+    if(raw){
+      const s = JSON.parse(raw);
+      if(s){
+        LEAGUE.numTeams     = s.numTeams      ?? 12;
+        LEAGUE.budgetPerTeam= s.budgetPerTeam ?? 200;
+        LEAGUE.benchSlots   = s.benchSlots    ?? 6;
+        LEAGUE.ppr          = s.ppr           ?? 0.5;
+      }
+    }
+  }catch(e){}
+  LEAGUE.totalLeagueBudget = LEAGUE.numTeams * LEAGUE.budgetPerTeam;
+  LEAGUE.replRank = derivedReplRank(LEAGUE.numTeams);
+}
+loadLeagueSettings();
 
 // Identity is by row position within its static array, not by name/team text --
 // two genuinely different players can share a displayed name + team (e.g. a same
@@ -1404,16 +1548,38 @@ function playerId(section, r){
 const ALL_PLAYERS = {};
 OFFENSE.forEach(r => {
   const id = playerId('offense', r);
-  ALL_PLAYERS[id] = {id, section:'offense', pos:r.pos, name:r.player, team:r.team, bye:r.bye, fpts:r.fpts, cost:Math.max(1, r.auctionValue||1)};
+  // fpts_base is always the raw 0.5-PPR projection from the source data.
+  // fpts is the live value for the current LEAGUE.ppr setting and is what
+  // all pricing/scarcity math uses. recomputeFpts() keeps them in sync.
+  // rec (receptions) is stored so PPR delta = rec × (newPPR − 0.5) at any time.
+  ALL_PLAYERS[id] = {id, section:'offense', pos:r.pos, name:r.player, team:r.team, bye:r.bye,
+    fpts_base: r.fpts, fpts: r.fpts, rec: r.rec ?? null, cost:Math.max(1, r.auctionValue||1)};
 });
 KICKERS.forEach(r => {
   const id = playerId('kickers', r);
-  ALL_PLAYERS[id] = {id, section:'kickers', pos:'K', name:r.player, team:r.team, bye:r.bye, fpts:r.fpts, cost:Math.max(1, r.auctionValue||1)};
+  ALL_PLAYERS[id] = {id, section:'kickers', pos:'K', name:r.player, team:r.team, bye:r.bye,
+    fpts_base: r.fpts, fpts: r.fpts, rec: null, cost:Math.max(1, r.auctionValue||1)};
 });
 DEFENSE.forEach(r => {
   const id = playerId('defense', r);
-  ALL_PLAYERS[id] = {id, section:'defense', pos:'DEF', name:r.team, team:r.team, bye:r.bye, fpts:r.fpts, cost:Math.max(1, r.auctionValue||1)};
+  ALL_PLAYERS[id] = {id, section:'defense', pos:'DEF', name:r.team, team:r.team, bye:r.bye,
+    fpts_base: r.fpts, fpts: r.fpts, rec: null, cost:Math.max(1, r.auctionValue||1)};
 });
+
+// Adjusts every player's fpts from the stored 0.5-PPR base to the current
+// LEAGUE.ppr setting. Only skill positions with reception data are affected;
+// QBs, kickers, and defenses have rec=null so they pass through unchanged.
+function recomputeFpts(){
+  const delta = LEAGUE.ppr - 0.5;
+  Object.values(ALL_PLAYERS).forEach(p => {
+    if(p.fpts_base == null){ p.fpts = null; return; }
+    p.fpts = (p.rec != null && delta !== 0)
+      ? Math.round(p.fpts_base + p.rec * delta)
+      : p.fpts_base;
+  });
+}
+// Apply once on load (handles the case where saved PPR ≠ 0.5)
+recomputeFpts();
 
 function escAttr(s){
   return String(s).replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
@@ -1451,19 +1617,20 @@ const SUBTIER_RANK = {A:1, B:2, C:3};
 /* ---- Static replacement-level baseline (computed once from the full pre-draft pool,
    mirrors auction_calc.py exactly -- held fixed through the draft; only the dollar
    pool distributed against it moves live). ---- */
-const REPL_RANK = {QB:14, RB:50, WR:50, TE:14, K:12, DEF:12};
-const REPLACEMENT = (() => {
+// REPLACEMENT is recomputed whenever LEAGUE settings change (team count or PPR
+// both affect which fpts values are used and where replacement level falls).
+let REPLACEMENT = {};
+function recomputeReplacement(){
   const byPos = {};
   ['QB','RB','WR','TE','K','DEF'].forEach(pos => { byPos[pos] = []; });
   Object.values(ALL_PLAYERS).forEach(p => { if(p.fpts != null) byPos[p.pos].push(p.fpts); });
-  const repl = {};
   Object.keys(byPos).forEach(pos => {
     const sorted = byPos[pos].slice().sort((a,b) => b - a);
-    const rank = REPL_RANK[pos];
-    repl[pos] = sorted.length >= rank ? sorted[rank-1] : (sorted.length ? sorted[sorted.length-1] : 0);
+    const rank = LEAGUE.replRank[pos];
+    REPLACEMENT[pos] = sorted.length >= rank ? sorted[rank-1] : (sorted.length ? sorted[sorted.length-1] : 0);
   });
-  return repl;
-})();
+}
+recomputeReplacement();
 function vorpOf(p){ return Math.max(0, p.fpts - REPLACEMENT[p.pos]); }
 
 let draftState = { mine:{}, opp:{}, nextSeq:1 };
@@ -1686,13 +1853,13 @@ function assignSlots(){
     if((p.pos === 'RB' || p.pos === 'WR' || p.pos === 'TE') && !slots.FLEX){ slots.FLEX = p; return; }
     if(p.pos === 'K' && !slots.K){ slots.K = p; return; }
     if(p.pos === 'DEF' && !slots.DEF){ slots.DEF = p; return; }
-    if(bench.length < BENCH_SLOTS){ bench.push(p); return; }
+    if(bench.length < LEAGUE.benchSlots){ bench.push(p); return; }
     bench.push(p); // roster over 15 -- shouldn't happen, but don't drop data
   });
 
   const spent = entries.reduce((s,p) => s + p.price, 0);
   const lockedFpts = SLOT_ORDER.reduce((s,k) => s + (slots[k] ? slots[k].fpts : 0), 0);
-  const benchFilled = Math.min(bench.length, BENCH_SLOTS);
+  const benchFilled = Math.min(bench.length, LEAGUE.benchSlots);
 
   return { slots, bench, spent, lockedFpts, benchFilled };
 }
@@ -1808,7 +1975,7 @@ function convolve(curveA, curveB, budget){
   return { curve, splitB };
 }
 
-const TOTAL_LEAGUE_BUDGET = 2400;
+// Derived from LEAGUE — no standalone const needed.
 
 // Re-runs the exact same VORP-share formula the static board was built with (see
 // auction_calc.py), but against the REAL remaining league dollars and REAL remaining
@@ -1820,7 +1987,7 @@ const TOTAL_LEAGUE_BUDGET = 2400;
 function computeLiveValues(takenIds){
   const totalRealSpent = Object.values(draftState.mine).reduce((s,p)=>s+p.price,0)
     + Object.values(draftState.opp).reduce((s,p)=>s+p.price,0);
-  const liveTotalPool = TOTAL_LEAGUE_BUDGET - totalRealSpent;
+  const liveTotalPool = LEAGUE.totalLeagueBudget - totalRealSpent;
 
   const remaining = Object.values(ALL_PLAYERS).filter(p => p.fpts != null && !takenIds.has(p.id));
   const withVorp = remaining.map(p => ({p, vorp: vorpOf(p)}));
@@ -2087,7 +2254,7 @@ function solveWithout(player, needs, budget, avail, baseSolves){
 // includesAt() is monotone in price (raising a player's own cost can only
 // make including them weakly less attractive), so binary search is valid.
 function findWalkAwayPrice(player, needs, budget, avail, baseSolves, baseCost){
-  const hi0 = Math.max(baseCost, Math.min(budget, 200));
+  const hi0 = Math.max(baseCost, Math.min(budget, LEAGUE.budgetPerTeam));
 
   function includesAt(price){
     const res = solveVariant(player, needs, budget, avail, baseSolves, price);
@@ -2192,7 +2359,7 @@ function computeBenchRecommendations(slots, takenIds, liveValues){
   // your total budget -- either one flags "extreme", per your own read. ----
   const byPriceDesc = myAll.slice().sort((a,b) => b.price - a.price);
   const top2Ids = new Set(byPriceDesc.slice(0, 2).map(p => p.id));
-  const pctThreshold = HANDCUFF_PCT_OF_BUDGET * BUDGET_TOTAL;
+  const pctThreshold = HANDCUFF_PCT_OF_BUDGET * LEAGUE.budgetPerTeam;
   const handcuffTargets = myAll.filter(p =>
     HANDCUFF_POS.has(p.pos) && (top2Ids.has(p.id) || p.price >= pctThreshold)
   );
@@ -2330,8 +2497,8 @@ function computeNeeds(slots){
 }
 function getDraftContext(){
   const { slots, bench, spent, lockedFpts, benchFilled } = assignSlots();
-  const benchRemaining = BENCH_SLOTS - benchFilled;
-  const budgetForStarters = BUDGET_TOTAL - spent - benchRemaining;
+  const benchRemaining = LEAGUE.benchSlots - benchFilled;
+  const budgetForStarters = LEAGUE.budgetPerTeam - spent - benchRemaining;
   const needs = computeNeeds(slots);
   const takenIds = new Set([...Object.keys(draftState.mine), ...Object.keys(draftState.opp)]);
   return { slots, bench, spent, lockedFpts, benchFilled, benchRemaining, budgetForStarters, needs, takenIds };
@@ -2432,8 +2599,8 @@ function renderNomination(){
 
 function renderDraftPanel(){
   const { slots, bench, spent, lockedFpts, benchFilled } = assignSlots();
-  const benchRemaining = BENCH_SLOTS - benchFilled;
-  const budgetForStarters = BUDGET_TOTAL - spent - benchRemaining;
+  const benchRemaining = LEAGUE.benchSlots - benchFilled;
+  const budgetForStarters = LEAGUE.budgetPerTeam - spent - benchRemaining;
 
   const needs = {
     QB: slots.QB ? 0 : 1,
@@ -2506,7 +2673,7 @@ function renderDraftPanel(){
       <span class="roster-price">${p ? fmtMoney(p.price) : ''}</span>
     </div>`;
   });
-  for(let i = 0; i < BENCH_SLOTS; i++){
+  for(let i = 0; i < LEAGUE.benchSlots; i++){
     const p = bench[i];
     rosterHTML += `<div class="roster-row">
       <span class="roster-slot">BN${i+1}</span>
@@ -3338,7 +3505,136 @@ document.getElementById('draftBackBtn').addEventListener('click', undoLast);
 })();
 
 switchSection('offense');
+
+/* ===================== League Settings UI ===================== */
+
+function updateSubLabel(){
+  const el = document.getElementById('weekLabel');
+  if(!el) return;
+  const pprLabel = LEAGUE.ppr === 0 ? '0 PPR' : LEAGUE.ppr === 1 ? 'Full PPR' : '0.5 PPR';
+  el.textContent = `${LEAGUE.numTeams}-team \u00b7 $${LEAGUE.budgetPerTeam} auction \u00b7 ${pprLabel} \u00b7 1QB/2RB/2WR/FLEX/TE/K/DEF`;
+}
+
+function applyLeagueSettings(numTeams, benchSlots, ppr){
+  const pprChanged = ppr !== LEAGUE.ppr;
+  const teamsChanged = numTeams !== LEAGUE.numTeams;
+  LEAGUE.numTeams      = numTeams;
+  LEAGUE.benchSlots    = benchSlots;
+  LEAGUE.ppr           = ppr;
+  LEAGUE.totalLeagueBudget = LEAGUE.numTeams * LEAGUE.budgetPerTeam;
+  LEAGUE.replRank      = derivedReplRank(LEAGUE.numTeams);
+
+  if(pprChanged) recomputeFpts();
+  // Replacement level depends on both team count and fpts (which PPR affects)
+  if(pprChanged || teamsChanged) recomputeReplacement();
+
+  try{
+    localStorage.setItem('ff2026-league-config', JSON.stringify({
+      numTeams: LEAGUE.numTeams,
+      budgetPerTeam: LEAGUE.budgetPerTeam,
+      benchSlots: LEAGUE.benchSlots,
+      ppr: LEAGUE.ppr,
+    }));
+  }catch(e){}
+
+  updateSubLabel();
+  renderDraftPanel();
+  render();
+  renderNomination();
+}
+
+(function setupSettingsModal(){
+  const overlay  = document.getElementById('settingsOverlay');
+  const teamsEl  = document.getElementById('settingTeams');
+  const benchEl  = document.getElementById('settingBench');
+  const pprOpts  = document.querySelectorAll('.ppr-option');
+  const saveBtn  = document.getElementById('settingsSave');
+  const openBtn  = document.getElementById('settingsBtn');
+
+  function syncPprHighlight(val){
+    pprOpts.forEach(opt => {
+      opt.classList.toggle('checked', opt.dataset.val === String(val));
+    });
+  }
+
+  function populateForm(){
+    teamsEl.value = String(LEAGUE.numTeams);
+    benchEl.value = String(LEAGUE.benchSlots);
+    syncPprHighlight(LEAGUE.ppr);
+  }
+
+  function openModal(){ populateForm(); overlay.classList.add('open'); }
+  function closeModal(){ overlay.classList.remove('open'); }
+
+  openBtn.addEventListener('click', openModal);
+
+  // Click on PPR option labels
+  pprOpts.forEach(opt => {
+    opt.addEventListener('click', () => {
+      const radio = opt.querySelector('input[type="radio"]');
+      if(radio) radio.checked = true;
+      syncPprHighlight(opt.dataset.val);
+    });
+  });
+
+  // Close on backdrop click
+  overlay.addEventListener('click', (e) => {
+    if(e.target === overlay) closeModal();
+  });
+
+  saveBtn.addEventListener('click', () => {
+    const numTeams  = parseInt(teamsEl.value, 10);
+    const benchSlots= parseInt(benchEl.value, 10);
+    const checkedRadio = document.querySelector('input[name="pprSetting"]:checked');
+    const ppr = checkedRadio ? parseFloat(checkedRadio.value) : LEAGUE.ppr;
+    applyLeagueSettings(numTeams, benchSlots, ppr);
+    closeModal();
+  });
+
+  // Show modal automatically on first visit (no saved config)
+  const firstVisit = !localStorage.getItem('ff2026-league-config');
+  if(firstVisit) openModal();
+})();
+
+// Initialise the sub-label after all JS has run
+updateSubLabel();
 </script>
+
+
+<div class="settings-overlay" id="settingsOverlay">
+  <div class="settings-modal">
+    <h2>League Settings</h2>
+    <p class="settings-desc">Calibrate the model to your league. All pricing, scarcity signals, and walk-away prices update immediately.</p>
+    <div class="settings-field">
+      <label for="settingTeams">Number of teams</label>
+      <select class="settings-select" id="settingTeams">
+        <option value="8">8 teams</option>
+        <option value="10">10 teams</option>
+        <option value="12">12 teams</option>
+        <option value="14">14 teams</option>
+      </select>
+    </div>
+    <div class="settings-field">
+      <label for="settingBench">Bench spots</label>
+      <select class="settings-select" id="settingBench">
+        <option value="4">4 bench spots</option>
+        <option value="5">5 bench spots</option>
+        <option value="6">6 bench spots</option>
+        <option value="7">7 bench spots</option>
+        <option value="8">8 bench spots</option>
+      </select>
+    </div>
+    <div class="settings-field">
+      <label>PPR scoring</label>
+      <div class="ppr-options" id="pprOptions">
+        <label class="ppr-option" data-val="0"><input type="radio" name="pprSetting" value="0"> Standard (0 PPR)</label>
+        <label class="ppr-option" data-val="0.5"><input type="radio" name="pprSetting" value="0.5"> Half PPR</label>
+        <label class="ppr-option" data-val="1"><input type="radio" name="pprSetting" value="1"> Full PPR</label>
+      </div>
+    </div>
+    <button class="settings-save" id="settingsSave">Save &amp; close</button>
+  </div>
+</div>
 
 </body>
 </html>
