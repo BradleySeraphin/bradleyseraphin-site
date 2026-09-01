@@ -2391,9 +2391,15 @@ function renderNomination(){
   const sub = `${player.pos}${(player.team && player.team !== player.name) ? ' &middot; '+player.team : ''}`;
 
   if(status === 'mine' || status === 'opp'){
+    const who = status;
+    const idAttr = escAttr(CURRENT_NOMINATION_ID);
     resultEl.className = 'nominate-result taken';
     resultEl.innerHTML = `<div class="nominate-name-row"><span class="nominate-name">${player.name}</span><span class="nominate-sub">${sub}</span></div>
-      <div class="nominate-note">Already off the board &mdash; ${status === 'mine' ? 'you drafted' : 'an opponent drafted'} them for ${fmtMoney(evalResult.price)}.</div>`;
+      <div class="draft-cell-locked draft-cell-locked--${who === 'mine' ? 'mine' : 'opp'}">
+        <span class="draft-badge draft-${who === 'mine' ? 'mine' : 'opp'}">${who === 'mine' ? 'MINE' : 'OPP'}</span>
+        ${priceControlHTML(CURRENT_NOMINATION_ID, idAttr, who, evalResult.price)}
+        <button class="draft-x" data-action="undo" data-id="${idAttr}" title="Undo pick">&times;</button>
+      </div>`;
     return;
   }
   const nomBtns = `<div class="nominate-actions"><button class="draft-btn draft-btn-me" data-nom-action="me">Mine</button><button class="draft-btn draft-btn-opp" data-nom-action="opp">Theirs</button></div>`;
@@ -3269,14 +3275,65 @@ document.getElementById('draftBackBtn').addEventListener('click', undoLast);
   // deferred so a dropdown-row mousedown lands first
   input.addEventListener('blur', () => { setTimeout(closeDropdown, 0); });
 
-  // Mine / Theirs buttons inside the nomination result panel
-  document.getElementById('nominateResult').addEventListener('click', (e) => {
-    const btn = e.target.closest('[data-nom-action]');
-    if(!btn || !CURRENT_NOMINATION_ID) return;
-    const action = btn.dataset.nomAction;
-    if(action === 'me') markMine(CURRENT_NOMINATION_ID);
-    else if(action === 'opp') markOpp(CURRENT_NOMINATION_ID);
+  // Mine / Theirs buttons and all locked-state controls in the nomination result panel
+  const nominateResult = document.getElementById('nominateResult');
+
+  nominateResult.addEventListener('click', (e) => {
+    // Mine / Theirs buttons (undrafted state)
+    const nomBtn = e.target.closest('[data-nom-action]');
+    if(nomBtn && CURRENT_NOMINATION_ID){
+      const nomAction = nomBtn.dataset.nomAction;
+      if(nomAction === 'me') markMine(CURRENT_NOMINATION_ID);
+      else if(nomAction === 'opp') markOpp(CURRENT_NOMINATION_ID);
+      renderNomination();
+      const inp = nominateResult.querySelector('.draft-price-input');
+      if(inp){ inp.focus(); inp.select(); }
+      return;
+    }
+    // Locked-state controls: pencil (edit-price) and undo (×)
+    const btn = e.target.closest('[data-action]');
+    if(!btn) return;
+    const action = btn.dataset.action;
+    const id = btn.dataset.id;
+    if(action === 'edit-price'){
+      EDITING_PRICE_ID = id;
+      renderNomination();
+      const inp = nominateResult.querySelector('.draft-price-input');
+      if(inp){ inp.focus(); inp.select(); }
+    } else if(action === 'undo'){
+      unmarkDraft(id);
+      CURRENT_NOMINATION_ID = null;
+      renderNomination();
+    }
+  });
+
+  nominateResult.addEventListener('change', (e) => {
+    const el = e.target.closest('[data-action="reprice"]');
+    if(!el) return;
+    repriceDraft(el.dataset.id, el.value, el.dataset.who);
     renderNomination();
+  });
+
+  nominateResult.addEventListener('keydown', (e) => {
+    if(!e.target.matches('.draft-price-input')) return;
+    if(e.key === 'Enter'){
+      e.preventDefault();
+      const id = e.target.dataset.id;
+      repriceDraft(id, e.target.value, e.target.dataset.who);
+      exitPriceEdit(id);
+      renderNomination();
+    } else if(e.key === 'Escape'){
+      e.preventDefault();
+      exitPriceEdit(e.target.dataset.id);
+      renderNomination();
+    }
+  });
+
+  nominateResult.addEventListener('focusout', (e) => {
+    if(e.target.matches('.draft-price-input')){
+      const id = e.target.dataset.id;
+      setTimeout(() => { exitPriceEdit(id); renderNomination(); }, 0);
+    }
   });
 })();
 
