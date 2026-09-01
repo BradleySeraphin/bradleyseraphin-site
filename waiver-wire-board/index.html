@@ -4121,24 +4121,32 @@ updateSubLabel();
 updateTabCounts();
 
 function applyStoredCustomData(){
+  let ok = false;
   try{
     const raw = localStorage.getItem(CUSTOM_DATA_KEY);
-    if(!raw) return;
+    if(!raw){ ok = true; return; }
     const saved = JSON.parse(raw);
-    if(!saved || !saved.offense) return;
+    if(!saved || !Array.isArray(saved.offense) || !saved.offense.length){ ok = true; return; }
     OFFENSE.splice(0, OFFENSE.length, ...saved.offense);
-    KICKERS.splice(0, KICKERS.length, ...saved.kickers);
-    DEFENSE.splice(0, DEFENSE.length, ...saved.defense);
+    KICKERS.splice(0, KICKERS.length, ...(Array.isArray(saved.kickers) ? saved.kickers : []));
+    DEFENSE.splice(0, DEFENSE.length, ...(Array.isArray(saved.defense) ? saved.defense : []));
     DATA_SOURCE_LABEL = saved.label || 'Custom upload';
+    ok = true;
+  }catch(e){
+    console.warn('Could not restore custom player data:', e);
+  }finally{
+    if(!ok){
+      // Partial execution may have corrupted arrays — restore clean defaults
+      OFFENSE.splice(0, OFFENSE.length, ...OFFENSE_DEFAULT);
+      KICKERS.splice(0, KICKERS.length, ...KICKERS_DEFAULT);
+      DEFENSE.splice(0, DEFENSE.length, ...DEFENSE_DEFAULT);
+      DATA_SOURCE_LABEL = 'Built-in data';
+    }
+    // Always rebuild indexes and re-render so the DOM matches the arrays
     rebuildPlayerCatalog();
     renderDraftPanel();
     render();
     renderNomination();
-  }catch(e){
-    console.warn('Could not restore custom player data:', e);
-    OFFENSE.splice(0, OFFENSE.length, ...OFFENSE_DEFAULT);
-    KICKERS.splice(0, KICKERS.length, ...KICKERS_DEFAULT);
-    DEFENSE.splice(0, DEFENSE.length, ...DEFENSE_DEFAULT);
   }
 }
 applyStoredCustomData();
