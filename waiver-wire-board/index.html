@@ -2214,7 +2214,7 @@ function unmarkDraft(id){
   renderDraftPanel();
   render();
 }
-function repriceDraft(id, price, who){
+function repriceDraft(id, price, who, keepEdit = false){
   const bucket = who === 'opp' ? draftState.opp : draftState.mine;
   if(!bucket[id]) return;
   const v = Math.max(1, Math.round(Number(price) || 1));
@@ -2227,7 +2227,8 @@ function repriceDraft(id, price, who){
   bucket[id].price = v;
   saveDraftState();
   LAST_ACTION_ID = id;
-  if(EDITING_PRICE_ID === id) EDITING_PRICE_ID = null;
+  // keepEdit = true when called from +/- stepper so the buttons stay visible
+  if(!keepEdit && EDITING_PRICE_ID === id) EDITING_PRICE_ID = null;
   renderDraftPanel();
   render();
 }
@@ -2324,7 +2325,7 @@ table.addEventListener('click', (e) => {
     const entry = draftState[who]?.[id];
     if(entry){
       const delta = action === 'price-inc' ? 1 : -1;
-      repriceDraft(id, Math.max(1, entry.price + delta), who);
+      repriceDraft(id, Math.max(1, entry.price + delta), who, true);
       render();
     }
   }
@@ -4365,7 +4366,7 @@ document.getElementById('draftBackBtn').addEventListener('click', undoLast);
       const entry = draftState[who]?.[id];
       if(entry){
         const delta = action === 'price-inc' ? 1 : -1;
-        repriceDraft(id, Math.max(1, entry.price + delta), who);
+        repriceDraft(id, Math.max(1, entry.price + delta), who, true);
         renderNomination();
         renderDraftPanel();
       }
