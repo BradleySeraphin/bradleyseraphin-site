@@ -4411,12 +4411,15 @@ document.getElementById('draftBackBtn').addEventListener('click', undoLast);
       const entry = draftState[who]?.[id];
       if(entry){
         const delta = action === 'price-inc' ? 1 : -1;
-        repriceDraft(id, Math.max(1, entry.price + delta), who, true);
-        renderNomination();
-        renderDraftPanel();
-        const inp = nominateResult.querySelector('.draft-price-input');
-        if(inp) inp.focus();
-        setTimeout(() => { STEPPER_ACTIVE = false; }, 0);
+        const newPrice = Math.max(1, entry.price + delta);
+        if(entry.price !== newPrice){
+          entry.price = newPrice;
+          saveDraftState();
+          // Update the input value in-place — no innerHTML rebuild, no focusout, edit mode stays open
+          const inp = nominateResult.querySelector('.draft-price-input');
+          if(inp){ inp.value = newPrice; inp.focus(); }
+          renderRecentPicks();
+        }
       }
     }
   });
@@ -4448,8 +4451,16 @@ document.getElementById('draftBackBtn').addEventListener('click', undoLast);
       const id = e.target.dataset.id;
       setTimeout(() => {
         if(STEPPER_ACTIVE) return;
+        // Commit whatever is in the input (handles direct typing)
+        const inp = nominateResult.querySelector('.draft-price-input');
+        const who = inp?.dataset.who;
+        if(inp && who && draftState[who]?.[id]){
+          const v = Math.max(1, Math.round(Number(inp.value) || 1));
+          draftState[who][id].price = v;
+          saveDraftState();
+        }
         exitPriceEdit(id);
-        renderNomination();
+        renderDraftPanel(); // full sync: budget + nomination panel
       }, 0);
     }
   });
