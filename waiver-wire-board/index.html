@@ -1173,10 +1173,11 @@ tbody td:last-child{
 .nominate-result.taken{color:var(--text-faint);}
 .nominate-name-row{
   display:flex;
-  align-items:baseline;
+  align-items:center;
   gap:8px;
   margin-bottom:4px;
 }
+.nom-clear-btn{ margin-left:auto; flex-shrink:0; }
 .nominate-name{
   font-family:"Big Shoulders Display", sans-serif;
   font-weight:700;
@@ -2011,6 +2012,14 @@ table.addEventListener('click', (e) => {
     focusPriceInput(id);
   }
 });
+table.addEventListener('dblclick', (e) => {
+  const tr = e.target.closest('tr[data-player-id]');
+  if(!tr) return;
+  CURRENT_NOMINATION_ID = tr.dataset.playerId;
+  renderNomination();
+  document.getElementById('nominatePanel').scrollIntoView({ behavior:'smooth', block:'nearest' });
+});
+
 table.addEventListener('change', (e) => {
   const el = e.target.closest('[data-action="reprice"]');
   if(!el) return;
@@ -2774,7 +2783,7 @@ function renderNomination(){
     const who = status;
     const idAttr = escAttr(CURRENT_NOMINATION_ID);
     resultEl.className = 'nominate-result taken';
-    resultEl.innerHTML = `<div class="nominate-name-row"><span class="nominate-name">${player.name}</span><span class="nominate-sub">${sub}</span></div>
+    resultEl.innerHTML = `<div class="nominate-name-row"><span class="nominate-name">${player.name}</span><span class="nominate-sub">${sub}</span><button class="draft-x nom-clear-btn" data-action="clear-nom" title="Clear nomination">&times;</button></div>
       <div class="draft-cell-locked draft-cell-locked--${who === 'mine' ? 'mine' : 'opp'}">
         <span class="draft-badge draft-${who === 'mine' ? 'mine' : 'opp'}">${who === 'mine' ? 'MINE' : 'OPP'}</span>
         ${priceControlHTML(CURRENT_NOMINATION_ID, idAttr, who, evalResult.price)}
@@ -2786,14 +2795,14 @@ function renderNomination(){
 
   if(status === 'no-projection'){
     resultEl.className = 'nominate-result';
-    resultEl.innerHTML = `<div class="nominate-name-row"><span class="nominate-name">${player.name}</span><span class="nominate-sub">${sub}</span></div>
+    resultEl.innerHTML = `<div class="nominate-name-row"><span class="nominate-name">${player.name}</span><span class="nominate-sub">${sub}</span><button class="draft-x nom-clear-btn" data-action="clear-nom" title="Clear nomination">&times;</button></div>
       <div class="nominate-note">No projection on file for this player &mdash; not enough data to price them.</div>
       ${nomBtns}`;
     return;
   }
   if(status === 'no-need'){
     resultEl.className = 'nominate-result';
-    resultEl.innerHTML = `<div class="nominate-name-row"><span class="nominate-name">${player.name}</span><span class="nominate-sub">${sub}</span></div>
+    resultEl.innerHTML = `<div class="nominate-name-row"><span class="nominate-name">${player.name}</span><span class="nominate-sub">${sub}</span><button class="draft-x nom-clear-btn" data-action="clear-nom" title="Clear nomination">&times;</button></div>
       <div class="nominate-note">You have no open starting slot at ${player.pos} right now, so no price would change your projected starting total. Check Recommended Bench if you want them as a handcuff or value stash instead.</div>
       ${nomBtns}`;
     return;
@@ -2801,7 +2810,7 @@ function renderNomination(){
 
   resultEl.className = 'nominate-result';
   resultEl.innerHTML = `
-    <div class="nominate-name-row"><span class="nominate-name">${player.name}</span><span class="nominate-sub">${sub} &middot; ${player.fpts} pts</span></div>
+    <div class="nominate-name-row"><span class="nominate-name">${player.name}</span><span class="nominate-sub">${sub} &middot; ${player.fpts} pts</span><button class="draft-x nom-clear-btn" data-action="clear-nom" title="Clear nomination">&times;</button></div>
     <div class="nominate-stats">
       <div class="stat"><span class="label">Live market value</span><span class="value">${fmtMoney(evalResult.liveCost)}</span></div>
       <div class="stat"><span class="label">Walk-away price</span><span class="value warn">${fmtMoney(evalResult.walkAwayPrice)}</span></div>
@@ -3588,6 +3597,16 @@ document.getElementById('searchBox').addEventListener('input', (e)=>{
   query = e.target.value;
   render();
 });
+document.getElementById('searchBox').addEventListener('keydown', (e)=>{
+  if(e.key !== 'Enter') return;
+  const playerRows = table.querySelectorAll('tr[data-player-id]');
+  if(playerRows.length === 1){
+    e.preventDefault();
+    CURRENT_NOMINATION_ID = playerRows[0].dataset.playerId;
+    renderNomination();
+    document.getElementById('nominatePanel').scrollIntoView({ behavior:'smooth', block:'nearest' });
+  }
+});
 document.getElementById('hideFA').addEventListener('change', (e)=>{
   hideFA = e.target.checked;
   render();
@@ -3683,6 +3702,9 @@ document.getElementById('draftBackBtn').addEventListener('click', undoLast);
       if(inp){ inp.focus(); inp.select(); }
     } else if(action === 'undo'){
       unmarkDraft(id);
+      CURRENT_NOMINATION_ID = null;
+      renderNomination();
+    } else if(action === 'clear-nom'){
       CURRENT_NOMINATION_ID = null;
       renderNomination();
     }
