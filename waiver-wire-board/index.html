@@ -1022,6 +1022,53 @@ tbody td:last-child{
 .bishop-stats .value.warn{ color:var(--warn); }
 .bishop-stats .value.good{ color:var(--accent); }
 
+/* ── Nomination Suggestions ───────────────────────────── */
+#nominationSuggestions{ margin-bottom:12px; }
+.nom-section-label{
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--text-faint);
+  margin-bottom:8px;
+}
+.nom-cards{ display:flex; flex-direction:column; gap:8px; }
+.nom-card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-left:3px solid var(--border);
+  border-radius:8px;
+  padding:10px 12px;
+}
+.nom-card.nom-bomb   { border-left-color:var(--warn); }
+.nom-card.nom-target { border-left-color:var(--accent); }
+.nom-card.nom-fog    { border-left-color:#8a63a8; }
+.nom-card.nom-chaff  { border-left-color:var(--text-faint); }
+.nom-header{ display:flex; align-items:center; gap:8px; margin-bottom:4px; }
+.nom-badge{
+  font-size:9px;
+  font-weight:800;
+  letter-spacing:.1em;
+  text-transform:uppercase;
+  padding:2px 6px;
+  border-radius:4px;
+  background:var(--surface-2);
+  color:var(--text-faint);
+}
+.nom-card.nom-bomb   .nom-badge{ color:var(--warn);   background:var(--warn-soft); }
+.nom-card.nom-target .nom-badge{ color:var(--accent); background:var(--accent-soft); }
+.nom-card.nom-fog    .nom-badge{ color:#8a63a8;        background:rgba(138,99,168,.12); }
+.nom-tagline{ font-size:11px; color:var(--text-faint); }
+.nom-player{ display:flex; align-items:baseline; gap:6px; margin-bottom:3px; }
+.nom-name{ font-size:15px; font-weight:700; color:var(--text); }
+.nom-sub{ font-size:11px; color:var(--text-dim); }
+.nom-why{ font-size:12px; color:var(--text-dim); margin:0 0 4px 0; line-height:1.4; }
+.nom-action{ font-size:12px; font-weight:600; margin:0; color:var(--text); }
+.nom-card.nom-bomb   .nom-action{ color:var(--warn); }
+.nom-card.nom-target .nom-action{ color:var(--accent); }
+.nom-card.nom-fog    .nom-action{ color:#8a63a8; }
+.nom-card.nom-chaff  .nom-action{ color:var(--text-faint); }
+
 .tier-radar{
   display:flex;
   flex-direction:column;
@@ -1524,6 +1571,7 @@ tbody td:last-child{
 
   <div class="draft-panel" id="draftPanel" hidden>
     <div class="queen-callout" id="queenCallout"></div>
+    <div id="nominationSuggestions" style="display:none"></div>
     <div class="tier-radar-mount" id="tierRadarDraft"></div>
     <div class="draft-summary" id="draftSummary"></div>
     <div class="draft-cols">
@@ -1923,6 +1971,7 @@ let LIVE_VALUES = new Map();
 let CURRENT_QUEEN = null; // {id, delta, liveCost, walkAwayPrice} | null -- see computeQueen()
 let CURRENT_KNIGHTS = []; // [{id, liveCost, walkAwayPrice}, ...] -- co-equal top targets when there's no single Queen
 let CURRENT_BISHOP = null; // {id, liveValue, auctionValue, ratio, walkAwayPrice} | null -- see computeQueen()
+let CURRENT_NOMINATIONS = []; // [{archetype, playerId, why, action}, ...] -- see computeNominationSuggestions()
 let LAST_ACTION_ID = null; // id of the player whose draft cell should flash "locked in" on this render pass
 let EDITING_PRICE_ID = null; // id of the one locked-in pick, if any, whose price is currently unlocked for editing
 let CURRENT_TIER_INSIGHTS = []; // [{sev, text}, ...] -- see computeTierRadar()
@@ -2434,6 +2483,137 @@ function computeQueen(needs, budget, takenIds, liveValues){
   }
 }
 
+// Nomination Suggester: four game-theory archetypes for whose turn it is to
+// put a player on the block -- Bomb (drain rivals), Target (player you want),
+// Fog (exploit price confusion), Chaff (cheap filler while others hoard).
+function computeNominationSuggestions(needs, budget, takenIds, liveValues, optimalPicks){
+  const available = Object.values(ALL_PLAYERS).filter(p => !takenIds.has(p.id) && p.cost > 0);
+  if(!available.length){ CURRENT_NOMINATIONS = []; return; }
+
+  const optimalSet = new Set(optimalPicks.map(p => p.id));
+  const myNeedPos  = new Set(Object.entries(needs).filter(([,v]) => v > 0).map(([k]) => k));
+
+  function posDepth(pos, maxTier){
+    return Math.max(1, available.filter(p => p.pos === pos && (p.tier ?? 3) <= maxTier).length);
+  }
+
+  const suggestions = [];
+
+  /* ── BOMB: nominate a player you don't need that rivals do ── */
+  {
+    const best = available
+      .filter(p => !optimalSet.has(p.id) && p.cost >= 18)
+      .map(p => {
+        const tier  = p.tier ?? 3;
+        const depth = posDepth(p.pos, tier);
+        const score = (p.cost / 65) * (1 / (tier + 0.5)) * Math.min(1, 6 / depth);
+        return { p, score, depth };
+      })
+      .sort((a, b) => b.score - a.score)[0];
+    if(best){
+      const { p, depth } = best;
+      const scarce = depth <= 3 ? 'Scarce position — ' : '';
+      suggestions.push({
+        archetype: 'BOMB',
+        playerId:  p.id,
+        why:    `Not in your optimal lineup. ${scarce}Rivals are going to pay for this one.`,
+        action: `Open at $1. Let it run — this isn\'t your player.`,
+      });
+    }
+  }
+
+  /* ── TARGET: nominate a player you want ── */
+  {
+    const best = available
+      .filter(p => optimalSet.has(p.id))
+      .map(p => {
+        const lv    = liveValues.get(p.id) ?? p.cost;
+        const ratio = p.cost > 0 ? lv / p.cost : 1;
+        const score = lv * Math.min(ratio, 1.2);
+        return { p, lv, ratio, score };
+      })
+      .sort((a, b) => b.score - a.score)[0];
+    if(best){
+      const { p, lv } = best;
+      const isKing   = CURRENT_QUEEN?.id === p.id && CURRENT_BISHOP?.id === p.id;
+      const isQueen  = CURRENT_QUEEN?.id  === p.id;
+      const isBishop = CURRENT_BISHOP?.id === p.id;
+      const walkAway = isBishop ? CURRENT_BISHOP.walkAwayPrice
+                     : isQueen  ? CURRENT_QUEEN.walkAwayPrice
+                     : Math.round(lv * 0.88);
+      const context  = isKing   ? 'Your King — most critical pick and most executable deal right now.'
+                     : isQueen  ? 'Your Queen — biggest VORP drop if you miss them.'
+                     : isBishop ? 'Your Bishop — best live value vs. market ratio available.'
+                     : 'In your optimal lineup.';
+      suggestions.push({
+        archetype: 'TARGET',
+        playerId:  p.id,
+        why:    context,
+        action: `Open at $1. Walk at ${fmtMoney(walkAway)}.`,
+      });
+    }
+  }
+
+  /* ── FOG: exploit the live vs. market price gap ── */
+  {
+    const best = available
+      .filter(p => {
+        if(p.cost < 6) return false;
+        const lv  = liveValues.get(p.id) ?? p.cost;
+        return Math.abs(lv - p.cost) / p.cost >= 0.20;
+      })
+      .map(p => {
+        const lv    = liveValues.get(p.id) ?? p.cost;
+        const div   = (lv - p.cost) / p.cost; // + = undervalued by mkt; - = overvalued
+        const tier  = p.tier ?? 3;
+        const tMult = tier <= 2 ? 1.4 : tier === 3 ? 1.0 : 0.7;
+        const score = Math.abs(div) * tMult * (p.cost / 40);
+        return { p, lv, div, score };
+      })
+      .sort((a, b) => b.score - a.score)[0];
+    if(best){
+      const { p, lv, div } = best;
+      const pct = Math.round(Math.abs(div) * 100);
+      let why, action;
+      if(div < 0){
+        why    = `ADP says ${fmtMoney(p.cost)} but your model prices them at ${fmtMoney(Math.round(lv))} — ${pct}% gap. Rivals are working off stale numbers.`;
+        action = `Open at $1. Let rivals overpay. Don\'t chase past ${fmtMoney(Math.round(lv))}.`;
+      } else {
+        why    = `Your model sees ${fmtMoney(Math.round(lv))} vs. ADP of ${fmtMoney(p.cost)} — ${pct}% above market. Could be a steal if rivals sleep.`;
+        action = `Open at $1. If it stalls under ${fmtMoney(Math.round(lv * 0.85))}, grab it.`;
+      }
+      suggestions.push({ archetype:'FOG', playerId:p.id, why, action });
+    }
+  }
+
+  /* ── CHAFF: cheap filler while others hoard budget ── */
+  {
+    const best = available
+      .filter(p => {
+        const lv = liveValues.get(p.id) ?? p.cost;
+        return lv <= 13 && myNeedPos.has(p.pos);
+      })
+      .map(p => {
+        const lv    = liveValues.get(p.id) ?? p.cost;
+        const score = (13 - lv) / 13;
+        return { p, lv, score };
+      })
+      .sort((a, b) => b.score - a.score)[0];
+    if(best){
+      const { p, lv } = best;
+      const safeMax = Math.max(2, Math.min(Math.round(lv * 1.1), Math.round(budget * 0.06)));
+      suggestions.push({
+        archetype: 'CHAFF',
+        playerId:  p.id,
+        why:    `Low-cost ${p.pos} filler. Other managers are hoarding budget — nobody wants to spend on this yet.`,
+        action: `Open at $1. You can go to ${fmtMoney(safeMax)} without hurting your plan.`,
+      });
+    }
+  }
+
+  CURRENT_NOMINATIONS = suggestions;
+}
+
 // Tier Radar: unlike the Queen/Knights recommendation (which is about YOUR
 // next pick), this tracks positional supply league-wide -- which tiers are
 // thinning, running out, or draining unevenly -- so a strategy shift shows up
@@ -2821,6 +3001,42 @@ function benchRowHTML(suggestion){
   </div>`;
 }
 
+function renderNominationSuggestions(){
+  const el = document.getElementById('nominationSuggestions');
+  if(!el) return;
+  if(!CURRENT_NOMINATIONS.length){ el.style.display = 'none'; el.innerHTML = ''; return; }
+  el.style.display = '';
+
+  const meta = {
+    BOMB:   { label:'Bomb',   tagline:'Drain their budget',           cls:'nom-bomb'   },
+    TARGET: { label:'Target', tagline:'Player you want',              cls:'nom-target' },
+    FOG:    { label:'Fog',    tagline:'Exploit the price gap',        cls:'nom-fog'    },
+    CHAFF:  { label:'Chaff',  tagline:'Cheap fill while others hoard',cls:'nom-chaff'  },
+  };
+
+  const cards = CURRENT_NOMINATIONS.map(nom => {
+    const p = ALL_PLAYERS[nom.playerId];
+    if(!p) return '';
+    const m   = meta[nom.archetype];
+    const sub = `${p.pos}${p.team && p.team !== p.name ? ' &middot; '+p.team : ''}`;
+    return `
+      <div class="nom-card ${m.cls}">
+        <div class="nom-header">
+          <span class="nom-badge">${m.label}</span>
+          <span class="nom-tagline">${m.tagline}</span>
+        </div>
+        <div class="nom-player">
+          <span class="nom-name">${p.name}</span>
+          <span class="nom-sub">${sub}</span>
+        </div>
+        <p class="nom-why">${nom.why}</p>
+        <p class="nom-action">${nom.action}</p>
+      </div>`;
+  }).join('');
+
+  el.innerHTML = `<div class="nom-section-label">Nominate</div><div class="nom-cards">${cards}</div>`;
+}
+
 function renderBenchPanel(slots, takenIds, liveValues){
   const el = document.getElementById('benchPanel');
   if(!el) return;
@@ -2991,10 +3207,13 @@ function renderDraftPanel(){
 
   if(anyNeed){
     computeQueen(needs, Math.max(0, budgetForStarters), takenIds, LIVE_VALUES);
+    computeNominationSuggestions(needs, budgetForStarters, takenIds, LIVE_VALUES, result.picks);
   } else {
     CURRENT_QUEEN = null;
+    CURRENT_NOMINATIONS = [];
   }
   renderQueenCallout(!anyNeed);
+  renderNominationSuggestions();
 
   // League-wide tier scarcity -- computed off everyone's picks, not just mine,
   // so it stays meaningful even after my own lineup is full.
