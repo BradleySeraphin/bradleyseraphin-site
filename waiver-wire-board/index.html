@@ -3210,14 +3210,26 @@ function evaluateNomination(playerId){
   const budget = Math.max(0, budgetForStarters);
   const liveCost = LIVE_VALUES.get(playerId) ?? player.cost;
 
-  // Zero open starter slots for this position (including FLEX, for RB/WR/TE)
-  // means no price -- however low -- would change your optimal STARTING
-  // total, so it's honest to say that plainly instead of printing a number
-  // that looks like real signal but isn't. (Still worth a look on the
-  // Recommended Bench for handcuff/value reasons -- just a different question.)
+  // Zero open starter slots for this position -- compute bench walk-away
+  // instead of a dead-end dismissal. A top player going cheap can still be
+  // worth bench budget; bench value ≈ live value × tier discount, capped by
+  // what you can actually afford given remaining slots.
   const posNeed = FLEX_POS.has(player.pos) ? (needs[player.pos] + needs.FLEX) : (needs[player.pos] || 0);
   if(posNeed <= 0){
-    return { player, status: 'no-need', liveCost };
+    const tier = player.tier ?? 3;
+    const discount = tier <= 0 ? 0.70 : tier === 1 ? 0.65 : tier === 2 ? 0.60 : 0.55;
+    const rawBench = Math.round(liveCost * discount);
+    const anyNeed  = Object.values(needs).some(v => v > 0);
+    const totalRem = Math.max(0, LEAGUE.budgetPerTeam - spent);
+    const benchBudget = anyNeed ? benchRemaining : totalRem;
+    const maxBid   = Math.max(1, benchBudget - Math.max(0, benchRemaining - 1));
+    const benchWalkAway = Math.min(rawBench, maxBid);
+    // Handcuff signal: do I already have a player at the same pos & team?
+    const handcuffOf = Object.keys(draftState.mine)
+      .map(id => ALL_PLAYERS[id])
+      .filter(Boolean)
+      .find(p => p.pos === player.pos && p.team === player.team && p.id !== player.id)?.name ?? null;
+    return { player, status: 'no-need', liveCost, benchWalkAway, handcuffOf };
   }
 
   const avail = Object.values(ALL_PLAYERS)
@@ -3303,10 +3315,31 @@ function renderNomination(){
     return;
   }
   if(status === 'no-need'){
+    const { liveCost, benchWalkAway, handcuffOf } = evalResult;
+    const isSteal   = benchWalkAway >= 8;
+    const isMarginal = benchWalkAway >= 4 && benchWalkAway < 8;
+    const contextNote = handcuffOf
+      ? `Backs up your ${handcuffOf}. `
+      : '';
+    const actionNote = !isSteal && !isMarginal
+      ? 'Low bench upside — pass unless essentially free.'
+      : isSteal
+      ? `Steal territory below ${fmtMoney(benchWalkAway)} — worth the bench spot.`
+      : `Marginal bench value — grab only if budget allows below ${fmtMoney(benchWalkAway)}.`;
     resultEl.className = 'nominate-result';
-    resultEl.innerHTML = `<div class="nominate-name-row"><span class="nominate-name">${player.name}</span><span class="nominate-sub">${sub}</span><button class="draft-x nom-clear-btn" data-action="clear-nom" title="Clear nomination">&times;</button></div>
-      <div class="nominate-note">You have no open starting slot at ${player.pos} right now, so no price would change your projected starting total. Check Recommended Bench if you want them as a handcuff or value stash instead.</div>
+    resultEl.innerHTML = `
+      <div class="nominate-name-row">
+        <span class="nominate-name">${player.name}</span>
+        <span class="nominate-sub">${sub} &middot; ${player.fpts} pts</span>
+        <button class="draft-x nom-clear-btn" data-action="clear-nom" title="Clear nomination">&times;</button>
+      </div>
+      <div class="nominate-stats">
+        <div class="stat"><span class="label">Live value</span><span class="value">${fmtMoney(liveCost)}</span></div>
+        <div class="stat"><span class="label">Bench walk-away</span><span class="value warn">${fmtMoney(benchWalkAway)}</span></div>
+      </div>
+      <div class="nominate-note">${contextNote}${actionNote}</div>
       ${nomBtns}`;
+    renderRecentPicks();
     return;
   }
 
