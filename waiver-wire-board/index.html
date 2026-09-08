@@ -3959,6 +3959,12 @@ function parseAndValidateCSV(text){
   openBtn.addEventListener('click', openModal);
   overlay.addEventListener('click', (e) => { if(e.target === overlay) closeModal(); });
 
+  zone.addEventListener('click', (e) => {
+    // Don't double-fire if the click was directly on the label or input
+    if(e.target === fileInput) return;
+    fileInput.click();
+  });
+
   fileInput.addEventListener('change', () => handleFile(fileInput.files[0]));
 
   zone.addEventListener('dragover', (e) => { e.preventDefault(); zone.classList.add('drag-over'); });
