@@ -3669,7 +3669,11 @@ document.getElementById('draftBackBtn').addEventListener('click', undoLast);
   });
 
   input.addEventListener('keydown', (e) => {
-    if(e.key === 'Escape'){ closeDropdown(); input.blur(); }
+    if(e.key === 'Escape'){ closeDropdown(); input.blur(); return; }
+    if(e.key === 'Enter'){
+      const rows = dropdown.querySelectorAll('.nominate-option[data-id]');
+      if(rows.length === 1){ e.preventDefault(); pick(rows[0].dataset.id); }
+    }
   });
 
   // deferred so a dropdown-row mousedown lands first
