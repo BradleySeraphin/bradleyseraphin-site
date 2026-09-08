@@ -837,8 +837,8 @@ tbody td:last-child{
 .draft-panel{
   display:flex;
   flex-direction:column;
-  gap:18px;
-  margin-bottom:18px;
+  gap:10px;
+  margin-bottom:12px;
 }
 .draft-summary{
   display:flex;
@@ -863,7 +863,7 @@ tbody td:last-child{
   background:linear-gradient(135deg, var(--accent-soft), var(--surface));
   border:1px solid var(--accent);
   border-radius:10px;
-  padding:12px 16px;
+  padding:8px 14px;
   box-shadow:var(--shadow);
 }
 .queen-callout.empty{
@@ -1049,52 +1049,75 @@ tbody td:last-child{
 .bishop-stats .value.warn{ color:var(--warn); }
 .bishop-stats .value.good{ color:var(--accent); }
 
-/* ── Nomination Suggestions ───────────────────────────── */
-#nominationSuggestions{ margin-bottom:12px; }
+/* ── Nomination Suggestions (compact row layout) ──────── */
+#nominationSuggestions{ margin-bottom:4px; }
 .nom-section-label{
   font-size:10px;
   font-weight:700;
   letter-spacing:.08em;
   text-transform:uppercase;
   color:var(--text-faint);
-  margin-bottom:8px;
+  margin-bottom:4px;
 }
-.nom-cards{ display:flex; flex-direction:column; gap:8px; }
+.nom-cards{ display:flex; flex-direction:column; gap:3px; }
 .nom-card{
+  display:grid;
+  grid-template:
+    "badge info action" auto
+    ".     why  why   " auto
+    / auto  1fr  auto;
+  column-gap:9px;
+  row-gap:1px;
   background:var(--surface);
   border:1px solid var(--border);
   border-left:3px solid var(--border);
-  border-radius:8px;
-  padding:10px 12px;
+  border-radius:6px;
+  padding:7px 10px 7px 8px;
 }
 .nom-card.nom-bomb   { border-left-color:var(--warn); }
 .nom-card.nom-target { border-left-color:var(--accent); }
 .nom-card.nom-fog    { border-left-color:#8a63a8; }
 .nom-card.nom-chaff  { border-left-color:var(--text-faint); }
-.nom-header{ display:flex; align-items:center; gap:8px; margin-bottom:4px; }
 .nom-badge{
-  font-size:9px;
+  grid-area:badge;
+  align-self:center;
+  font-size:8.5px;
   font-weight:800;
   letter-spacing:.1em;
   text-transform:uppercase;
-  padding:2px 6px;
+  padding:2px 5px;
   border-radius:4px;
   background:var(--surface-2);
   color:var(--text-faint);
+  white-space:nowrap;
 }
 .nom-card.nom-bomb   .nom-badge{ color:var(--warn);   background:var(--warn-soft); }
 .nom-card.nom-target .nom-badge{ color:var(--accent); background:var(--accent-soft); }
 .nom-card.nom-fog    .nom-badge{ color:#8a63a8;        background:rgba(138,99,168,.12); }
-.nom-tagline{ font-size:11px; color:var(--text-faint); }
-.nom-player{ display:flex; align-items:baseline; gap:6px; margin-bottom:3px; }
-.nom-name{ font-size:15px; font-weight:700; color:var(--text); }
-.nom-sub{ font-size:11px; color:var(--text-dim); }
-.nom-why{ font-size:12px; color:var(--text-dim); margin:0 0 4px 0; line-height:1.4; }
-.nom-action{ font-size:12px; font-weight:600; margin:0; color:var(--text); }
+.nom-info{ grid-area:info; display:flex; align-items:baseline; gap:5px; min-width:0; }
+.nom-name{ font-size:13.5px; font-weight:700; color:var(--text); white-space:nowrap; }
+.nom-sub{ font-size:11px; color:var(--text-dim); white-space:nowrap; }
+.nom-action{
+  grid-area:action;
+  align-self:center;
+  font-size:11.5px;
+  font-weight:600;
+  white-space:nowrap;
+  color:var(--text-dim);
+}
 .nom-card.nom-bomb   .nom-action{ color:var(--warn); }
 .nom-card.nom-target .nom-action{ color:var(--accent); }
 .nom-card.nom-fog    .nom-action{ color:#8a63a8; }
-.nom-card.nom-chaff  .nom-action{ color:var(--text-faint); }
+.nom-why{
+  grid-area:why;
+  font-size:10.5px;
+  color:var(--text-faint);
+  line-height:1.3;
+  margin:0;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
 
 .tier-radar{
   display:flex;
@@ -1240,12 +1263,12 @@ tbody td:last-child{
   background:var(--surface);
   border:1px solid var(--border);
   border-radius:10px;
-  padding:12px 16px;
-  margin-bottom:14px;
+  padding:8px 14px;
+  margin-bottom:6px;
   box-shadow:var(--shadow);
   display:flex;
   flex-direction:column;
-  gap:10px;
+  gap:6px;
 }
 .nominate-header{
   display:flex;
@@ -3202,16 +3225,13 @@ function renderNominationSuggestions(){
     const sub = `${p.pos}${p.team && p.team !== p.name ? ' &middot; '+p.team : ''}`;
     return `
       <div class="nom-card ${m.cls}">
-        <div class="nom-header">
-          <span class="nom-badge">${m.label}</span>
-          <span class="nom-tagline">${m.tagline}</span>
-        </div>
-        <div class="nom-player">
+        <span class="nom-badge">${m.label}</span>
+        <div class="nom-info">
           <span class="nom-name">${p.name}</span>
           <span class="nom-sub">${sub}</span>
         </div>
+        <span class="nom-action">${nom.action}</span>
         <p class="nom-why">${nom.why}</p>
-        <p class="nom-action">${nom.action}</p>
       </div>`;
   }).join('');
 
