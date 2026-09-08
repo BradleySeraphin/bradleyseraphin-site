@@ -1246,6 +1246,10 @@ tbody td:last-child{
 .roster-player.empty{color:var(--text-faint); font-style:italic; font-weight:400;}
 .roster-fpts{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--accent); width:44px; text-align:right;}
 .roster-price{font-family:"IBM Plex Mono",monospace; font-size:12px; color:var(--text-dim); width:36px; text-align:right;}
+.roster-bench-col{width:32px; flex-shrink:0; text-align:right;}
+.bench-flag-btn{font-size:10px; font-weight:700; padding:1px 5px; border-radius:4px; border:1px solid var(--border); background:transparent; color:var(--text-faint); cursor:pointer; line-height:1.6;}
+.bench-flag-btn:hover{border-color:var(--warn); color:var(--warn);}
+.bench-flag-btn.active{border-color:var(--accent); color:var(--accent); background:color-mix(in srgb, var(--accent) 12%, transparent);}
 
 .roster-row.bench-row{align-items:flex-start;}
 .roster-player-col{display:flex; flex-direction:column; gap:1px; flex:1; min-width:0;}
@@ -2392,6 +2396,10 @@ function assignSlots(){
   const slots = {QB:null, RB1:null, RB2:null, WR1:null, WR2:null, FLEX:null, TE:null, K:null, DEF:null};
   const bench = [];
   entries.forEach(p => {
+    // Bench-locked players skip starter slots entirely
+    if(draftState.mine[p.id]?.bench){
+      bench.push(p); return;
+    }
     if(p.pos === 'QB' && !slots.QB){ slots.QB = p; return; }
     if(p.pos === 'RB' && !slots.RB1){ slots.RB1 = p; return; }
     if(p.pos === 'RB' && !slots.RB2){ slots.RB2 = p; return; }
@@ -3548,15 +3556,18 @@ function renderDraftPanel(){
       <span class="roster-player ${p ? '' : 'empty'}">${p ? p.name + ((p.team && p.team !== p.name) ? ' · '+p.team : '') : '— open —'}</span>
       <span class="roster-fpts">${p ? p.fpts : ''}</span>
       <span class="roster-price">${p ? fmtMoney(p.price) : ''}</span>
+      <span class="roster-bench-col">${p ? `<button class="bench-flag-btn" data-action="toggle-bench" data-id="${p.id}" title="Lock to bench">BN</button>` : ''}</span>
     </div>`;
   });
   for(let i = 0; i < LEAGUE.benchSlots; i++){
     const p = bench[i];
+    const isBenchLocked = p && draftState.mine[p.id]?.bench;
     rosterHTML += `<div class="roster-row">
       <span class="roster-slot">BN${i+1}</span>
       <span class="roster-player ${p ? '' : 'empty'}">${p ? p.name + ((p.team && p.team !== p.name) ? ' · '+p.team : '') : '— open —'}</span>
       <span class="roster-fpts">${p ? p.fpts : ''}</span>
       <span class="roster-price">${p ? fmtMoney(p.price) : ''}</span>
+      <span class="roster-bench-col">${isBenchLocked ? `<button class="bench-flag-btn active" data-action="toggle-bench" data-id="${p.id}" title="Allow as starter">ST</button>` : ''}</span>
     </div>`;
   }
   rosterList.innerHTML = rosterHTML;
@@ -3619,6 +3630,20 @@ function undoLast(){
 loadDraftState();
 updateBackButtonState();
 renderDraftPanel();
+
+// Bench-lock toggle: click "BN" on a starter to force them to bench,
+// click "ST" on a bench-locked player to restore normal slot assignment.
+document.getElementById('myRosterList').addEventListener('click', (e) => {
+  const btn = e.target.closest('[data-action="toggle-bench"]');
+  if(!btn) return;
+  const id = btn.dataset.id;
+  if(!draftState.mine[id]) return;
+  draftState.mine[id].bench = !draftState.mine[id].bench;
+  saveDraftState();
+  renderDraftPanel();
+  render();
+  renderNomination();
+});
 
 /* =================== end Draft Tracker =================== */
 
