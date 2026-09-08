@@ -1355,6 +1355,45 @@ tbody td:last-child{
 .nominate-stats .value.warn{color:var(--warn);}
 .nominate-actions{display:flex; gap:8px; margin-top:14px;}
 
+/* ── Recent Picks ─────────────────────────────────────── */
+#recentPicks{
+  border-top:1px solid var(--border);
+  padding-top:10px;
+  margin-top:6px;
+}
+.recent-picks-label{
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--text-faint);
+  margin-bottom:6px;
+}
+.recent-pick-row{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:5px 0;
+  border-top:1px solid var(--border);
+}
+.recent-pick-row:first-of-type{ border-top:none; }
+.recent-pick-info{
+  flex:1;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:1px;
+}
+.recent-pick-name{
+  font-size:13px;
+  font-weight:600;
+  color:var(--text);
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.recent-pick-sub{ font-size:11px; color:var(--text-dim); }
+
 /* ---------- League Settings modal ---------- */
 .settings-btn{
   font-family:"IBM Plex Sans",sans-serif;
@@ -1573,6 +1612,7 @@ tbody td:last-child{
       </div>
     </div>
     <div class="nominate-result" id="nominateResult" hidden></div>
+    <div id="recentPicks" style="display:none"></div>
   </div>
 
   <div class="controls" id="controlsBar">
@@ -3191,13 +3231,49 @@ function evaluateNomination(playerId){
   return { player, status: 'ok', liveCost, walkAwayPrice };
 }
 
+function renderRecentPicks(){
+  const el = document.getElementById('recentPicks');
+  if(!el) return;
+
+  const all = [
+    ...Object.entries(draftState.mine).map(([id, info]) => ({ id, who:'mine', ...info })),
+    ...Object.entries(draftState.opp).map(([id,  info]) => ({ id, who:'opp',  ...info })),
+  ].sort((a, b) => b.seq - a.seq).slice(0, 3);
+
+  if(!all.length){ el.style.display = 'none'; el.innerHTML = ''; return; }
+  el.style.display = '';
+
+  const rows = all.map(({ id, who, price }) => {
+    const p = ALL_PLAYERS[id];
+    if(!p) return '';
+    const idAttr = escAttr(id);
+    const sub = `${p.pos}${p.team && p.team !== p.name ? ' &middot; '+p.team : ''}`;
+    return `
+      <div class="recent-pick-row">
+        <span class="draft-badge draft-${who}">${who === 'mine' ? 'MINE' : 'OPP'}</span>
+        <div class="recent-pick-info">
+          <span class="recent-pick-name">${p.name}</span>
+          <span class="recent-pick-sub">${sub}</span>
+        </div>
+        <div class="draft-price-stepper">
+          <button class="draft-price-step-btn" data-action="recent-dec" data-id="${idAttr}" data-who="${who}">&minus;</button>
+          <span class="draft-price-static">$${price}</span>
+          <button class="draft-price-step-btn" data-action="recent-inc" data-id="${idAttr}" data-who="${who}">+</button>
+        </div>
+        <button class="draft-x" data-action="recent-undo" data-id="${idAttr}" title="Undo pick">&times;</button>
+      </div>`;
+  }).join('');
+
+  el.innerHTML = `<div class="recent-picks-label">Recent Picks</div>${rows}`;
+}
+
 function renderNomination(){
   const resultEl = document.getElementById('nominateResult');
   if(!resultEl) return;
-  if(!CURRENT_NOMINATION_ID){ resultEl.hidden = true; return; }
+  if(!CURRENT_NOMINATION_ID){ resultEl.hidden = true; renderRecentPicks(); return; }
 
   const evalResult = evaluateNomination(CURRENT_NOMINATION_ID);
-  if(!evalResult){ resultEl.hidden = true; CURRENT_NOMINATION_ID = null; return; }
+  if(!evalResult){ resultEl.hidden = true; CURRENT_NOMINATION_ID = null; renderRecentPicks(); return; }
 
   resultEl.hidden = false;
   const { player, status } = evalResult;
@@ -3214,6 +3290,7 @@ function renderNomination(){
         <button class="draft-x" data-action="undo" data-id="${idAttr}" title="Undo pick">&times;</button>
         <button class="nom-confirm-btn" data-action="clear-nom" title="Confirm price and clear nomination">&#10003;</button>
       </div>`;
+    renderRecentPicks();
     return;
   }
   const nomBtns = `<div class="nominate-actions"><button class="draft-btn draft-btn-me" data-nom-action="me">Mine</button><button class="draft-btn draft-btn-opp" data-nom-action="opp">Theirs</button></div>`;
@@ -3242,6 +3319,7 @@ function renderNomination(){
     </div>
     ${nomBtns}
   `;
+  renderRecentPicks();
 }
 
 function renderDraftPanel(){
@@ -4189,6 +4267,29 @@ document.getElementById('draftBackBtn').addEventListener('click', undoLast);
       setTimeout(() => { exitPriceEdit(id); renderNomination(); }, 0);
     }
   });
+
+  // Recent Picks: +/- and undo buttons for the last 3 drafted players
+  const recentPicks = document.getElementById('recentPicks');
+  if(recentPicks){
+    recentPicks.addEventListener('click', (e) => {
+      const btn = e.target.closest('[data-action]');
+      if(!btn) return;
+      const action = btn.dataset.action;
+      const id     = btn.dataset.id;
+      const who    = btn.dataset.who;
+      if(action === 'recent-dec' || action === 'recent-inc'){
+        const entry = draftState[who]?.[id];
+        if(entry){
+          const delta = action === 'recent-inc' ? 1 : -1;
+          repriceDraft(id, Math.max(1, entry.price + delta), who);
+          renderRecentPicks();
+        }
+      } else if(action === 'recent-undo'){
+        unmarkDraft(id);
+        renderRecentPicks();
+      }
+    });
+  }
 })();
 
 switchSection('offense');
