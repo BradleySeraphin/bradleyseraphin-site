@@ -1323,6 +1323,23 @@ tbody td:last-child{
   margin-bottom:4px;
 }
 .nom-clear-btn{ margin-left:auto; flex-shrink:0; }
+.nom-confirm-btn{
+  border:none;
+  background:var(--accent);
+  color:#fff;
+  cursor:pointer;
+  font-size:18px;
+  font-weight:700;
+  width:36px;
+  height:36px;
+  border-radius:8px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+  line-height:1;
+}
+.nom-confirm-btn:hover{ opacity:.85; }
 .nominate-name{
   font-family:"Big Shoulders Display", sans-serif;
   font-weight:700;
@@ -3195,6 +3212,7 @@ function renderNomination(){
         <span class="draft-badge draft-${who === 'mine' ? 'mine' : 'opp'}">${who === 'mine' ? 'MINE' : 'OPP'}</span>
         ${priceControlHTML(CURRENT_NOMINATION_ID, idAttr, who, evalResult.price)}
         <button class="draft-x" data-action="undo" data-id="${idAttr}" title="Undo pick">&times;</button>
+        <button class="nom-confirm-btn" data-action="clear-nom" title="Confirm price and clear nomination">&#10003;</button>
       </div>`;
     return;
   }
