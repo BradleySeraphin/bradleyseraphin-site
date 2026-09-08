@@ -950,6 +950,77 @@ tbody td:last-child{
   margin-right:4px;
   font-size:12px;
 }
+/* ---------- King / Bishop callout ---------- */
+.queen-callout.king{
+  background:linear-gradient(135deg, var(--warn-soft), var(--surface));
+  border-color:var(--warn);
+}
+.queen-callout.king .queen-crown-lg{ color:var(--warn); }
+.queen-callout.has-bishop{
+  flex-direction:column;
+  align-items:stretch;
+}
+.queen-callout.has-bishop .queen-top{
+  display:flex;
+  align-items:center;
+  gap:14px;
+}
+.bishop-divider{
+  height:1px;
+  background:var(--border);
+  margin:4px 0;
+}
+.bishop-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.bishop-icon{
+  font-size:22px;
+  line-height:1;
+  color:var(--warn);
+  flex-shrink:0;
+}
+.bishop-body{
+  display:flex;
+  flex-direction:column;
+  gap:1px;
+  flex:1;
+  min-width:130px;
+}
+.bishop-eyebrow{
+  font-size:10.5px;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  color:var(--text-faint);
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+.bishop-badge{
+  font-size:9px;
+  font-weight:700;
+  padding:1px 5px;
+  border-radius:3px;
+  letter-spacing:.04em;
+  text-transform:uppercase;
+}
+.bishop-badge.execute{ background:var(--accent-soft); color:var(--accent); }
+.bishop-badge.deal{ background:var(--warn-soft); color:var(--warn); }
+.bishop-badge.monitor{ background:var(--surface-2); color:var(--text-faint); }
+.bishop-name{
+  font-family:"Big Shoulders Display",sans-serif;
+  font-weight:700;
+  font-size:16px;
+  color:var(--text);
+}
+.bishop-sub{ font-size:11px; color:var(--text-dim); }
+.bishop-stats{ display:flex; gap:14px; }
+.bishop-stats .stat{ display:flex; flex-direction:column; gap:2px; min-width:80px; }
+.bishop-stats .label{ font-size:10.5px; text-transform:uppercase; letter-spacing:.04em; color:var(--text-faint); }
+.bishop-stats .value{ font-family:"IBM Plex Mono",monospace; font-size:15px; font-weight:700; color:var(--text); }
+.bishop-stats .value.warn{ color:var(--warn); }
+.bishop-stats .value.good{ color:var(--accent); }
 
 .tier-radar{
   display:flex;
@@ -1851,6 +1922,7 @@ let draftState = { mine:{}, opp:{}, nextSeq:1 };
 let LIVE_VALUES = new Map();
 let CURRENT_QUEEN = null; // {id, delta, liveCost, walkAwayPrice} | null -- see computeQueen()
 let CURRENT_KNIGHTS = []; // [{id, liveCost, walkAwayPrice}, ...] -- co-equal top targets when there's no single Queen
+let CURRENT_BISHOP = null; // {id, liveValue, auctionValue, ratio, walkAwayPrice} | null -- see computeQueen()
 let LAST_ACTION_ID = null; // id of the player whose draft cell should flash "locked in" on this render pass
 let EDITING_PRICE_ID = null; // id of the one locked-in pick, if any, whose price is currently unlocked for editing
 let CURRENT_TIER_INSIGHTS = []; // [{sev, text}, ...] -- see computeTierRadar()
@@ -2277,7 +2349,7 @@ function optimizeRemaining(needs, budget, takenIds, liveValues){
   budget = Math.max(0, budget);
   const avail = Object.values(ALL_PLAYERS)
     .filter(p => p.fpts != null && !takenIds.has(p.id))
-    .map(p => ({...p, cost: liveValues.get(p.id) ?? p.cost}));
+    .map(p => ({...p, cost: Math.max(liveValues.get(p.id) ?? p.cost, p.cost)}));
   const solves = solveSubCurves(needs, budget, avail);
   return combineSolves(needs, budget, solves);
 }
@@ -2311,12 +2383,13 @@ const KNIGHT_COUNT = 3;
 function computeQueen(needs, budget, takenIds, liveValues){
   const avail = Object.values(ALL_PLAYERS)
     .filter(p => p.fpts != null && !takenIds.has(p.id))
-    .map(p => ({...p, cost: liveValues.get(p.id) ?? p.cost}));
+    .map(p => ({...p, cost: Math.max(liveValues.get(p.id) ?? p.cost, p.cost)}));
   const baseSolves = solveSubCurves(needs, budget, avail);
   const baseline = combineSolves(needs, budget, baseSolves);
 
-  if(!baseline.picks.length){ CURRENT_QUEEN = null; CURRENT_KNIGHTS = []; return; }
+  if(!baseline.picks.length){ CURRENT_QUEEN = null; CURRENT_KNIGHTS = []; CURRENT_BISHOP = null; return; }
 
+  // --- Queen ---
   let best = null, bestDelta = -Infinity;
   baseline.picks.forEach(p => {
     const withoutTotal = solveWithout(p, needs, budget, avail, baseSolves).totalFpts;
@@ -2327,29 +2400,38 @@ function computeQueen(needs, budget, takenIds, liveValues){
   if(best && bestDelta > 0){
     const liveCost = liveValues.get(best.id) ?? best.cost;
     const walkAwayPrice = findWalkAwayPrice(best, needs, budget, avail, baseSolves, liveCost);
-    CURRENT_QUEEN = {
-      id: best.id,
-      delta: Math.round(bestDelta * 10) / 10,
-      liveCost,
-      walkAwayPrice,
-    };
+    CURRENT_QUEEN = { id: best.id, delta: Math.round(bestDelta * 10) / 10, liveCost, walkAwayPrice };
     CURRENT_KNIGHTS = [];
-    return;
+  } else {
+    CURRENT_QUEEN = null;
+    const ranked = baseline.picks.slice().sort((a, b) => b.fpts - a.fpts).slice(0, KNIGHT_COUNT);
+    CURRENT_KNIGHTS = ranked.map(p => {
+      const liveCost = liveValues.get(p.id) ?? p.cost;
+      const walkAwayPrice = findWalkAwayPrice(p, needs, budget, avail, baseSolves, liveCost);
+      return { id: p.id, liveCost, walkAwayPrice };
+    });
   }
 
-  // No single player is uniquely irreplaceable right now (every removal-test
-  // came back at a dead-even delta) -- that's not "nothing to report", it
-  // means several of your current picks are tied for best. Surface the top
-  // few by raw projection instead, each with its own real walk-away price
-  // (findWalkAwayPrice makes no assumption of uniqueness -- it's just "what's
-  // the most worth paying for this one player", so it's equally valid here).
-  CURRENT_QUEEN = null;
-  const ranked = baseline.picks.slice().sort((a, b) => b.fpts - a.fpts).slice(0, KNIGHT_COUNT);
-  CURRENT_KNIGHTS = ranked.map(p => {
-    const liveCost = liveValues.get(p.id) ?? p.cost;
-    const walkAwayPrice = findWalkAwayPrice(p, needs, budget, avail, baseSolves, liveCost);
-    return { id: p.id, liveCost, walkAwayPrice };
-  });
+  // --- Bishop: pick in optimal lineup with best rawLiveValue / auctionValue ratio ---
+  const bishopCandidates = baseline.picks.map(p => {
+    const rawLive = liveValues.get(p.id) ?? p.cost;
+    const market  = ALL_PLAYERS[p.id]?.cost ?? p.cost;
+    return { p, rawLive, market, ratio: market > 0 ? rawLive / market : 0 };
+  }).sort((a, b) => b.ratio - a.ratio);
+
+  if(bishopCandidates.length){
+    const bc = bishopCandidates[0];
+    const walkAwayPrice = findWalkAwayPrice(bc.p, needs, budget, avail, baseSolves, bc.rawLive);
+    CURRENT_BISHOP = {
+      id: bc.p.id,
+      liveValue:    Math.round(bc.rawLive),
+      auctionValue: Math.round(bc.market),
+      ratio:        bc.ratio,
+      walkAwayPrice,
+    };
+  } else {
+    CURRENT_BISHOP = null;
+  }
 }
 
 // Tier Radar: unlike the Queen/Knights recommendation (which is about YOUR
@@ -2494,36 +2576,98 @@ function findWalkAwayPrice(player, needs, budget, avail, baseSolves, baseCost){
   return answer;
 }
 
+function bishopHTML(){
+  if(!CURRENT_BISHOP) return '';
+  const p = ALL_PLAYERS[CURRENT_BISHOP.id];
+  if(!p) return '';
+  const sub = `${p.pos}${(p.team && p.team !== p.name) ? ' &middot; '+p.team : ''}`;
+  const r = CURRENT_BISHOP.ratio;
+  const badgeCls  = r >= 0.90 ? 'execute' : r >= 0.75 ? 'deal' : 'monitor';
+  const badgeTxt  = r >= 0.90 ? 'Execute now' : r >= 0.75 ? 'Deal possible' : 'Monitor';
+  const mktCls    = r >= 0.90 ? 'good' : r >= 0.75 ? 'warn' : '';
+  return `
+    <div class="bishop-divider"></div>
+    <div class="bishop-row">
+      <span class="bishop-icon">&#9821;</span>
+      <div class="bishop-body">
+        <span class="bishop-eyebrow">Your Bishop <span class="bishop-badge ${badgeCls}">${badgeTxt}</span></span>
+        <span class="bishop-name">${p.name}</span>
+        <span class="bishop-sub">${sub}</span>
+      </div>
+      <div class="bishop-stats">
+        <div class="stat"><span class="label">Walk-away</span><span class="value warn">${fmtMoney(CURRENT_BISHOP.walkAwayPrice)}</span></div>
+        <div class="stat"><span class="label">Market</span><span class="value ${mktCls}">${fmtMoney(CURRENT_BISHOP.auctionValue)}</span></div>
+      </div>
+    </div>`;
+}
+
 function renderQueenCallout(lineupComplete){
   const el = document.getElementById('queenCallout');
   if(!el) return;
 
+  const isKing = CURRENT_QUEEN && CURRENT_BISHOP && CURRENT_QUEEN.id === CURRENT_BISHOP.id;
+
   if(CURRENT_QUEEN){
     const p = ALL_PLAYERS[CURRENT_QUEEN.id];
     if(!p){ el.className = 'queen-callout empty'; el.innerHTML = ''; return; }
-    el.className = 'queen-callout';
-    const name = p.name;
     const sub = `${p.pos}${(p.team && p.team !== p.name) ? ' &middot; '+p.team : ''}`;
-    el.innerHTML = `
-      <span class="queen-crown-lg">&#9819;</span>
-      <div class="queen-body">
-        <span class="queen-eyebrow">Your Queen</span>
-        <span class="queen-name">${name}</span>
-        <span class="queen-sub">${sub}</span>
-      </div>
-      <div class="queen-stats">
-        <div class="stat"><span class="label">Marginal value</span><span class="value accent">+${CURRENT_QUEEN.delta} pts</span></div>
-        <div class="stat"><span class="label">Walk-away price</span><span class="value warn">${fmtMoney(CURRENT_QUEEN.walkAwayPrice)}</span></div>
-      </div>
-    `;
+
+    if(isKing){
+      const r = CURRENT_BISHOP.ratio;
+      const badgeCls = r >= 0.90 ? 'execute' : r >= 0.75 ? 'deal' : 'monitor';
+      const badgeTxt = r >= 0.90 ? 'Execute now' : r >= 0.75 ? 'Deal possible' : 'Monitor';
+      const mktCls   = r >= 0.90 ? 'good' : r >= 0.75 ? 'warn' : '';
+      el.className = 'queen-callout king';
+      el.innerHTML = `
+        <span class="queen-crown-lg">&#9818;</span>
+        <div class="queen-body">
+          <span class="queen-eyebrow">Your King <span class="bishop-badge ${badgeCls}">${badgeTxt}</span></span>
+          <span class="queen-name">${p.name}</span>
+          <span class="queen-sub">${sub}</span>
+        </div>
+        <div class="queen-stats">
+          <div class="stat"><span class="label">Marginal value</span><span class="value accent">+${CURRENT_QUEEN.delta} pts</span></div>
+          <div class="stat"><span class="label">Walk-away</span><span class="value warn">${fmtMoney(CURRENT_QUEEN.walkAwayPrice)}</span></div>
+          <div class="stat"><span class="label">Market</span><span class="value ${mktCls}">${fmtMoney(CURRENT_BISHOP.auctionValue)}</span></div>
+        </div>`;
+      return;
+    }
+
+    const hasBishop = !!CURRENT_BISHOP;
+    el.className = 'queen-callout' + (hasBishop ? ' has-bishop' : '');
+    if(hasBishop){
+      el.innerHTML = `
+        <div class="queen-top">
+          <span class="queen-crown-lg">&#9819;</span>
+          <div class="queen-body">
+            <span class="queen-eyebrow">Your Queen</span>
+            <span class="queen-name">${p.name}</span>
+            <span class="queen-sub">${sub}</span>
+          </div>
+          <div class="queen-stats">
+            <div class="stat"><span class="label">Marginal value</span><span class="value accent">+${CURRENT_QUEEN.delta} pts</span></div>
+            <div class="stat"><span class="label">Walk-away price</span><span class="value warn">${fmtMoney(CURRENT_QUEEN.walkAwayPrice)}</span></div>
+          </div>
+        </div>
+        ${bishopHTML()}`;
+    } else {
+      el.innerHTML = `
+        <span class="queen-crown-lg">&#9819;</span>
+        <div class="queen-body">
+          <span class="queen-eyebrow">Your Queen</span>
+          <span class="queen-name">${p.name}</span>
+          <span class="queen-sub">${sub}</span>
+        </div>
+        <div class="queen-stats">
+          <div class="stat"><span class="label">Marginal value</span><span class="value accent">+${CURRENT_QUEEN.delta} pts</span></div>
+          <div class="stat"><span class="label">Walk-away price</span><span class="value warn">${fmtMoney(CURRENT_QUEEN.walkAwayPrice)}</span></div>
+        </div>`;
+    }
     return;
   }
 
   if(CURRENT_KNIGHTS.length){
-    // No single player is uniquely irreplaceable, but that's not the same as
-    // nothing to report -- these are tied for best, each with its own real
-    // walk-away price. Pick any one; the model has no preference between them.
-    el.className = 'queen-callout knights';
+    el.className = 'queen-callout knights' + (CURRENT_BISHOP ? ' has-bishop' : '');
     const rows = CURRENT_KNIGHTS.map(k => {
       const p = ALL_PLAYERS[k.id];
       if(!p) return '';
@@ -2537,7 +2681,7 @@ function renderQueenCallout(lineupComplete){
         <div class="knight-price"><span class="label">Walk-away</span><span class="value warn">${fmtMoney(k.walkAwayPrice)}</span></div>
       </div>`;
     }).join('');
-    el.innerHTML = `<div class="knights-eyebrow">No single Queen right now &mdash; these are tied for your best next target</div>${rows}`;
+    el.innerHTML = `<div class="knights-eyebrow">No single Queen right now &mdash; these are tied for your best next target</div>${rows}${bishopHTML()}`;
     return;
   }
 
