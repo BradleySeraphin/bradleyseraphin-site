@@ -2162,6 +2162,7 @@ let CURRENT_BISHOP = null; // {id, liveValue, auctionValue, ratio, walkAwayPrice
 let CURRENT_NOMINATIONS = []; // [{archetype, playerId, why, action}, ...] -- see computeNominationSuggestions()
 let LAST_ACTION_ID = null; // id of the player whose draft cell should flash "locked in" on this render pass
 let EDITING_PRICE_ID = null; // id of the one locked-in pick, if any, whose price is currently unlocked for editing
+let STEPPER_ACTIVE = false;  // true while a +/- stepper click is being processed; suppresses focusout → exitPriceEdit
 let CURRENT_TIER_INSIGHTS = []; // [{sev, text}, ...] -- see computeTierRadar()
 
 function loadDraftState(){
@@ -2313,7 +2314,10 @@ function exitPriceEdit(id){
 }
 
 table.addEventListener('mousedown', (e) => {
-  if(e.target.closest('.draft-price-step-btn')) e.preventDefault();
+  if(e.target.closest('.draft-price-step-btn')){
+    e.preventDefault();
+    STEPPER_ACTIVE = true;
+  }
 });
 
 table.addEventListener('click', (e) => {
@@ -2335,6 +2339,8 @@ table.addEventListener('click', (e) => {
       const delta = action === 'price-inc' ? 1 : -1;
       repriceDraft(id, Math.max(1, entry.price + delta), who, true);
       render();
+      focusPriceInput(id);
+      setTimeout(() => { STEPPER_ACTIVE = false; }, 0);
     }
   }
 });
@@ -2377,8 +2383,7 @@ table.addEventListener('focusout', (e) => {
   if(e.target.matches('.draft-price-input')){
     const id = e.target.dataset.id;
     setTimeout(() => {
-      const activeEl = document.activeElement;
-      if(activeEl && activeEl.matches('.draft-price-step-btn') && activeEl.dataset.id === id) return;
+      if(STEPPER_ACTIVE) return;
       exitPriceEdit(id);
     }, 0);
   }
@@ -4366,7 +4371,10 @@ document.getElementById('draftBackBtn').addEventListener('click', undoLast);
   const nominateResult = document.getElementById('nominateResult');
 
   nominateResult.addEventListener('mousedown', (e) => {
-    if(e.target.closest('.draft-price-step-btn')) e.preventDefault();
+    if(e.target.closest('.draft-price-step-btn')){
+      e.preventDefault();
+      STEPPER_ACTIVE = true;
+    }
   });
 
   nominateResult.addEventListener('click', (e) => {
@@ -4406,6 +4414,9 @@ document.getElementById('draftBackBtn').addEventListener('click', undoLast);
         repriceDraft(id, Math.max(1, entry.price + delta), who, true);
         renderNomination();
         renderDraftPanel();
+        const inp = nominateResult.querySelector('.draft-price-input');
+        if(inp) inp.focus();
+        setTimeout(() => { STEPPER_ACTIVE = false; }, 0);
       }
     }
   });
@@ -4436,8 +4447,7 @@ document.getElementById('draftBackBtn').addEventListener('click', undoLast);
     if(e.target.matches('.draft-price-input')){
       const id = e.target.dataset.id;
       setTimeout(() => {
-        const activeEl = document.activeElement;
-        if(activeEl && activeEl.matches('.draft-price-step-btn') && activeEl.dataset.id === id) return;
+        if(STEPPER_ACTIVE) return;
         exitPriceEdit(id);
         renderNomination();
       }, 0);
