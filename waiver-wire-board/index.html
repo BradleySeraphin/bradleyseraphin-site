@@ -3748,7 +3748,7 @@ switchSection('offense');
 // then maps to the internal field name. Covers common export formats from
 // ESPN, Sleeper, FantasyPros, and general spreadsheet exports.
 const CSV_COL_MAP = {
-  name:'player', player:'player',
+  name:'player', player:'player', playername:'player',
   pos:'pos', position:'pos',
   team:'team',
   bye:'bye', byeweek:'bye',
@@ -3765,7 +3765,7 @@ const CSV_COL_MAP = {
   patt:'pAtt', passatt:'pAtt', passattempts:'pAtt',
   pyd:'pYd', passyd:'pYd', passingyards:'pYd',
   ptd:'pTd', passtd:'pTd', passingtd:'pTd',
-  tier:'tier',
+  tier:'tier', tiers:'tier', tierrank:'tier',
   tierlabel:'tierLabel',
   subtier:'subtier',
   adp:'adp',
@@ -3887,22 +3887,6 @@ function normalizePlayerRow(row){
   return out;
 }
 
-// Auto-assign tiers by fpts percentile when the CSV has no tier column.
-// Cuts: top 15% → T1, next 20% → T2, next 25% → T3, next 20% → T4, rest → T5.
-function autoAssignTierGroup(players){
-  if(!players.length) return;
-  const sorted = players.slice().sort((a,b) => (b.fpts ?? 0) - (a.fpts ?? 0));
-  const n = sorted.length;
-  const cuts = [0.15, 0.35, 0.60, 0.80];
-  sorted.forEach((p, i) => {
-    const pct = i / n;
-    const tier = pct < cuts[0] ? 1 : pct < cuts[1] ? 2 : pct < cuts[2] ? 3 : pct < cuts[3] ? 4 : 5;
-    p.tier = tier;
-    p.subtier = 1;
-    p.tierLabel = tier + 'A';
-  });
-}
-
 function parseAndValidateCSV(text){
   const raw = parseCSVText(text);
   if(!raw.length) return { error: 'No rows found in file.' };
@@ -3927,18 +3911,9 @@ function parseAndValidateCSV(text){
   const total = off.length + kick.length + def.length;
   if(total === 0) return { error: 'No valid player rows found. Check that Pos values are QB/RB/WR/TE/K/DEF and FPTS is numeric.' };
 
-  // If no players have tier data (CSV lacked a Tier column), auto-assign
-  // tiers by fpts percentile so grouped view and chart boundaries still work.
-  const hasAnyTier = [...off, ...kick, ...def].some(p => p.tier != null);
-  if(!hasAnyTier){
-    const byPos = {};
-    off.forEach(p => { (byPos[p.pos] = byPos[p.pos] || []).push(p); });
-    Object.values(byPos).forEach(group => autoAssignTierGroup(group));
-    autoAssignTierGroup(kick);
-    autoAssignTierGroup(def);
-  }
+  const noTiers = ![...off, ...kick, ...def].some(p => p.tier != null);
 
-  return { off, kick, def, skipped, total };
+  return { off, kick, def, skipped, total, noTiers };
 }
 
 (function setupUploadModal(){
@@ -3994,7 +3969,8 @@ function parseAndValidateCSV(text){
         preview.innerHTML =
           `<b>${result.total} players parsed</b>${skipNote}<br>` +
           `Offense: ${result.off.length} &nbsp;&middot;&nbsp; Kickers: ${result.kick.length} &nbsp;&middot;&nbsp; Defense: ${result.def.length}` +
-          (result.off[0]?.rec != null ? '<br>✓ Rec column found — PPR adjustments will work.' : '<br>⚠ No Rec column — PPR switching will have no effect on these players.');
+          (result.off[0]?.rec != null ? '<br>✓ Rec column found — PPR adjustments will work.' : '<br>⚠ No Rec column — PPR switching will have no effect on these players.') +
+          (result.noTiers ? '<br>⚠ No Tier column found — Tier Radar and grouped view will be unavailable. Add a <b>Tier</b> column (or <b>Tiers</b>) to enable them.' : '<br>✓ Tier data found — grouped view and Tier Radar will work.');
         pendingOff  = result.off;
         pendingKick = result.kick;
         pendingDef  = result.def;
