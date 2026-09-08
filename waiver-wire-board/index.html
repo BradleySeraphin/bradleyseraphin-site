@@ -3887,6 +3887,22 @@ function normalizePlayerRow(row){
   return out;
 }
 
+// Auto-assign tiers by fpts percentile when the CSV has no tier column.
+// Cuts: top 15% → T1, next 20% → T2, next 25% → T3, next 20% → T4, rest → T5.
+function autoAssignTierGroup(players){
+  if(!players.length) return;
+  const sorted = players.slice().sort((a,b) => (b.fpts ?? 0) - (a.fpts ?? 0));
+  const n = sorted.length;
+  const cuts = [0.15, 0.35, 0.60, 0.80];
+  sorted.forEach((p, i) => {
+    const pct = i / n;
+    const tier = pct < cuts[0] ? 1 : pct < cuts[1] ? 2 : pct < cuts[2] ? 3 : pct < cuts[3] ? 4 : 5;
+    p.tier = tier;
+    p.subtier = 1;
+    p.tierLabel = tier + 'A';
+  });
+}
+
 function parseAndValidateCSV(text){
   const raw = parseCSVText(text);
   if(!raw.length) return { error: 'No rows found in file.' };
@@ -3910,6 +3926,17 @@ function parseAndValidateCSV(text){
 
   const total = off.length + kick.length + def.length;
   if(total === 0) return { error: 'No valid player rows found. Check that Pos values are QB/RB/WR/TE/K/DEF and FPTS is numeric.' };
+
+  // If no players have tier data (CSV lacked a Tier column), auto-assign
+  // tiers by fpts percentile so grouped view and chart boundaries still work.
+  const hasAnyTier = [...off, ...kick, ...def].some(p => p.tier != null);
+  if(!hasAnyTier){
+    const byPos = {};
+    off.forEach(p => { (byPos[p.pos] = byPos[p.pos] || []).push(p); });
+    Object.values(byPos).forEach(group => autoAssignTierGroup(group));
+    autoAssignTierGroup(kick);
+    autoAssignTierGroup(def);
+  }
 
   return { off, kick, def, skipped, total };
 }
