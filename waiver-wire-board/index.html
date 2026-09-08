@@ -2308,6 +2308,10 @@ function exitPriceEdit(id){
   render();
 }
 
+table.addEventListener('mousedown', (e) => {
+  if(e.target.closest('.draft-price-step-btn')) e.preventDefault();
+});
+
 table.addEventListener('click', (e) => {
   const btn = e.target.closest('[data-action]');
   if(!btn) return;
@@ -2368,7 +2372,11 @@ table.addEventListener('keydown', (e) => {
 table.addEventListener('focusout', (e) => {
   if(e.target.matches('.draft-price-input')){
     const id = e.target.dataset.id;
-    setTimeout(() => exitPriceEdit(id), 0);
+    setTimeout(() => {
+      const activeEl = document.activeElement;
+      if(activeEl && activeEl.matches('.draft-price-step-btn') && activeEl.dataset.id === id) return;
+      exitPriceEdit(id);
+    }, 0);
   }
 });
 
@@ -4332,6 +4340,10 @@ document.getElementById('draftBackBtn').addEventListener('click', undoLast);
   // Mine / Theirs buttons and all locked-state controls in the nomination result panel
   const nominateResult = document.getElementById('nominateResult');
 
+  nominateResult.addEventListener('mousedown', (e) => {
+    if(e.target.closest('.draft-price-step-btn')) e.preventDefault();
+  });
+
   nominateResult.addEventListener('click', (e) => {
     // Mine / Theirs buttons (undrafted state)
     const nomBtn = e.target.closest('[data-nom-action]');
@@ -4398,7 +4410,12 @@ document.getElementById('draftBackBtn').addEventListener('click', undoLast);
   nominateResult.addEventListener('focusout', (e) => {
     if(e.target.matches('.draft-price-input')){
       const id = e.target.dataset.id;
-      setTimeout(() => { exitPriceEdit(id); renderNomination(); }, 0);
+      setTimeout(() => {
+        const activeEl = document.activeElement;
+        if(activeEl && activeEl.matches('.draft-price-step-btn') && activeEl.dataset.id === id) return;
+        exitPriceEdit(id);
+        renderNomination();
+      }, 0);
     }
   });
 
