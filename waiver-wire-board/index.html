@@ -739,6 +739,29 @@ tbody td:last-child{
   box-shadow:0 0 0 3px var(--accent-soft);
 }
 .draft-price-sign{ font-family:"IBM Plex Mono", monospace; font-size:12.5px; color:var(--text-faint); }
+.draft-price-stepper{
+  display:flex;
+  align-items:center;
+  gap:3px;
+}
+.draft-price-step-btn{
+  border:1px solid var(--border);
+  background:var(--surface-2);
+  color:var(--text);
+  cursor:pointer;
+  font-size:18px;
+  font-weight:700;
+  width:32px;
+  height:32px;
+  border-radius:7px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  line-height:1;
+  flex-shrink:0;
+  user-select:none;
+}
+.draft-price-step-btn:hover{ background:var(--accent-soft); color:var(--accent); border-color:var(--accent); }
 .draft-price-input{
   width:44px;
   font-family:"IBM Plex Mono", monospace;
@@ -748,8 +771,12 @@ tbody td:last-child{
   border:none;
   background:transparent;
   color:var(--text);
+  /* hide native spin arrows — replaced by custom +/− buttons */
+  -moz-appearance:textfield;
 }
 .draft-price-input:focus{ outline:none; }
+.draft-price-input::-webkit-inner-spin-button,
+.draft-price-input::-webkit-outer-spin-button{ -webkit-appearance:none; margin:0; }
 
 /* Locked-in price, at rest: plain text, not a control -- a stray click on the
    number itself does nothing. Only the separate pencil button unlocks
@@ -2075,8 +2102,12 @@ function armReset(btn){
 // editing a previous pick's price.
 function priceControlHTML(id, idAttr, who, price){
   if(EDITING_PRICE_ID === id){
-    return `<label class="draft-price-wrap"><span class="draft-price-sign">$</span>` +
-      `<input type="number" class="draft-price-input" min="1" value="${price}" data-action="reprice" data-who="${who}" data-id="${idAttr}"></label>`;
+    return `<div class="draft-price-stepper">` +
+      `<button class="draft-price-step-btn" data-action="price-dec" data-id="${idAttr}" data-who="${who}">&minus;</button>` +
+      `<label class="draft-price-wrap"><span class="draft-price-sign">$</span>` +
+      `<input type="number" class="draft-price-input" min="1" value="${price}" data-action="reprice" data-who="${who}" data-id="${idAttr}"></label>` +
+      `<button class="draft-price-step-btn" data-action="price-inc" data-id="${idAttr}" data-who="${who}">+</button>` +
+      `</div>`;
   }
   return `<span class="draft-price-static">$${price}</span>` +
     `<button class="draft-price-edit-btn" data-action="edit-price" data-id="${idAttr}" title="Edit price">&#9998;</button>`;
@@ -2131,6 +2162,14 @@ table.addEventListener('click', (e) => {
     EDITING_PRICE_ID = id;
     render();
     focusPriceInput(id);
+  } else if(action === 'price-dec' || action === 'price-inc'){
+    const who = btn.dataset.who;
+    const entry = draftState[who]?.[id];
+    if(entry){
+      const delta = action === 'price-inc' ? 1 : -1;
+      repriceDraft(id, Math.max(1, entry.price + delta), who);
+      render();
+    }
   }
 });
 table.addEventListener('dblclick', (e) => {
@@ -4092,6 +4131,15 @@ document.getElementById('draftBackBtn').addEventListener('click', undoLast);
     } else if(action === 'clear-nom'){
       CURRENT_NOMINATION_ID = null;
       renderNomination();
+    } else if(action === 'price-dec' || action === 'price-inc'){
+      const who = btn.dataset.who;
+      const entry = draftState[who]?.[id];
+      if(entry){
+        const delta = action === 'price-inc' ? 1 : -1;
+        repriceDraft(id, Math.max(1, entry.price + delta), who);
+        renderNomination();
+        renderDraftPanel();
+      }
     }
   });
 
