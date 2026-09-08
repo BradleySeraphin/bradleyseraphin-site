@@ -2892,7 +2892,7 @@ function liveWorth(p, liveValues){
   return { cost, worth: p.fpts / cost };
 }
 
-function computeBenchRecommendations(slots, takenIds, liveValues){
+function computeBenchRecommendations(slots, takenIds, liveValues, maxBenchBid = 1){
   const myAll = Object.keys(draftState.mine)
     .map(id => ({id, ...draftState.mine[id], ...ALL_PLAYERS[id]}))
     .filter(p => p.pos);
@@ -2984,6 +2984,14 @@ function computeBenchRecommendations(slots, takenIds, liveValues){
     }
   }
 
+  // In auction drafts you can't take budget home -- apply the full available
+  // max bid to the single highest-priority bench pick so the tool surfaces
+  // what you can actually spend, not just the $1 live-value floor.
+  if(maxBenchBid > 1){
+    const topPick = handcuffs[0] || darts[0] || byeGaps[0] || backupQB;
+    if(topPick) topPick.cost = Math.max(topPick.cost, maxBenchBid);
+  }
+
   return { handcuffs, darts, byeGaps, backupQB };
 }
 
@@ -3037,10 +3045,10 @@ function renderNominationSuggestions(){
   el.innerHTML = `<div class="nom-section-label">Nominate</div><div class="nom-cards">${cards}</div>`;
 }
 
-function renderBenchPanel(slots, takenIds, liveValues){
+function renderBenchPanel(slots, takenIds, liveValues, maxBenchBid = 1){
   const el = document.getElementById('benchPanel');
   if(!el) return;
-  const { handcuffs, darts, byeGaps, backupQB } = computeBenchRecommendations(slots, takenIds, liveValues);
+  const { handcuffs, darts, byeGaps, backupQB } = computeBenchRecommendations(slots, takenIds, liveValues, maxBenchBid);
 
   const sections = [
     { title: 'Handcuffs', rows: handcuffs },
@@ -3199,6 +3207,13 @@ function renderDraftPanel(){
   LIVE_VALUES = liveInfo.values;
 
   const anyNeed = Object.values(needs).some(v => v > 0);
+  // When the starting lineup is complete the "budgetForStarters" residual is
+  // no longer reserved -- fold it into the bench budget so the max bid per
+  // bench pick is calculated correctly.
+  const totalRemaining    = Math.max(0, LEAGUE.budgetPerTeam - spent);
+  const effectiveBenchBudget = anyNeed ? benchRemaining : totalRemaining;
+  const maxBenchBid       = Math.max(1, effectiveBenchBudget - Math.max(0, benchRemaining - 1));
+
   const result = anyNeed
     ? optimizeRemaining(needs, budgetForStarters, takenIds, LIVE_VALUES)
     : { totalFpts: 0, picks: [] };
@@ -3220,7 +3235,7 @@ function renderDraftPanel(){
   CURRENT_TIER_INSIGHTS = buildTierInsights(computeTierRadar(takenIds));
   renderTierRadar();
 
-  renderBenchPanel(slots, takenIds, LIVE_VALUES);
+  renderBenchPanel(slots, takenIds, LIVE_VALUES, maxBenchBid);
 
   // Keep whatever's currently nominated live -- if another pick lands while
   // you're staring at this number deciding, it shouldn't go stale on you.
@@ -3240,8 +3255,11 @@ function renderDraftPanel(){
   const summary = document.getElementById('draftSummary');
   summary.innerHTML = `
     <div class="stat"><span class="label">Spent</span><span class="value">${fmtMoney(spent)}</span></div>
-    <div class="stat"><span class="label">Bench reserve left</span><span class="value">${fmtMoney(benchRemaining)}</span></div>
-    <div class="stat"><span class="label">Budget for open starters</span><span class="value accent">${fmtMoney(Math.max(0,budgetForStarters))}</span></div>
+    ${anyNeed
+      ? `<div class="stat"><span class="label">Bench reserve left</span><span class="value">${fmtMoney(benchRemaining)}</span></div>
+         <div class="stat"><span class="label">Budget for open starters</span><span class="value accent">${fmtMoney(Math.max(0,budgetForStarters))}</span></div>`
+      : `<div class="stat"><span class="label">Bench budget left</span><span class="value accent">${fmtMoney(effectiveBenchBudget)}</span></div>`
+    }
     <div class="stat"><span class="label">Locked-in points</span><span class="value">${lockedFpts}</span></div>
     <div class="stat"><span class="label">Projected total</span><span class="value accent">${projectedTotal}</span></div>
     <div class="stat"><span class="label">${pulseLabel}</span>${pulseHTML}</div>
