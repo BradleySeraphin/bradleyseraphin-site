@@ -278,6 +278,7 @@
   var axis = root.querySelector(".swell__axis");
   var card = document.getElementById("swell-card");
   var backBtn = root.querySelector(".swell__back");
+  var reelEl = stage.querySelector(".swell__reel");
   var NS = "http://www.w3.org/2000/svg";
   var reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 
@@ -390,6 +391,12 @@
       b.classList.toggle("is-selected", M[i].id === selected);
       b.setAttribute("aria-selected", M[i].id === selected ? "true" : "false");
     });
+
+    // reel beacon rides the surface between Shutterstock and SSG
+    if (reelEl) {
+      var rx = mx(5.5);
+      reelEl.style.transform = "translate(" + (rx - 19).toFixed(1) + "px," + (surfaceY(rx) - 58).toFixed(1) + "px)";
+    }
   }
 
   function lensFor(m) { return (lens !== "all" && m.l[lens]) ? lens : ORDER.filter(function (k) { return m.l[k]; })[0]; }
@@ -432,6 +439,7 @@
   stage.addEventListener("pointermove", function (e) { var r = stage.getBoundingClientRect(); pointerX = e.clientX - r.left; });
   stage.addEventListener("pointerleave", function () { pointerX = null; });
   stage.addEventListener("click", function (e) {
+    if (e.target.closest(".swell__reel")) return;
     var r = stage.getBoundingClientRect(), i = nearest(e.clientX - r.left);
     if (lens !== "all" && !M[i].l[lens]) return;
     select(M[i].id);
