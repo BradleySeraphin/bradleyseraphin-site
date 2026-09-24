@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>Higgsfield Creative Gallery — Bradley Seraphin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+
+/* ---- Gallery layout ---- */
+
+.gallery-hero {
+  padding: 140px 0 64px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 80px;
+}
+
+.gallery-hero__eyebrow {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 20px;
+}
+
+.gallery-hero h1 {
+  font-family: var(--sans);
+  font-size: clamp(32px, 5vw, 52px);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  max-width: 700px;
+  margin-bottom: 20px;
+}
+
+.gallery-hero p {
+  color: var(--ink-dim);
+  font-size: 17px;
+  line-height: 1.75;
+  max-width: 600px;
+}
+
+/* ---- Campaign section ---- */
+
+.campaign {
+  margin-bottom: 100px;
+}
+
+.campaign__header {
+  margin-bottom: 40px;
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--line);
+}
+
+.campaign__label {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 10px;
+}
+
+.campaign__title {
+  font-family: var(--sans);
+  font-size: clamp(20px, 3vw, 28px);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+
+.campaign__note {
+  margin-top: 10px;
+  font-size: 14px;
+  color: var(--ink-dim);
+  line-height: 1.6;
+}
+
+.campaign__note a {
+  color: var(--accent);
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s;
+}
+
+.campaign__note a:hover {
+  border-color: var(--accent);
+}
+
+/* ---- Video grid ---- */
+
+.vid-grid {
+  display: grid;
+  gap: 20px;
+}
+
+.vid-grid--3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.vid-grid--2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.vid-grid--1 {
+  grid-template-columns: minmax(0, 640px);
+}
+
+.vid-card {
+  background: var(--bg-alt);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  overflow: hidden;
+  transition: border-color 0.2s var(--ease);
+}
+
+.vid-card:hover {
+  border-color: rgba(255, 255, 255, 0.18);
+}
+
+.vid-card video {
+  width: 100%;
+  display: block;
+  aspect-ratio: 9/16;
+  object-fit: cover;
+  background: #000;
+}
+
+.vid-card--wide video {
+  aspect-ratio: 16/9;
+}
+
+.vid-card__cap {
+  padding: 14px 16px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+
+/* ---- Responsive ---- */
+
+@media (max-width: 768px) {
+  .vid-grid--3 {
+    grid-template-columns: 1fr;
+  }
+  .vid-grid--2 {
+    grid-template-columns: 1fr;
+  }
+  .gallery-hero {
+    padding: 120px 0 48px;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .vid-grid--3 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+</style>
+</head>
+<body>
+
+<div class="cursor-glow"></div>
+
+<nav class="nav scrolled">
+  <a href="../index.html#top" class="nav__mark"><span class="nav__dot"></span>BRADLEY SERAPHIN</a>
+  <div class="nav__links">
+    <a href="../index.html#work">Work</a>
+    <a href="../index.html#about">About</a>
+    <a href="../assets/Bradley-Seraphin-Resume.pdf" download>Resume</a>
+    <a href="../index.html#contact">Contact</a>
+  </div>
+</nav>
+
+<main>
+  <div class="wrap">
+
+    <a href="../index.html#work" class="back-link reveal">← All work</a>
+
+    <header class="gallery-hero reveal">
+      <div class="gallery-hero__eyebrow">Higgsfield · AI Video</div>
+      <h1>Creative Work</h1>
+      <p>A collection of AI-generated video work produced with Higgsfield — from hyper-local mobile game ads to brand concepts.</p>
+    </header>
+
+    <!-- SSG -->
+    <section class="campaign reveal">
+      <div class="campaign__header">
+        <div class="campaign__label">Campaign</div>
+        <div class="campaign__title">Shiba Story Go! — Hyper-Local Mobile Game Ads</div>
+        <div class="campaign__note">
+          Cinematic trailer-style ads for Proof of Play's Shiba Story Go global launch — produced in hours with Higgsfield, Claude, and Canva.
+          <br><a href="https://www.linkedin.com/pulse/fable-higgsfield-glorious-brad-seraphin-ktdkc/" target="_blank" rel="noopener">Read the writeup on LinkedIn ↗</a>
+        </div>
+      </div>
+      <div class="vid-grid vid-grid--3">
+        <div class="vid-card">
+          <video controls preload="none" poster="../work/video/how-far-would-you-go-poster.jpg">
+            <source src="../work/video/how-far-would-you-go.mp4" type="video/mp4">
+          </video>
+          <div class="vid-card__cap">How Far Would You Go</div>
+        </div>
+        <div class="vid-card">
+          <video controls preload="none" poster="../work/video/two-dogs-one-fate-poster.jpg">
+            <source src="../work/video/two-dogs-one-fate.mp4" type="video/mp4">
+          </video>
+          <div class="vid-card__cap">Two Dogs, One Fate</div>
+        </div>
+        <div class="vid-card">
+          <video controls preload="none" poster="../work/video/ordinary-dog-poster.jpg">
+            <source src="../work/video/ordinary-dog.mp4" type="video/mp4">
+          </video>
+          <div class="vid-card__cap">Ordinary Dog</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TurboTax -->
+    <section class="campaign reveal">
+      <div class="campaign__header">
+        <div class="campaign__label">Campaign Concept</div>
+        <div class="campaign__title">Say No To Tax Clowns — TurboTax</div>
+      </div>
+      <div class="vid-grid vid-grid--2">
+        <div class="vid-card vid-card--wide">
+          <video controls preload="none" poster="video/turbotax-hard-at-work-poster.jpg">
+            <source src="video/turbotax-hard-at-work.mp4" type="video/mp4">
+          </video>
+          <div class="vid-card__cap">Hard at Work</div>
+        </div>
+        <div class="vid-card vid-card--wide">
+          <video controls preload="none" poster="video/turbotax-tax-circus-poster.jpg">
+            <source src="video/turbotax-tax-circus.mp4" type="video/mp4">
+          </video>
+          <div class="vid-card__cap">Tax Circus</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Rabid Rabbits -->
+    <section class="campaign reveal">
+      <div class="campaign__header">
+        <div class="campaign__label">Game Concept</div>
+        <div class="campaign__title">Rabid Rabbits</div>
+      </div>
+      <div class="vid-grid vid-grid--1">
+        <div class="vid-card">
+          <video controls preload="none" poster="video/rabid-rabbits-poster.jpg">
+            <source src="video/rabid-rabbits.mp4" type="video/mp4">
+          </video>
+          <div class="vid-card__cap">Rabid Rabbits — Game Concept</div>
+        </div>
+      </div>
+    </section>
+
+  </div>
+</main>
+
+<script src="../js/main.js"></script>
+</body>
+</html>
