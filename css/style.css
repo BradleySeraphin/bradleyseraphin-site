@@ -166,8 +166,10 @@ section { position: relative; }
 .hero__photo {
   position: absolute;
   right: 0;
+  top: 0;
   bottom: 0;
   height: 68%;
+  margin: auto 0;
   max-width: 36%;
   mask-image: linear-gradient(to bottom, transparent 0%, black 18%), linear-gradient(to right, transparent 0%, black 22%);
   mask-composite: intersect;
