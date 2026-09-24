@@ -407,23 +407,23 @@ button { background: none; border: none; cursor: pointer; font: inherit; color: 
     </div>
 
     <nav class="project-list" role="tablist">
-      <button class="proj-btn active" data-panel="p0" role="tab" aria-selected="true">
-        <img class="proj-btn__thumb" src="video/rabid-rabbits-poster.jpg" alt="Rabid Rabbits">
+      <button class="proj-btn active" data-panel="p1" role="tab" aria-selected="true">
+        <img class="proj-btn__thumb" src="video/turbotax-hard-at-work-poster.jpg" alt="Say No To Tax Clowns">
         <div class="proj-btn__body">
           <span class="proj-btn__num">01</span>
           <div class="proj-btn__copy">
-            <span class="proj-btn__name">Rabid Rabbits</span>
-            <span class="proj-btn__type">Game Concept</span>
+            <span class="proj-btn__name">Say No To Tax Clowns</span>
+            <span class="proj-btn__type">TurboTax · Campaign</span>
           </div>
         </div>
       </button>
-      <button class="proj-btn" data-panel="p1" role="tab" aria-selected="false">
-        <img class="proj-btn__thumb" src="video/turbotax-hard-at-work-poster.jpg" alt="Say No To Tax Clowns">
+      <button class="proj-btn" data-panel="p0" role="tab" aria-selected="false">
+        <img class="proj-btn__thumb" src="video/rabid-rabbits-poster.jpg" alt="Rabid Rabbits">
         <div class="proj-btn__body">
           <span class="proj-btn__num">02</span>
           <div class="proj-btn__copy">
-            <span class="proj-btn__name">Say No To Tax Clowns</span>
-            <span class="proj-btn__type">TurboTax · Campaign</span>
+            <span class="proj-btn__name">Rabid Rabbits</span>
+            <span class="proj-btn__type">Game Concept</span>
           </div>
         </div>
       </button>
@@ -446,8 +446,8 @@ button { background: none; border: none; cursor: pointer; font: inherit; color: 
   <!-- ── RIGHT STAGE ── -->
   <div class="stage">
 
-    <!-- 01: Rabid Rabbits -->
-    <div class="panel active" id="p0" role="tabpanel">
+    <!-- 02: Rabid Rabbits -->
+    <div class="panel" id="p0" role="tabpanel">
       <div class="vid-area vid-area--1">
         <div class="vid-slot">
           <video controls preload="none" poster="video/rabid-rabbits-poster.jpg">
@@ -465,17 +465,17 @@ button { background: none; border: none; cursor: pointer; font: inherit; color: 
       </div>
     </div>
 
-    <!-- 02: TurboTax -->
-    <div class="panel" id="p1" role="tabpanel">
+    <!-- 01: TurboTax -->
+    <div class="panel active" id="p1" role="tabpanel">
       <div class="vid-area vid-area--2">
-        <div class="vid-slot">
-          <video controls preload="none" poster="video/turbotax-hard-at-work-poster.jpg">
-            <source src="video/turbotax-hard-at-work.mp4" type="video/mp4">
-          </video>
-        </div>
         <div class="vid-slot">
           <video controls preload="none" poster="video/turbotax-tax-circus-poster.jpg">
             <source src="video/turbotax-tax-circus.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="vid-slot">
+          <video controls preload="none" poster="video/turbotax-hard-at-work-poster.jpg">
+            <source src="video/turbotax-hard-at-work.mp4" type="video/mp4">
           </video>
         </div>
       </div>
