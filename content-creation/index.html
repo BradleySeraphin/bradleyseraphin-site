@@ -58,7 +58,7 @@ button { background: none; border: none; cursor: pointer; font: inherit; color: 
 
 /* brand */
 .brand {
-  margin-bottom: 52px;
+  margin-bottom: 32px;
 }
 .brand__label {
   font-family: var(--mono);
@@ -85,9 +85,9 @@ button { background: none; border: none; cursor: pointer; font: inherit; color: 
 
 .proj-btn {
   display: flex;
-  align-items: flex-start;
-  gap: 14px;
-  padding: 18px 0;
+  flex-direction: column;
+  gap: 10px;
+  padding: 16px 0 20px;
   border-top: 1px solid var(--line);
   position: relative;
   transition: opacity 0.15s;
@@ -106,6 +106,27 @@ button { background: none; border: none; cursor: pointer; font: inherit; color: 
   transition: opacity 0.25s var(--ease);
 }
 .proj-btn.active::before { opacity: 1; }
+
+/* thumbnail */
+.proj-btn__thumb {
+  width: 100%;
+  aspect-ratio: 16/9;
+  object-fit: cover;
+  border-radius: 5px;
+  display: block;
+  border: 1px solid var(--line);
+  opacity: 0.4;
+  transition: opacity 0.25s var(--ease), border-color 0.25s;
+}
+.proj-btn.active .proj-btn__thumb  { opacity: 1; border-color: var(--accent); }
+.proj-btn:hover:not(.active) .proj-btn__thumb { opacity: 0.65; }
+
+/* number + text row */
+.proj-btn__body {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
 
 .proj-btn__num {
   font-family: var(--mono);
@@ -387,24 +408,33 @@ button { background: none; border: none; cursor: pointer; font: inherit; color: 
 
     <nav class="project-list" role="tablist">
       <button class="proj-btn active" data-panel="p0" role="tab" aria-selected="true">
-        <span class="proj-btn__num">01</span>
-        <div class="proj-btn__copy">
-          <span class="proj-btn__name">Rabid Rabbits</span>
-          <span class="proj-btn__type">Game Concept</span>
+        <img class="proj-btn__thumb" src="video/rabid-rabbits-poster.jpg" alt="Rabid Rabbits">
+        <div class="proj-btn__body">
+          <span class="proj-btn__num">01</span>
+          <div class="proj-btn__copy">
+            <span class="proj-btn__name">Rabid Rabbits</span>
+            <span class="proj-btn__type">Game Concept</span>
+          </div>
         </div>
       </button>
       <button class="proj-btn" data-panel="p1" role="tab" aria-selected="false">
-        <span class="proj-btn__num">02</span>
-        <div class="proj-btn__copy">
-          <span class="proj-btn__name">Say No To Tax Clowns</span>
-          <span class="proj-btn__type">TurboTax · Campaign</span>
+        <img class="proj-btn__thumb" src="video/turbotax-hard-at-work-poster.jpg" alt="Say No To Tax Clowns">
+        <div class="proj-btn__body">
+          <span class="proj-btn__num">02</span>
+          <div class="proj-btn__copy">
+            <span class="proj-btn__name">Say No To Tax Clowns</span>
+            <span class="proj-btn__type">TurboTax · Campaign</span>
+          </div>
         </div>
       </button>
       <button class="proj-btn" data-panel="p2" role="tab" aria-selected="false">
-        <span class="proj-btn__num">03</span>
-        <div class="proj-btn__copy">
-          <span class="proj-btn__name">Shiba Story Go!</span>
-          <span class="proj-btn__type">Hyper-Local Mobile Ads</span>
+        <img class="proj-btn__thumb" src="../work/video/how-far-would-you-go-poster.jpg" alt="Shiba Story Go!">
+        <div class="proj-btn__body">
+          <span class="proj-btn__num">03</span>
+          <div class="proj-btn__copy">
+            <span class="proj-btn__name">Shiba Story Go!</span>
+            <span class="proj-btn__type">Hyper-Local Mobile Ads</span>
+          </div>
         </div>
       </button>
     </nav>
