@@ -169,8 +169,10 @@ section { position: relative; }
   bottom: 0;
   height: 68%;
   max-width: 36%;
-  mask-image: linear-gradient(90deg, transparent 0%, black 22%);
-  -webkit-mask-image: linear-gradient(90deg, transparent 0%, black 22%);
+  mask-image: linear-gradient(to bottom, transparent 0%, black 18%), linear-gradient(to right, transparent 0%, black 22%);
+  mask-composite: intersect;
+  -webkit-mask-image: linear-gradient(to bottom, transparent 0%, black 18%), linear-gradient(to right, transparent 0%, black 22%);
+  -webkit-mask-composite: source-in;
   will-change: transform;
 }
 
