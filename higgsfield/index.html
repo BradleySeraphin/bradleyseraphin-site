@@ -4,266 +4,548 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noindex, nofollow">
-<title>Higgsfield Creative Gallery — Bradley Seraphin</title>
+<title>Content Creation — Bradley Seraphin</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/style.css">
 <style>
 
-/* ---- Gallery layout ---- */
-
-.gallery-hero {
-  padding: 140px 0 64px;
-  border-bottom: 1px solid var(--line);
-  margin-bottom: 80px;
+/* ── Tokens ── */
+:root {
+  --bg:        #08090c;
+  --bg-alt:    #0e1015;
+  --ink:       #f2f3f5;
+  --ink-dim:   #9aa0ab;
+  --ink-faint: #5c6270;
+  --accent:    #4da3ff;
+  --line:      rgba(255,255,255,0.08);
+  --line-hi:   rgba(255,255,255,0.16);
+  --sans:      "Space Grotesk", -apple-system, sans-serif;
+  --body:      "Inter", -apple-system, sans-serif;
+  --mono:      "JetBrains Mono", ui-monospace, monospace;
+  --ease:      cubic-bezier(0.16,1,0.3,1);
 }
 
-.gallery-hero__eyebrow {
-  font-family: var(--mono);
-  font-size: 12px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--accent);
-  margin-bottom: 20px;
-}
-
-.gallery-hero h1 {
-  font-family: var(--sans);
-  font-size: clamp(32px, 5vw, 52px);
-  font-weight: 700;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+body {
+  background: var(--bg);
   color: var(--ink);
-  max-width: 700px;
-  margin-bottom: 20px;
+  font-family: var(--body);
+  -webkit-font-smoothing: antialiased;
+}
+a { color: inherit; text-decoration: none; }
+button { background: none; border: none; cursor: pointer; font: inherit; color: inherit; padding: 0; text-align: left; }
+
+/* ── Two-column shell ── */
+.shell {
+  display: grid;
+  grid-template-columns: 268px 1fr;
+  height: 100vh;
 }
 
-.gallery-hero p {
-  color: var(--ink-dim);
-  font-size: 17px;
-  line-height: 1.75;
-  max-width: 600px;
+/* ─────────────────────────────────────
+   LEFT NAV
+───────────────────────────────────── */
+.sidebar {
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  padding: 44px 32px 36px;
+  overflow-y: auto;
 }
 
-/* ---- Campaign section ---- */
-
-.campaign {
-  margin-bottom: 100px;
+/* brand */
+.brand {
+  margin-bottom: 52px;
 }
-
-.campaign__header {
-  margin-bottom: 40px;
-  padding-bottom: 24px;
-  border-bottom: 1px solid var(--line);
-}
-
-.campaign__label {
+.brand__label {
   font-family: var(--mono);
-  font-size: 11px;
+  font-size: 10px;
   letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--ink-faint);
   margin-bottom: 10px;
 }
-
-.campaign__title {
+.brand__title {
   font-family: var(--sans);
-  font-size: clamp(20px, 3vw, 28px);
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  color: var(--ink);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.1;
 }
 
-.campaign__note {
-  margin-top: 10px;
-  font-size: 14px;
-  color: var(--ink-dim);
-  line-height: 1.6;
+/* project list */
+.project-list {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
-.campaign__note a {
-  color: var(--accent);
-  border-bottom: 1px solid transparent;
-  transition: border-color 0.2s;
+.proj-btn {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 18px 0;
+  border-top: 1px solid var(--line);
+  position: relative;
+  transition: opacity 0.15s;
 }
+.proj-btn:last-child { border-bottom: 1px solid var(--line); }
 
-.campaign__note a:hover {
-  border-color: var(--accent);
+/* active indicator bar */
+.proj-btn::before {
+  content: "";
+  position: absolute;
+  left: -32px;
+  top: 0; bottom: 0;
+  width: 2px;
+  background: var(--accent);
+  opacity: 0;
+  transition: opacity 0.25s var(--ease);
 }
+.proj-btn.active::before { opacity: 1; }
 
-/* ---- Video grid ---- */
-
-.vid-grid {
-  display: grid;
-  gap: 20px;
-}
-
-.vid-grid--3 {
-  grid-template-columns: repeat(3, 1fr);
-}
-
-.vid-grid--2 {
-  grid-template-columns: repeat(2, 1fr);
-}
-
-.vid-grid--1 {
-  grid-template-columns: minmax(0, 640px);
-}
-
-.vid-card {
-  background: var(--bg-alt);
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  overflow: hidden;
-  transition: border-color 0.2s var(--ease);
-}
-
-.vid-card:hover {
-  border-color: rgba(255, 255, 255, 0.18);
-}
-
-.vid-card video {
-  width: 100%;
-  display: block;
-  aspect-ratio: 9/16;
-  object-fit: cover;
-  background: #000;
-}
-
-.vid-card--wide video {
-  aspect-ratio: 16/9;
-}
-
-.vid-card__cap {
-  padding: 14px 16px;
+.proj-btn__num {
   font-family: var(--mono);
   font-size: 11px;
+  color: var(--ink-faint);
+  padding-top: 2px;
+  width: 18px;
+  flex-shrink: 0;
+  transition: color 0.2s;
+}
+.proj-btn.active .proj-btn__num { color: var(--accent); }
+
+.proj-btn__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.proj-btn__name {
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink-dim);
+  line-height: 1.25;
+  transition: color 0.2s;
+}
+.proj-btn.active .proj-btn__name,
+.proj-btn:hover .proj-btn__name { color: var(--ink); }
+
+.proj-btn__type {
+  font-family: var(--mono);
+  font-size: 10px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
+  color: var(--ink-faint);
+  transition: color 0.2s;
+}
+.proj-btn.active .proj-btn__type { color: var(--accent); opacity: 0.65; }
+
+/* back link */
+.back-link {
+  margin-top: 36px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  transition: color 0.2s;
+}
+.back-link:hover { color: var(--ink-dim); }
+
+/* ─────────────────────────────────────
+   RIGHT STAGE
+───────────────────────────────────── */
+.stage {
+  position: relative;
+  overflow: hidden;
+}
+
+.panel {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 44px 52px 36px;
+  gap: 24px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s var(--ease);
+  overflow: hidden;
+}
+.panel.active {
+  opacity: 1;
+  pointer-events: all;
+}
+
+/* ── Video area (fills remaining height) ── */
+.vid-area {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+}
+
+/* ── Single video ── */
+.vid-area--1 {
+  justify-content: center;
+}
+.vid-area--1 .vid-slot {
+  max-width: 70%;
+  flex: 0 1 auto;
+}
+
+/* ── Two equal videos ── */
+.vid-area--2 .vid-slot {
+  flex: 1;
+}
+
+/* ── SSG: 65% main + 35% thumb column ── */
+.vid-area--3 .vid-slot--main {
+  flex: 0 0 65%;
+}
+.vid-thumbs {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+.vid-thumb {
+  flex: 1;
+  min-height: 0;
+  cursor: pointer;
+  position: relative;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  transition: border-color 0.2s;
+}
+.vid-thumb:hover { border-color: var(--line-hi); }
+.vid-thumb.is-active { border-color: var(--accent); }
+.vid-thumb video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+  opacity: 0.55;
+  transition: opacity 0.2s;
+}
+.vid-thumb.is-active video { opacity: 1; }
+
+/* ── Slot (shared by all layouts) ── */
+.vid-slot {
+  border-radius: 8px;
+  overflow: hidden;
+  background: #000;
+  border: 1px solid var(--line);
+  transition: border-color 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  min-width: 0;
+}
+.vid-slot:hover { border-color: var(--line-hi); }
+.vid-slot video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  display: block;
+  max-height: calc(100vh - 196px); /* viewport minus padding + meta */
+}
+
+/* ── Meta strip ── */
+.meta {
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--line);
+}
+.meta__left {}
+.meta__tag {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-bottom: 5px;
+}
+.meta__title {
+  font-family: var(--sans);
+  font-size: clamp(17px, 1.8vw, 22px);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+.meta__desc {
+  margin-top: 6px;
+  font-size: 13.5px;
   color: var(--ink-dim);
+  line-height: 1.6;
+  max-width: 520px;
 }
-
-/* ---- Responsive ---- */
-
-@media (max-width: 768px) {
-  .vid-grid--3 {
-    grid-template-columns: 1fr;
-  }
-  .vid-grid--2 {
-    grid-template-columns: 1fr;
-  }
-  .gallery-hero {
-    padding: 120px 0 48px;
-  }
+.meta__link {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.07em;
+  color: var(--accent);
+  white-space: nowrap;
+  flex-shrink: 0;
+  border-bottom: 1px solid transparent;
+  transition: border-color 0.2s;
+  padding-bottom: 1px;
 }
+.meta__link:hover { border-color: var(--accent); }
 
-@media (min-width: 769px) and (max-width: 1024px) {
-  .vid-grid--3 {
-    grid-template-columns: repeat(2, 1fr);
+/* ─────────────────────────────────────
+   MOBILE  (≤ 860px — stack vertically)
+───────────────────────────────────── */
+@media (max-width: 860px) {
+  html, body { overflow: auto; }
+
+  .shell {
+    grid-template-columns: 1fr;
+    height: auto;
   }
+
+  .sidebar {
+    border-right: none;
+    border-bottom: 1px solid var(--line);
+    padding: 28px 24px 20px;
+    overflow: visible;
+  }
+
+  .brand { margin-bottom: 20px; }
+
+  .project-list {
+    flex-direction: row;
+    gap: 0;
+  }
+  .proj-btn {
+    flex: 1;
+    flex-direction: column;
+    gap: 4px;
+    padding: 12px 8px;
+    border-top: none;
+    border-right: 1px solid var(--line);
+  }
+  .proj-btn:last-child { border-right: none; border-bottom: none; }
+  .proj-btn::before {
+    left: 0; right: 0; top: auto; bottom: -1px;
+    width: auto; height: 2px;
+  }
+
+  .back-link { display: none; }
+
+  .stage { height: auto; }
+
+  .panel {
+    position: relative;
+    opacity: 1;
+    pointer-events: all;
+    display: none;
+    padding: 28px 20px 28px;
+    overflow: visible;
+  }
+  .panel.active { display: flex; }
+
+  .vid-area {
+    flex-direction: column;
+    height: auto;
+  }
+  .vid-area--1 .vid-slot { max-width: 100%; flex: none; }
+  .vid-area--3 { flex-direction: column; }
+  .vid-area--3 .vid-slot--main { flex: none; }
+  .vid-thumbs { flex-direction: row; }
+  .vid-slot video { max-height: 55vw; height: auto; }
+
+  .meta { flex-direction: column; align-items: flex-start; }
 }
 
 </style>
 </head>
 <body>
 
-<div class="cursor-glow"></div>
+<div class="shell">
 
-<nav class="nav scrolled">
-  <a href="../index.html#top" class="nav__mark"><span class="nav__dot"></span>BRADLEY SERAPHIN</a>
-  <div class="nav__links">
-    <a href="../index.html#work">Work</a>
-    <a href="../index.html#about">About</a>
-    <a href="../assets/Bradley-Seraphin-Resume.pdf" download>Resume</a>
-    <a href="../index.html#contact">Contact</a>
-  </div>
-</nav>
+  <!-- ── LEFT SIDEBAR ── -->
+  <aside class="sidebar">
 
-<main>
-  <div class="wrap">
+    <div class="brand">
+      <div class="brand__label">Higgsfield · AI Video</div>
+      <h1 class="brand__title">Content<br>Creation</h1>
+    </div>
 
-    <a href="../index.html#work" class="back-link reveal">← All work</a>
-
-    <header class="gallery-hero reveal">
-      <div class="gallery-hero__eyebrow">Higgsfield · AI Video</div>
-      <h1>Creative Work</h1>
-      <p>A collection of AI-generated video work produced with Higgsfield — from hyper-local mobile game ads to brand concepts.</p>
-    </header>
-
-    <!-- SSG -->
-    <section class="campaign reveal">
-      <div class="campaign__header">
-        <div class="campaign__label">Campaign</div>
-        <div class="campaign__title">Shiba Story Go! — Hyper-Local Mobile Game Ads</div>
-        <div class="campaign__note">
-          Cinematic trailer-style ads for Proof of Play's Shiba Story Go global launch — produced in hours with Higgsfield, Claude, and Canva.
-          <br><a href="https://www.linkedin.com/pulse/fable-higgsfield-glorious-brad-seraphin-ktdkc/" target="_blank" rel="noopener">Read the writeup on LinkedIn ↗</a>
+    <nav class="project-list" role="tablist">
+      <button class="proj-btn active" data-panel="p0" role="tab" aria-selected="true">
+        <span class="proj-btn__num">01</span>
+        <div class="proj-btn__copy">
+          <span class="proj-btn__name">Rabid Rabbits</span>
+          <span class="proj-btn__type">Game Concept</span>
         </div>
-      </div>
-      <div class="vid-grid vid-grid--3">
-        <div class="vid-card">
-          <video controls preload="none" poster="../work/video/how-far-would-you-go-poster.jpg">
-            <source src="../work/video/how-far-would-you-go.mp4" type="video/mp4">
-          </video>
-          <div class="vid-card__cap">How Far Would You Go</div>
+      </button>
+      <button class="proj-btn" data-panel="p1" role="tab" aria-selected="false">
+        <span class="proj-btn__num">02</span>
+        <div class="proj-btn__copy">
+          <span class="proj-btn__name">Say No To Tax Clowns</span>
+          <span class="proj-btn__type">TurboTax · Campaign</span>
         </div>
-        <div class="vid-card">
-          <video controls preload="none" poster="../work/video/two-dogs-one-fate-poster.jpg">
-            <source src="../work/video/two-dogs-one-fate.mp4" type="video/mp4">
-          </video>
-          <div class="vid-card__cap">Two Dogs, One Fate</div>
+      </button>
+      <button class="proj-btn" data-panel="p2" role="tab" aria-selected="false">
+        <span class="proj-btn__num">03</span>
+        <div class="proj-btn__copy">
+          <span class="proj-btn__name">Shiba Story Go!</span>
+          <span class="proj-btn__type">Hyper-Local Mobile Ads</span>
         </div>
-        <div class="vid-card">
-          <video controls preload="none" poster="../work/video/ordinary-dog-poster.jpg">
-            <source src="../work/video/ordinary-dog.mp4" type="video/mp4">
-          </video>
-          <div class="vid-card__cap">Ordinary Dog</div>
-        </div>
-      </div>
-    </section>
+      </button>
+    </nav>
 
-    <!-- TurboTax -->
-    <section class="campaign reveal">
-      <div class="campaign__header">
-        <div class="campaign__label">Campaign Concept</div>
-        <div class="campaign__title">Say No To Tax Clowns — TurboTax</div>
-      </div>
-      <div class="vid-grid vid-grid--2">
-        <div class="vid-card vid-card--wide">
-          <video controls preload="none" poster="video/turbotax-hard-at-work-poster.jpg">
-            <source src="video/turbotax-hard-at-work.mp4" type="video/mp4">
-          </video>
-          <div class="vid-card__cap">Hard at Work</div>
-        </div>
-        <div class="vid-card vid-card--wide">
-          <video controls preload="none" poster="video/turbotax-tax-circus-poster.jpg">
-            <source src="video/turbotax-tax-circus.mp4" type="video/mp4">
-          </video>
-          <div class="vid-card__cap">Tax Circus</div>
-        </div>
-      </div>
-    </section>
+    <a href="../index.html#work" class="back-link">← bradleyseraphin.com</a>
 
-    <!-- Rabid Rabbits -->
-    <section class="campaign reveal">
-      <div class="campaign__header">
-        <div class="campaign__label">Game Concept</div>
-        <div class="campaign__title">Rabid Rabbits</div>
-      </div>
-      <div class="vid-grid vid-grid--1">
-        <div class="vid-card">
+  </aside>
+
+  <!-- ── RIGHT STAGE ── -->
+  <div class="stage">
+
+    <!-- 01: Rabid Rabbits -->
+    <div class="panel active" id="p0" role="tabpanel">
+      <div class="vid-area vid-area--1">
+        <div class="vid-slot">
           <video controls preload="none" poster="video/rabid-rabbits-poster.jpg">
             <source src="video/rabid-rabbits.mp4" type="video/mp4">
           </video>
-          <div class="vid-card__cap">Rabid Rabbits — Game Concept</div>
         </div>
       </div>
-    </section>
+      <div class="meta">
+        <div class="meta__left">
+          <div class="meta__tag">Game Concept</div>
+          <div class="meta__title">Rabid Rabbits</div>
+          <div class="meta__desc">An original mobile game concept — trailer produced with Higgsfield.</div>
+        </div>
+        <a href="https://www.linkedin.com/posts/bradseraphin_about-a-year-ago-i-pitched-a-mobile-game-activity-7495540813649674241-MZOH?utm_source=share&utm_medium=member_desktop&rcm=ACoAAAC1jBEBgniCTifbYYsD5N9hTimzbtrJUEo" target="_blank" rel="noopener" class="meta__link">Read the writeup ↗</a>
+      </div>
+    </div>
 
-  </div>
-</main>
+    <!-- 02: TurboTax -->
+    <div class="panel" id="p1" role="tabpanel">
+      <div class="vid-area vid-area--2">
+        <div class="vid-slot">
+          <video controls preload="none" poster="video/turbotax-hard-at-work-poster.jpg">
+            <source src="video/turbotax-hard-at-work.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="vid-slot">
+          <video controls preload="none" poster="video/turbotax-tax-circus-poster.jpg">
+            <source src="video/turbotax-tax-circus.mp4" type="video/mp4">
+          </video>
+        </div>
+      </div>
+      <div class="meta">
+        <div class="meta__left">
+          <div class="meta__tag">Campaign Concept · TurboTax</div>
+          <div class="meta__title">Say No To Tax Clowns</div>
+          <div class="meta__desc">Two spots making the case for TurboTax against the chaos of tax season — produced with Higgsfield.</div>
+        </div>
+        <a href="https://www.linkedin.com/pulse/say-tax-clowns-bradley-seraphin-gdmcc" target="_blank" rel="noopener" class="meta__link">Read the writeup ↗</a>
+      </div>
+    </div>
 
-<script src="../js/main.js"></script>
+    <!-- 03: Shiba Story Go -->
+    <div class="panel" id="p2" role="tabpanel">
+      <div class="vid-area vid-area--3">
+        <div class="vid-slot vid-slot--main">
+          <video id="ssg-main" controls preload="none" poster="../work/video/how-far-would-you-go-poster.jpg">
+            <source src="../work/video/how-far-would-you-go.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="vid-thumbs">
+          <div class="vid-thumb is-active"
+               data-src="../work/video/how-far-would-you-go.mp4"
+               data-poster="../work/video/how-far-would-you-go-poster.jpg">
+            <video preload="none" poster="../work/video/how-far-would-you-go-poster.jpg" muted playsinline>
+              <source src="../work/video/how-far-would-you-go.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div class="vid-thumb"
+               data-src="../work/video/two-dogs-one-fate.mp4"
+               data-poster="../work/video/two-dogs-one-fate-poster.jpg">
+            <video preload="none" poster="../work/video/two-dogs-one-fate-poster.jpg" muted playsinline>
+              <source src="../work/video/two-dogs-one-fate.mp4" type="video/mp4">
+            </video>
+          </div>
+          <div class="vid-thumb"
+               data-src="../work/video/ordinary-dog.mp4"
+               data-poster="../work/video/ordinary-dog-poster.jpg">
+            <video preload="none" poster="../work/video/ordinary-dog-poster.jpg" muted playsinline>
+              <source src="../work/video/ordinary-dog.mp4" type="video/mp4">
+            </video>
+          </div>
+        </div>
+      </div>
+      <div class="meta">
+        <div class="meta__left">
+          <div class="meta__tag">Hyper-Local Mobile Ads · Proof of Play</div>
+          <div class="meta__title">Shiba Story Go!</div>
+          <div class="meta__desc">Cinematic trailer-style ads for a global launch — produced in hours with Higgsfield, Claude, and Canva.</div>
+        </div>
+        <a href="https://www.linkedin.com/pulse/fable-higgsfield-glorious-brad-seraphin-ktdkc/" target="_blank" rel="noopener" class="meta__link">Read the writeup ↗</a>
+      </div>
+    </div>
+
+  </div><!-- /stage -->
+
+</div><!-- /shell -->
+
+<script>
+// ── Project switching ──
+const btns   = document.querySelectorAll('.proj-btn');
+const panels = document.querySelectorAll('.panel');
+
+btns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    const target = btn.dataset.panel;
+
+    // Pause any playing video in the current panel before switching
+    document.querySelector('.panel.active')
+      ?.querySelectorAll('video')
+      .forEach(v => v.pause());
+
+    btns.forEach(b => { b.classList.remove('active'); b.setAttribute('aria-selected','false'); });
+    panels.forEach(p => p.classList.remove('active'));
+
+    btn.classList.add('active');
+    btn.setAttribute('aria-selected', 'true');
+    document.getElementById(target).classList.add('active');
+  });
+});
+
+// ── SSG thumbnail switcher ──
+const mainVid = document.getElementById('ssg-main');
+const thumbs  = document.querySelectorAll('.vid-thumb');
+
+thumbs.forEach(thumb => {
+  thumb.addEventListener('click', () => {
+    const src    = thumb.dataset.src;
+    const poster = thumb.dataset.poster;
+
+    mainVid.pause();
+    mainVid.poster = poster;
+    mainVid.querySelector('source').setAttribute('src', src);
+    mainVid.load();
+
+    thumbs.forEach(t => t.classList.remove('is-active'));
+    thumb.classList.add('is-active');
+  });
+});
+</script>
 </body>
 </html>
