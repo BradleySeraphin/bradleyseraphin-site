@@ -203,6 +203,20 @@
     chapterSections.forEach(function (s) { railIo.observe(s); });
   }
 
+  /* ---------------- Discipline tab switcher ---------------- */
+  var discTabs = document.querySelectorAll(".disc-tab");
+  var discPanels = document.querySelectorAll(".disc-panel");
+  if (discTabs.length) {
+    discTabs.forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        discTabs.forEach(function (b) { b.classList.remove("active"); });
+        discPanels.forEach(function (p) { p.classList.remove("active"); });
+        btn.classList.add("active");
+        document.getElementById("disc-" + btn.dataset.disc).classList.add("active");
+      });
+    });
+  }
+
   /* ---------------- Active nav link highlight ---------------- */
   var sections = document.querySelectorAll("main section[id]");
   var navLinks = document.querySelectorAll(".nav__links a");

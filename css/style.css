@@ -1337,6 +1337,178 @@ footer {
   .role-closer__logos img { height: 42px; }
 }
 
+/* ---------------- Hero byline (portrait + name) ---------------- */
+
+.hero__byline {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 28px;
+  opacity: 0;
+  animation: rise 0.7s var(--ease) 0.1s forwards;
+}
+
+.hero__portrait {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+  object-position: 50% 12%;
+  filter: grayscale(1);
+  border: 1px solid rgba(255,255,255,0.15);
+  flex-shrink: 0;
+}
+
+.hero__name {
+  font-family: var(--mono);
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-dim);
+}
+
+/* ---------------- Discipline tabs ---------------- */
+
+.disc-section {
+  padding: 96px 0 120px;
+  border-bottom: 1px solid var(--line);
+}
+
+.disc-tabs {
+  display: flex;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 52px;
+}
+
+.disc-tab {
+  font-family: var(--sans);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--ink-faint);
+  padding: 0 0 18px;
+  margin-right: 40px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.2s;
+  white-space: nowrap;
+}
+
+.disc-tab::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 0; right: 0;
+  height: 2px;
+  background: var(--accent);
+  opacity: 0;
+  transition: opacity 0.25s var(--ease);
+}
+
+.disc-tab.active { color: var(--ink); }
+.disc-tab.active::after { opacity: 1; }
+.disc-tab:hover:not(.active) { color: var(--ink-dim); }
+
+.disc-panel { display: none; }
+.disc-panel.active {
+  display: block;
+  animation: panel-in 0.35s var(--ease);
+}
+
+@keyframes panel-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.disc-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 24px;
+  margin-bottom: 48px;
+  padding-bottom: 48px;
+  border-bottom: 1px solid var(--line);
+}
+
+.disc-metric b {
+  display: block;
+  font-family: var(--sans);
+  font-size: clamp(36px, 4.5vw, 52px);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--ink);
+  line-height: 1;
+}
+
+.disc-metric span {
+  display: block;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  margin-top: 8px;
+  line-height: 1.5;
+  max-width: 220px;
+}
+
+.disc-cards {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.disc-card {
+  background: var(--bg-alt);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 28px 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  transition: border-color 0.2s var(--ease);
+  text-decoration: none;
+  color: inherit;
+}
+
+.disc-card:hover { border-color: rgba(255,255,255,0.18); }
+
+.disc-card__logo {
+  height: 26px;
+  width: auto;
+  max-width: 120px;
+  object-fit: contain;
+  object-position: left center;
+  filter: grayscale(1) brightness(2);
+  opacity: 0.6;
+  display: block;
+}
+
+.disc-card__proof {
+  font-size: 14px;
+  color: var(--ink-dim);
+  line-height: 1.7;
+  flex: 1;
+}
+
+.disc-card__link {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.07em;
+  color: var(--accent);
+}
+
+@media (max-width: 900px) {
+  .disc-cards { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 640px) {
+  .disc-tabs { overflow-x: auto; padding-bottom: 0; }
+  .disc-tab { font-size: 13px; margin-right: 24px; }
+  .disc-section { padding: 72px 0 90px; }
+  .disc-metric b { font-size: 30px; }
+}
+
 /* ---------------- Responsive ---------------- */
 
 @media (max-width: 900px) {
