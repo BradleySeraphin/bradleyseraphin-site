@@ -26,55 +26,45 @@
 
 <main>
 
-  <section class="hero" id="top">
-    <div class="hero__bg">
-      <div class="hero__grid" data-speed="0.12"></div>
-      <canvas id="particles"></canvas>
-      <div class="hero__glow" data-speed="0.06"></div>
-      <div class="hero__photo" data-speed="0.03">
-        <img src="assets/brad-hero.jpg" alt="Bradley Seraphin">
+  <section class="hero calm" id="top">
+    <canvas id="flow" aria-hidden="true"></canvas>
+
+    <div class="wrap calm__top">
+      <div class="calm__copy">
+        <h1 class="hero__title" aria-label="Marketing Technologist">
+          <span class="line-break"><span class="word"><span style="animation-delay:.05s">Marketing</span></span></span>
+          <span class="line-break"><span class="word"><span style="animation-delay:.18s" class="accent">Technologist.</span></span></span>
+        </h1>
+        <p class="hero__sub">
+          Bradley's been surfing the wave of cutting-edge marketing technologies from the early
+          days of social, SEO, and SEM, through the proliferation of AI, with a growth mindset
+          and a Lean build, measure, learn philosophy.
+        </p>
+        <div class="calm__pillars" role="group" aria-label="Specialties">
+          <button type="button" data-pillar="pm" aria-pressed="false"><i></i>Product Marketing</button>
+          <button type="button" data-pillar="gtm" aria-pressed="false"><i></i>Go-to-Market</button>
+          <button type="button" data-pillar="growth" aria-pressed="false"><i></i>User Acquisition &amp; Growth</button>
+        </div>
       </div>
+
+      <figure class="calm__me">
+        <img src="assets/surf-portrait.jpg" alt="Bradley Seraphin">
+        <figcaption>
+          <b>Bradley Seraphin</b>
+          <span><i class="calm__live"></i>San Diego, CA · Available for full-time and consulting roles</span>
+        </figcaption>
+      </figure>
     </div>
 
-    <div class="wrap hero__content">
-      <div class="hero__eyebrow">
-        <span class="rule"></span>
-        <span class="mono-tag">Product Marketing, Go-to-Market, User Acquisition & Growth</span>
+    <div class="swell" id="swell">
+      <div class="swell__stage">
+        <svg class="swell__svg" aria-hidden="true"></svg>
+        <div class="swell__scan" aria-hidden="true"><i></i></div>
+        <div class="swell__crest" aria-hidden="true"><b></b><span></span></div>
+        <button type="button" class="swell__back" hidden>← All waves</button>
       </div>
-
-      <h1 class="hero__title" aria-label="Marketing Technologist">
-        <span class="line-break">
-          <span class="word"><span style="animation-delay:.05s">Marketing</span></span>
-        </span>
-        <span class="line-break">
-          <span class="word"><span style="animation-delay:.18s" class="accent">Technologist.</span></span>
-        </span>
-      </h1>
-
-      <p class="hero__sub">
-        Bradley's been surfing the wave of cutting-edge marketing technologies from the early
-        days of social, SEO, and SEM, through the proliferation of AI, with a growth mindset
-        and a Lean build, measure, learn philosophy.
-      </p>
-
-      <div class="hero__cta">
-        <a href="#work" class="btn btn--solid">Work Highlights</a>
-        <a href="assets/Bradley-Seraphin-Resume.pdf" download class="btn btn--ghost">Download résumé</a>
-        <a href="#contact" class="btn btn--ghost">Contact</a>
-      </div>
-    </div>
-
-    <div class="scroll-cue"><span class="scroll-cue__line"></span>SCROLL</div>
-
-    <div class="hero__wave" aria-hidden="true">
-      <!-- back wave: period=720, 4 full periods across the 2880-unit SVG — loops seamlessly at translateX(-50%) -->
-      <svg class="wave-layer wave-layer--back" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2880 100" preserveAspectRatio="none">
-        <path d="M0,75 C120,35 240,35 360,75 C480,115 600,115 720,75 C840,35 960,35 1080,75 C1200,115 1320,115 1440,75 C1560,35 1680,35 1800,75 C1920,115 2040,115 2160,75 C2280,35 2400,35 2520,75 C2640,115 2760,115 2880,75 L2880,100 L0,100 Z" fill="rgba(77,163,255,0.05)"/>
-      </svg>
-      <!-- front wave: period=480, 6 full periods across 2880 — slightly faster, different rhythm -->
-      <svg class="wave-layer wave-layer--front" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2880 100" preserveAspectRatio="none">
-        <path d="M0,82 C80,52 160,52 240,82 C320,112 400,112 480,82 C560,52 640,52 720,82 C800,112 880,112 960,82 C1040,52 1120,52 1200,82 C1280,112 1360,112 1440,82 C1520,52 1600,52 1680,82 C1760,112 1840,112 1920,82 C2000,52 2080,52 2160,82 C2240,112 2320,112 2400,82 C2480,52 2560,52 2640,82 C2720,112 2800,112 2880,82 L2880,100 L0,100 Z" fill="rgba(77,163,255,0.035)"/>
-      </svg>
+      <div class="swell__axis wrap-wide" role="tablist" aria-label="Career moments"></div>
+      <div class="swell__readout wrap" id="swell-card" aria-live="polite"></div>
     </div>
   </section>
 
@@ -106,9 +96,16 @@
         <p>Anecdotes and artifacts of a marketing technologist. Click a card for the detail.</p>
       </div>
 
+      <div class="work-filter" role="group" aria-label="Filter work by specialty">
+        <button type="button" data-filter="all" aria-pressed="true">All</button>
+        <button type="button" data-filter="pm" aria-pressed="false">Product Marketing</button>
+        <button type="button" data-filter="gtm" aria-pressed="false">Go-to-Market</button>
+        <button type="button" data-filter="growth" aria-pressed="false">UA &amp; Growth</button>
+      </div>
+
       <div class="work-grid">
 
-        <article class="case reveal">
+        <article class="case reveal" data-pillars="growth gtm">
           <div class="case__top">
             <span class="case__num">01 · Proof of Play</span>
             <span class="case__toggle">+</span>
@@ -122,17 +119,14 @@
             <div class="case__metric"><b>12.2K / 49.2K</b><span>Instagram / YouTube</span></div>
           </div>
           <div class="case__visuals">
-            <a class="case__visual" href="work/proof-of-play.html" aria-label="Watch: How Far Would You Go">
-              <img src="work/video/how-far-would-you-go-poster.jpg" alt="How Far Would You Go, cinematic ad">
-              <span class="case__visual__play"><span>▶</span></span>
+            <a class="case__visual" href="work/proof-of-play.html" aria-label="Mobile Game Report home">
+              <img src="work/img/mgr-home.png" alt="Mobile Game Report home page">
             </a>
-            <a class="case__visual" href="work/proof-of-play.html" aria-label="Watch: Two Dogs, One Fate">
-              <img src="work/video/two-dogs-one-fate-poster.jpg" alt="Two Dogs, One Fate, cinematic ad">
-              <span class="case__visual__play"><span>▶</span></span>
+            <a class="case__visual" href="work/proof-of-play.html" aria-label="Game Intelligence Radar">
+              <img src="work/img/mgr-radar.png" alt="Game Intelligence Radar">
             </a>
-            <a class="case__visual" href="work/proof-of-play.html" aria-label="Watch: Ordinary Dog">
-              <img src="work/video/ordinary-dog-poster.jpg" alt="Ordinary Dog, cinematic ad">
-              <span class="case__visual__play"><span>▶</span></span>
+            <a class="case__visual" href="work/proof-of-play.html" aria-label="Mobile Game Report articles">
+              <img src="work/img/mgr-articles.png" alt="Mobile Game Report articles">
             </a>
           </div>
           <div class="case__detail">
@@ -149,7 +143,7 @@
           </div>
         </article>
 
-        <article class="case reveal">
+        <article class="case reveal" data-pillars="gtm pm">
           <div class="case__top">
             <span class="case__num">02 · Shutterstock</span>
             <span class="case__toggle">+</span>
@@ -170,7 +164,7 @@
           </div>
         </article>
 
-        <article class="case reveal">
+        <article class="case reveal" data-pillars="pm gtm">
           <div class="case__top">
             <span class="case__num">03 · HP Inc.</span>
             <span class="case__toggle">+</span>
@@ -207,7 +201,7 @@
           </div>
         </article>
 
-        <article class="case reveal">
+        <article class="case reveal" data-pillars="">
           <div class="case__top">
             <span class="case__num">04 · Curious Minds</span>
             <span class="case__toggle">+</span>
@@ -232,7 +226,7 @@
           </div>
         </article>
 
-        <article class="case reveal">
+        <article class="case reveal" data-pillars="growth">
           <div class="case__top">
             <span class="case__num">05 · Veoh Networks</span>
             <span class="case__toggle">+</span>
