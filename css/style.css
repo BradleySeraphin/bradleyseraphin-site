@@ -451,6 +451,110 @@ section { position: relative; }
   color: var(--ink-dim);
 }
 
+/* ---------------- Creative feature ---------------- */
+
+.creative-feature {
+  padding: 100px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: var(--bg-alt);
+}
+
+.creative-feature__inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+
+.creative-feature__hed {
+  font-family: var(--sans);
+  font-weight: 600;
+  font-size: clamp(36px, 5vw, 58px);
+  letter-spacing: -0.02em;
+  margin-top: 18px;
+  line-height: 1;
+}
+
+.creative-feature__copy p {
+  color: var(--ink-dim);
+  font-size: 16px;
+  line-height: 1.75;
+  max-width: 400px;
+  margin-top: 20px;
+}
+
+.creative-feature__cta {
+  display: inline-block;
+  margin-top: 36px;
+}
+
+.creative-feature__strip {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+
+.creative-feature__thumb {
+  position: relative;
+  display: block;
+  aspect-ratio: 9 / 16;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  background: var(--bg);
+}
+
+.creative-feature__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  filter: grayscale(0.25) brightness(0.9);
+  transition: filter 0.4s var(--ease), transform 0.4s var(--ease);
+}
+
+.creative-feature__thumb:hover img {
+  filter: grayscale(0) brightness(1);
+  transform: scale(1.04);
+}
+
+.creative-feature__play {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.creative-feature__play::after {
+  content: "▶";
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: rgba(8, 9, 12, 0.55);
+  border: 1.5px solid rgba(255, 255, 255, 0.3);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: #fff;
+  transition: background 0.25s, border-color 0.25s;
+}
+
+.creative-feature__thumb:hover .creative-feature__play::after {
+  background: rgba(77, 163, 255, 0.25);
+  border-color: rgba(77, 163, 255, 0.7);
+}
+
+@media (max-width: 860px) {
+  .creative-feature__inner { grid-template-columns: 1fr; gap: 48px; }
+  .creative-feature__copy p { max-width: none; }
+  .creative-feature__strip { max-width: 480px; }
+}
+
 /* ---------------- About ---------------- */
 
 .about {
