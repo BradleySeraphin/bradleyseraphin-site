@@ -193,11 +193,13 @@ section { position: relative; }
   border-bottom: 1px solid var(--line);
   padding: 26px 0;
   background: var(--bg-alt);
+  overflow: hidden;
 }
 
 .marquee {
   display: flex;
   width: max-content;
+  will-change: transform;
   animation: scroll-left 32s linear infinite;
 }
 
@@ -206,6 +208,7 @@ section { position: relative; }
 .marquee__group {
   display: flex;
   align-items: center;
+  flex-shrink: 0;
 }
 
 .marquee__item {
@@ -240,8 +243,8 @@ section { position: relative; }
 }
 
 @keyframes scroll-left {
-  from { transform: translateX(0); }
-  to { transform: translateX(-50%); }
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
 }
 
 /* ---------------- Section heads ---------------- */
