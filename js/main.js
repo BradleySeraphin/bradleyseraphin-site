@@ -310,7 +310,7 @@
     b.type = "button"; b.setAttribute("role", "tab");
     b.innerHTML = "<span class=\"dots\">" + ORDER.map(function (k) { return m.l[k] ? '<i style="background:' + LENS[k].color + '"></i>' : ""; }).join("") +
       "</span><b>" + m.axis + "</b><em>" + m.yr + "</em>";
-    b.addEventListener("click", function () { select(m.id); });
+    b.addEventListener("click", (function (m_captured) { return function () { if (lens !== "all" && !m_captured.l[lens]) setLens("all"); select(m_captured.id); }; })(m));
     b.addEventListener("mouseenter", function () { hover = i; });
     b.addEventListener("mouseleave", function () { hover = -1; });
     axis.appendChild(b); return b;
@@ -434,7 +434,7 @@
   stage.addEventListener("pointerleave", function () { pointerX = null; });
   stage.addEventListener("click", function (e) {
     var r = stage.getBoundingClientRect(), i = nearest(e.clientX - r.left);
-    if (lens !== "all" && !M[i].l[lens]) return;
+    if (lens !== "all" && !M[i].l[lens]) setLens("all");
     select(M[i].id);
   });
   axis.addEventListener("keydown", function (e) {
