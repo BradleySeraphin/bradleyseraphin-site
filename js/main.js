@@ -413,7 +413,7 @@
     });
   }
 
-  function select(id) { selected = id; renderCard(); card.scrollIntoView({ behavior: "smooth", block: "nearest" }); }
+  function select(id) { selected = id; renderCard(); }
 
   function setLens(key) {
     lens = key;

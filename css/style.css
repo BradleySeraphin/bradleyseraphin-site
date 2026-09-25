@@ -1319,7 +1319,7 @@ footer {
 .calm__pillars button[aria-pressed="true"] { background: var(--c); border-color: var(--c); color: #06080c; }
 .calm__pillars button[aria-pressed="true"] i { background: #06080c; box-shadow: none; }
 
-.swell { position: relative; z-index: 2; margin-top: 44px; background: linear-gradient(180deg, rgba(6,8,12,0) 0, #06080c 200px); }
+.swell { position: relative; z-index: 2; margin-top: 44px; background: linear-gradient(180deg, #06080c 0px, #06080c 160px, rgba(6,8,12,0) 220px); }
 .swell__stage { position: relative; cursor: crosshair; }
 .swell__svg { display: block; width: 100%; height: 200px; }
 .swell__scan { position: absolute; left: 0; top: 0; bottom: 0; width: 1px; background: linear-gradient(180deg, rgba(255,255,255,0), rgba(255,255,255,0.35)); pointer-events: none; transition: opacity 0.2s; }
@@ -1344,10 +1344,21 @@ footer {
 .swell__axis .dots i { width: 5px; height: 5px; border-radius: 50%; }
 .swell__axis b { display: block; font-family: var(--mono); font-weight: 500; font-size: 10.5px; letter-spacing: 0.06em; text-transform: uppercase; white-space: nowrap; }
 .swell__axis em { display: block; font-style: normal; font-family: var(--mono); font-size: 10px; color: var(--ink-faint); white-space: nowrap; }
-.swell__axis button:hover, .swell__axis button.is-selected { color: var(--ink); }
+.swell__axis button:hover { color: var(--ink-dim); }
+.swell__axis button.is-selected { color: var(--ink); }
+.swell__axis button.is-selected b { position: relative; }
+.swell__axis button.is-selected b::after {
+  content: "";
+  position: absolute;
+  left: 50%; bottom: -5px;
+  transform: translateX(-50%);
+  width: 18px; height: 2px;
+  border-radius: 1px;
+  background: var(--ink);
+}
 .swell__axis button.is-dim { opacity: 0.25; }
 
-.swell__readout { display: grid; grid-template-columns: 1fr auto; gap: 40px; align-items: start; padding: 28px 0 44px; border-top: 1px solid rgba(255,255,255,0.10); }
+.swell__readout { display: grid; grid-template-columns: 1fr auto; gap: 40px; align-items: start; padding: 28px 0 36px; border-bottom: 1px solid rgba(255,255,255,0.08); }
 .swell__line { display: flex; flex-direction: column; align-items: flex-start; gap: 12px; }
 .swell__line .k { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-dim); }
 .swell__line h4 { min-width: 0; font-family: var(--sans); font-weight: 600; font-size: clamp(20px, 2vw, 28px); line-height: 1.25; }
@@ -1367,7 +1378,7 @@ footer {
 
 
 @media (max-width: 900px) {
-  .swell__readout { grid-template-columns: 1fr; gap: 18px; padding: 22px 0 32px; }
+  .swell__readout { grid-template-columns: 1fr; gap: 16px; padding: 20px 0 28px; border-bottom: 1px solid rgba(255,255,255,0.08); }
   .swell__meta { min-width: 0; max-width: none; }
   .swell__line, .swell__meta { gap: 10px; }
   .swell__axis b { font-size: 9px; }
