@@ -232,6 +232,7 @@
     growth: { name: "User Acquisition & Growth", color: "#ffb454" }
   };
   var ORDER = ["pm", "gtm", "growth"];
+  var LENS_DEFAULT = { pm: "create", gtm: "robot", growth: "ua" };
 
   var M = [
     { id: "veoh", axis: "Veoh", yr: "2005–08", label: "22M", co: "Veoh Networks", era: "2005–2008 · Online video's infancy", href: "work/veoh.html",
@@ -377,12 +378,19 @@
     var cx = mx(si), cy = surfaceY(cx);
     crest.style.transform = "translate(" + cx + "px," + cy + "px)";
 
-    // scan line + rider follow the pointer
+    // scan line + rider: full opacity on hover, ghost breathe at selected x when idle
     if (pointerX !== null) {
-      scan.style.opacity = 1;
+      scan.classList.remove("is-ghost");
+      scan.style.opacity = "1";
       scan.style.transform = "translateX(" + pointerX + "px)";
       scan.firstChild.style.transform = "translateY(" + surfaceY(pointerX) + "px)";
-    } else scan.style.opacity = 0;
+    } else {
+      var si2 = M.findIndex(function (m) { return m.id === selected; });
+      var gx = mx(si2);
+      scan.style.transform = "translateX(" + gx + "px)";
+      scan.firstChild.style.transform = "translateY(" + surfaceY(gx) + "px)";
+      if (!scan.classList.contains("is-ghost")) { scan.style.opacity = ""; scan.classList.add("is-ghost"); }
+    }
 
     ticks.forEach(function (b, i) {
       var inLens = lens === "all" || !!M[i].l[lens];
@@ -413,7 +421,21 @@
     });
   }
 
-  function select(id) { selected = id; renderCard(); }
+  function beaconNeighbors() {
+    var si = M.findIndex(function (m) { return m.id === selected; });
+    var left = -1, right = -1;
+    for (var i = si - 1; i >= 0; i--) { if (lens === "all" || M[i].l[lens]) { left = i; break; } }
+    for (var j = si + 1; j < M.length; j++) { if (lens === "all" || M[j].l[lens]) { right = j; break; } }
+    [left, right].forEach(function (idx) {
+      if (idx < 0) return;
+      var b = ticks[idx];
+      b.classList.remove("is-beacon"); void b.offsetWidth;
+      b.classList.add("is-beacon");
+      setTimeout(function () { b.classList.remove("is-beacon"); }, 1100);
+    });
+  }
+
+  function select(id) { selected = id; renderCard(); beaconNeighbors(); }
 
   function setLens(key) {
     lens = key;
@@ -421,12 +443,17 @@
       b.setAttribute("aria-pressed", b.dataset.pillar === key ? "true" : "false");
     });
     if (key !== "all") {
-      var cur = M.filter(function (q) { return q.id === selected; })[0];
-      if (!cur.l[key]) selected = M.filter(function (q) { return q.l[key]; })[0].id;
+      if (LENS_DEFAULT[key]) {
+        selected = LENS_DEFAULT[key];
+      } else {
+        var cur = M.filter(function (q) { return q.id === selected; })[0];
+        if (!cur.l[key]) selected = M.filter(function (q) { return q.l[key]; })[0].id;
+      }
     }
     if (backBtn) backBtn.hidden = key === "all";
     renderCard();
     filterWork(key);
+    runScan();
   }
 
   // pointer: ride the swell; click to lock a moment
@@ -466,6 +493,70 @@
   window.addEventListener("resize", measure);
   if (reduce) { setInterval(draw, 300); return; }
   (function loop() { t += 0.016; draw(); requestAnimationFrame(loop); })();
+
+  // Wave flash: briefly glow the active wave line after scan completes
+  function flashWave() {
+    var k = lens === "all" ? ORDER[0] : lens;
+    var ln = lines[k];
+    if (!ln) return;
+    ln.style.filter = "drop-shadow(0 0 6px " + LENS[k].color + ") drop-shadow(0 0 14px " + LENS[k].color + ")";
+    setTimeout(function () { ln.style.filter = ""; }, 700);
+  }
+
+  // Auto-scan: sweep once when stage enters view, and again on each lens switch
+  var scanGen = 0;
+  function runScan() {
+    var gen = ++scanGen, dur = 2400, s0 = null;
+    (function frame(ts) {
+      if (scanGen !== gen) return;
+      if (!s0) s0 = ts;
+      var p = Math.min((ts - s0) / dur, 1);
+      p = p < 0.5 ? 2 * p * p : -1 + (4 - 2 * p) * p;
+      pointerX = p * (stage.offsetWidth || W);
+      if (p < 1) requestAnimationFrame(frame);
+      else { pointerX = null; flashWave(); }
+    })(performance.now());
+    var cancel = function () { if (scanGen === gen) { scanGen++; pointerX = null; } };
+    stage.addEventListener("pointermove", cancel, { once: true });
+    stage.addEventListener("click", cancel, { once: true });
+  }
+  var scanObs = new IntersectionObserver(function (entries) {
+    if (!entries[0].isIntersecting) return;
+    scanObs.disconnect();
+    runScan();
+  }, { threshold: 0.4 });
+  scanObs.observe(stage);
+
+  // Pillar idle cycle: pulse buttons sequentially if user hasn't picked a lens after 4s
+  var idleFired = false;
+  setTimeout(function () {
+    if (lens !== "all" || idleFired) return;
+    idleFired = true;
+    var btns = Array.from(document.querySelectorAll(".calm__pillars button"));
+    var i = 0;
+    (function next() {
+      if (i >= btns.length) return;
+      var b = btns[i++];
+      b.classList.add("is-idle-pulse");
+      setTimeout(function () { b.classList.remove("is-idle-pulse"); setTimeout(next, 160); }, 580);
+    })();
+  }, 4000);
+})();
+
+/* ---------------- Marquee: ensure enough groups for seamless loop at any viewport width ---------------- */
+(function () {
+  var wrap = document.querySelector(".marquee");
+  if (!wrap) return;
+  var primary = wrap.querySelector(".marquee__group");
+  if (!primary) return;
+  var safety = 8;
+  while (wrap.scrollWidth < window.innerWidth * 3 && --safety > 0) {
+    var clone = primary.cloneNode(true);
+    clone.setAttribute("aria-hidden", "true");
+    wrap.appendChild(clone);
+  }
+  var n = wrap.querySelectorAll(".marquee__group").length;
+  document.documentElement.style.setProperty("--marquee-shift", "-" + (100 / n).toFixed(4) + "%");
 })();
 
 /* ---------------- Flow field: wind/swell streamlines behind the hero ---------------- */
