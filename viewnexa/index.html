@@ -146,10 +146,16 @@ details.vn-acc .acc-body p { font-size: 14.5px; margin-bottom: 8px; }
 .vn-modal__foot { margin-top: 20px; padding-top: 12px; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 11px !important; color: var(--ink-faint) !important; }
 
 /* scroll cue for interactive elements */
-.vn-info, .tabs, .seg-btns, .field, .toggle, select.vn-sel, details.vn-acc summary { transition: box-shadow 0.25s ease, border-color 0.25s ease, background 0.25s ease; border-radius: 8px; }
-.vn-cue { box-shadow: 0 0 0 1px var(--accent), 0 0 18px rgba(77,163,255,0.55) !important; }
-.vn-info.vn-cue { background: var(--accent); color: var(--bg); }
-.field.vn-cue { background: rgba(77,163,255,0.06); }
+.vn-info, .field, .toggle, select.vn-sel, details.vn-acc summary { transition: box-shadow 0.25s ease, background 0.25s ease, transform 0.25s ease; border-radius: 8px; }
+.tabs button, .seg-btns button { transition: all 0.2s ease; }
+.vn-cue { box-shadow: 0 0 0 1px var(--accent), 0 0 22px rgba(77,163,255,0.6) !important; }
+.field.vn-cue, .toggle.vn-cue { background: rgba(77,163,255,0.08); }
+.vn-info.vn-cue { background: var(--accent); color: var(--bg); transform: scale(1.35); }
+.tabs button.vn-cue-btn, .seg-btns button.vn-cue-btn { color: var(--ink) !important; border-color: var(--accent) !important; background: rgba(77,163,255,0.22) !important; box-shadow: 0 0 20px rgba(77,163,255,0.75); transform: translateY(-2px) scale(1.06); }
+.tabs button.active.vn-cue-btn, .seg-btns button.active.vn-cue-btn { color: var(--bg) !important; background: var(--accent) !important; }
+/* clearer resting affordance for buttons */
+.tabs button:not(.active), .seg-btns button:not(.active) { border-color: rgba(255,255,255,0.22); color: var(--ink); }
+.tabs button:not(.active):hover, .seg-btns button:not(.active):hover { border-color: var(--accent); background: rgba(77,163,255,0.1); }
 
 @media (max-width: 860px) {
   .calc__body { grid-template-columns: 1fr; }
@@ -260,7 +266,7 @@ details.vn-acc .acc-body p { font-size: 14.5px; margin-bottom: 8px; }
       <div class="vn-src">Sources: <a href="https://docs.fcc.gov/public/attachments/DA-26-652A1.pdf">FCC</a>, <a href="https://www.rtdna.org/news/local-tv-news-employment-continues-to-decline">RTDNA</a>, <a href="https://thedesk.net/2026/08/gracenote-data-hub-q3-update-fast-channel-count/">Gracenote via The Desk</a>, <a href="https://www.mediapost.com/publications/article/416513/iab-ctv-ad-spend-estimated-to-grow-11-to-293b.html">IAB via MediaPost</a>, <a href="https://www.businesswire.com/news/home/20251117273854/en">Omdia</a>, <a href="https://www.tvtechnology.com/insights/analysis/bia-political-spending-lifts-2026-local-ad-market-to-usd186-1-billion">BIA via TV Tech</a>, <a href="https://abc30.com/post/nba-nhl-teams-told-main-street-sports-network-will-end-operations/18836353/">ABC30</a>. Also 1,850 megachurches (Hartford Institute) and 1,075 NCAA schools (NCAA).</div>
 
       <h3>Market size</h3>
-      <p><strong>TAM</strong> (total addressable market) is the whole industry: US spending on streaming technology, about <strong>$5.1B to $5.2B</strong> <span class="tag tag-s">Sourced</span>, from GMI's estimate and a cross-check against Caretta's global media software figure. <strong>SAM</strong> (serviceable addressable market) is spending on platforms like ViewNexa that cover content management, channels, apps, distribution and monetization in one. <strong>SOM</strong> (serviceable obtainable market) is current revenue plus what the strategy on this page can win in three years.</p>
+      <p><strong>TAM</strong> (total addressable market) is the whole industry: US spending on streaming technology, about <strong>$5.1B to $5.2B</strong> <span class="tag tag-s">Sourced</span>. Two routes agree: GMI's estimate of the US video streaming software market ($5.1B), and Caretta's $43.5B global broadcast and media software market x 40% US share x 30% streaming share ($5.2B; both percentages are assumptions). <strong>SAM</strong> (serviceable addressable market) is spending on platforms like ViewNexa that cover content management, channels, apps, distribution and monetization in one. <strong>SOM</strong> (serviceable obtainable market) is current revenue plus what the strategy on this page can win in three years.</p>
 
       <div class="calc" id="calc-sam">
         <div class="calc__head"><b>SAM and SOM calculator</b><span class="tag tag-a">Assumptions adjustable</span></div>
@@ -269,12 +275,12 @@ details.vn-acc .acc-body p { font-size: 14.5px; margin-bottom: 8px; }
             <div class="fgroup">Prices a year</div>
             <div class="field"><label>Full-power station <output id="s-fp"></output></label><input type="range" id="i-fp" min="20000" max="90000" step="1000" value="45000"><small>Brightcove's OTT apps list at $50K a year (AWS Marketplace).</small></div>
             <div class="field"><label>Class A and low-power station <output id="s-lp"></output></label><input type="range" id="i-lp" min="4000" max="30000" step="1000" value="12000"><small>2,169 stations. Brightcove Video Cloud lists at $12K.</small></div>
-            <div class="field"><label>Faith organization <output id="s-fa"></output></label><input type="range" id="i-fa" min="4000" max="30000" step="1000" value="12000"><small>About 2,850 buyers (1,850 megachurches plus about 1,000 media ministries).</small></div>
-            <div class="field"><label>Independent streamer <output id="s-in"></output></label><input type="range" id="i-in" min="10000" max="50000" step="1000" value="25000"><small>About 500 buyers. Vimeo Enterprise averaged $23K a year.</small></div>
+            <div class="field"><label>Faith organization <output id="s-fa"></output></label><input type="range" id="i-fa" min="4000" max="30000" step="1000" value="12000"><small>About 2,850 buyers: 1,850 megachurches (Hartford Institute) plus about 1,000 media ministries (NRB membership, an older figure).</small></div>
+            <div class="field"><label>Independent streamer <output id="s-in"></output></label><input type="range" id="i-in" min="10000" max="50000" step="1000" value="25000"><small>About 500 buyers, a placeholder: 1,442 US FAST channels less those owned by broadcasters. Vimeo Enterprise averaged $23K a year.</small></div>
             <div class="field"><label>Group discount <output id="s-gd"></output></label><input type="range" id="i-gd" min="0" max="40" step="5" value="20"></div>
             <div class="field"><label>Share of full-power stations in groups of 5+ <output id="s-gs"></output></label><input type="range" id="i-gs" min="0" max="100" step="5" value="80"></div>
             <div class="fgroup">Growth</div>
-            <div class="field"><label>Current revenue <output id="s-cur"></output></label><input type="range" id="i-cur" min="1000000" max="5000000" step="250000" value="2500000"><small>Not public. Estimated two ways at $2.1M to $3.8M.</small></div>
+            <div class="field"><label>Current revenue <output id="s-cur"></output></label><input type="range" id="i-cur" min="1000000" max="5000000" step="250000" value="2500000"><small>Not public, so estimated two ways. By headcount: about 15 staff (assumed) x $150K to $250K revenue per employee (Amagi runs about $155K) = $2.3M to $3.8M. By customers: 6 broadcast groups averaging 6 stations at $36K a station, plus 7 smaller accounts at $20K, plus about $650K of FAST ad revenue share = about $2.1M.</small></div>
             <div class="field"><label>Sellers <output id="s-sel"></output></label><input type="range" id="i-sel" min="1" max="6" step="1" value="2"></div>
             <div class="field"><label>New deals per seller a year <output id="s-dps"></output></label><input type="range" id="i-dps" min="2" max="20" step="1" value="8"></div>
             <div class="field"><label>Expansion from the roadmap, a year <output id="s-ex"></output></label><input type="range" id="i-ex" min="0" max="30" step="1" value="10"><small>Placeholder until the roadmap is known.</small></div>
@@ -929,7 +935,7 @@ details.vn-acc .acc-body p { font-size: 14.5px; margin-bottom: 8px; }
   }
 
   var SWOT = [
-    ["Amagi", "Scale (9,000+ channel deliveries, 300+ platforms); top groups (Sinclair, Cox, NBCU); newsroom AI; public-company proof", "No apps or app-facing content management; priced per channel; built for large accounts (about $320K per customer, estimated)", "Mid-size groups priced out of per-channel playout who also need apps", "A lower-cost package and station-group marketing reaching down-market"],
+    ["Amagi", "Scale (9,000+ channel deliveries, 300+ platforms); top groups (Sinclair, Cox, NBCU); newsroom AI; public-company proof", "No apps or app-facing content management; priced per channel; built for large accounts (about $320K per customer: about $129M of software revenue across about 400 customers)", "Mid-size groups priced out of per-channel playout who also need apps", "A lower-cost package and station-group marketing reaching down-market"],
     ["Wurl", "AppLovin ad demand; 60 to 65+ outlets; advertiser research", "No content management or apps; no local TV focus", "Demand plus apps plus local news in one contract", "Buyers who care only about ad revenue"],
     ["Brightcove", "Brand and logo wall; apps on 8 platforms; AI suite; cloud playout", "Ownership change and heavy 2025 layoffs; apps built on Applicaster; no US local TV customers; no VIZIO", "Unsettled customers; a built-for-broadcast contrast", "A 40% lower entry price and the Gen 2 relaunch"],
     ["Quickplay", "Gray across 113 markets with a consolidation and speed story; deep AI with Google Cloud", "Enterprise only; no pricing; one flagship reference; rollouts take months", "\"What Gray built, sized for groups of 2 to 20 stations\"", "A lighter package; Gray absorbing ViewNexa customers' stations"],
@@ -1304,8 +1310,8 @@ details.vn-acc .acc-body p { font-size: 14.5px; margin-bottom: 8px; }
     market: {
       t: "Market",
       a: "Started from sourced counts (FCC, Gracenote, IAB, Omdia, BIA, Pew), then sized the market with definitions set up front: TAM is the whole industry, SAM is all spending on platforms like ViewNexa, and SOM is current revenue plus what this strategy and the product roadmap can win in three years.",
-      d: ["Textbook definitions (SOM as a share of SAM) against SOM tied to a plan. Kept the plan version so the number connects to sellers, deals and pricing.", "First-pass guesses were replaced with benchmarks wherever they were cheap to find. The FAST ad-share estimate, for example, was rebuilt from ad load, sell-through, fill and CPM benchmarks.", "The mid case lands at 7.6% of SAM, above a 3 to 5% sanity check. It is flagged in the calculator, and the low case became the target."],
-      s: ["Prices per segment anchored to list prices (Brightcove, Vimeo, Lightcast, Muvi).", "80% of full-power stations in groups of 5+, with a 20% group discount.", "Current revenue about $2.5M, estimated two ways because it is not public.", "Expansion and churn at 10% a year each; new-deal mix of 40% groups, 40% small, 20% mid-size."]
+      d: ["Textbook definitions (SOM as a share of SAM) against SOM tied to a plan. Kept the plan version so the number connects to sellers, deals and pricing.", "First-pass guesses were replaced with benchmarks wherever they were cheap to find. The FAST ad-share estimate, for example, was rebuilt from benchmarks: 6M streaming hours a month (from an earlier ViewNexa site figure, no longer shown) x 24 thirty-second ad slots an hour x 50% of slots sold by the channel owner x 30% fill x $12.50 CPM = about $3.2M a year to channel owners, of which a 20% vendor share is about $650K.", "The mid case lands at 7.6% of SAM, above a 3 to 5% sanity check. It is flagged in the calculator, and the low case became the target."],
+      s: ["Prices per segment anchored to list prices (Brightcove, Vimeo, Lightcast, Muvi).", "80% of full-power stations in groups of 5+, with a 20% group discount.", "Current revenue about $2.5M, because it is not public. By headcount: about 15 staff x $150K to $250K revenue per employee (Amagi runs about $155K) = $2.3M to $3.8M. By customers: 6 broadcast groups averaging 6 stations at $36K a station ($1.3M), 7 smaller accounts at $20K ($140K) and about $650K of FAST ad share = about $2.1M. The model uses $2.5M, between the two.", "Expansion and churn at 10% a year each; new-deal mix of 40% groups, 40% small, 20% mid-size."]
     },
     customer: {
       t: "Customer",
@@ -1317,7 +1323,7 @@ details.vn-acc .acc-body p { font-size: 14.5px; margin-bottom: 8px; }
       t: "Competition",
       a: "Tore down the seven JD competitors on their product pages, pricing pages and AWS Marketplace listings, then read a SWOT for each from ViewNexa's side. To see who actually powers mid-size station streaming, checked station apps' package names, which surfaced BLOX Digital.",
       d: ["Whether to stay inside the JD's seven. BLOX and \"build it yourself\" were added because they are what mid-size groups run today.", "Research stayed on what was easy to find, to avoid rabbit holes.", "Facts were corrected along the way: Brightcove does offer FAST playout, and Wurl is still owned by AppLovin."],
-      s: ["\"Not stated\" means not found on the vendor's site.", "Amagi's revenue per customer is an estimate from its investor deck."]
+      s: ["\"Not stated\" means not found on the vendor's site.", "Amagi's revenue per customer: about $129M of fiscal 2026 software revenue (converted at an assumed 87 rupees per dollar) across about 400 content-provider customers, from its investor deck, is about $320K each."]
     },
     current: {
       t: "Current state",
@@ -1402,34 +1408,46 @@ details.vn-acc .acc-body p { font-size: 14.5px; margin-bottom: 8px; }
     });
   })();
 
-  /* ================= Scroll cue: briefly light up what's interactive ================= */
+  /* ================= Scroll cue: light up what's interactive as it comes into view ================= */
   (function () {
     if (!("IntersectionObserver" in window)) return;
     if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    var SEL = ".vn-info, .tabs button, .seg-btns button, .field, .toggle, select.vn-sel, details.vn-acc summary";
+    var queue = [], busy = false;
+    function run() {
+      if (busy || !queue.length) return;
+      busy = true;
+      queue.sort(function (x, y) { return x.compareDocumentPosition(y) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1; });
+      var batch = queue.splice(0).filter(function (el) { if (inBand(el)) return true; el.__cued = false; io.observe(el); return false; }), delay = 0;
+      batch.forEach(function (el) {
+        if (el.classList.contains("tabs") || el.classList.contains("seg-btns")) {
+          Array.prototype.slice.call(el.querySelectorAll("button")).forEach(function (btn) {
+            setTimeout(function () { btn.classList.add("vn-cue-btn"); setTimeout(function () { btn.classList.remove("vn-cue-btn"); }, 520); }, delay);
+            delay += 140;
+          });
+          delay += 120;
+        } else {
+          setTimeout(function () { el.classList.add("vn-cue"); setTimeout(function () { el.classList.remove("vn-cue"); }, 700); }, delay);
+          delay += 120;
+        }
+      });
+      setTimeout(function () { busy = false; run(); }, delay + 200);
+    }
+    function inBand(el) {
+      var r = el.getBoundingClientRect(), vh = window.innerHeight;
+      return r.bottom > vh * 0.12 && r.top < vh * 0.75;
+    }
     var io = new IntersectionObserver(function (entries) {
       entries.forEach(function (en) {
         if (!en.isIntersecting) return;
-        io.unobserve(en.target);
-        var els = Array.prototype.slice.call(en.target.querySelectorAll(SEL)).filter(function (el) { return el.offsetParent !== null; });
-        var picked = [], seenBtnGroup = [];
-        els.forEach(function (el) {
-          var grp = el.closest(".tabs, .seg-btns");
-          if (grp) { if (seenBtnGroup.indexOf(grp) === -1) { seenBtnGroup.push(grp); picked.push(grp); } return; }
-          picked.push(el);
-        });
-        picked = picked.slice(0, 12);
-        picked.forEach(function (el, i) {
-          setTimeout(function () {
-            el.classList.add("vn-cue");
-            setTimeout(function () { el.classList.remove("vn-cue"); }, 650);
-          }, 350 + i * 110);
-        });
+        var el = en.target;
+        setTimeout(function () {
+          if (el.__cued || !inBand(el)) return;
+          el.__cued = true; io.unobserve(el); queue.push(el); run();
+        }, 450);
       });
-    }, { threshold: 0.18 });
-    document.querySelectorAll("section.chapter[id]").forEach(function (s) { io.observe(s); });
+    }, { rootMargin: "-15% 0px -30% 0px", threshold: 0.6 });
+    document.querySelectorAll(".vn-info, .tabs, .seg-btns, .field, .toggle, select.vn-sel, details.vn-acc summary").forEach(function (el) { io.observe(el); });
   })();
-
 })();
 
 </script>
