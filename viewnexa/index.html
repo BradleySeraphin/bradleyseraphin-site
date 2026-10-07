@@ -1,0 +1,1281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex, nofollow">
+<title>ViewNexa: Market, Positioning and Plan | Brad Seraphin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../css/style.css">
+<style>
+/* ---- ViewNexa page components ---- */
+.vn-lede { color: var(--ink-dim); font-size: 17px; line-height: 1.8; max-width: 760px; margin-top: 22px; }
+.chapter h3 { font-family: var(--sans); font-size: 19px; font-weight: 600; margin: 40px 0 14px; color: var(--ink); }
+.chapter h3:first-of-type { margin-top: 28px; }
+.chapter ul.vn-list { list-style: none; max-width: 760px; margin: 0 0 18px; }
+.chapter ul.vn-list li { position: relative; padding: 6px 0 6px 18px; color: var(--ink-dim); font-size: 15.5px; line-height: 1.7; }
+.chapter ul.vn-list li::before { content: ''; position: absolute; left: 0; top: 16px; width: 5px; height: 5px; border-radius: 50%; background: var(--accent-dim); }
+.chapter ul.vn-list li b { color: var(--ink); font-weight: 500; }
+.vn-src { color: var(--ink-faint); font-family: var(--mono); font-size: 11.5px; margin-top: 10px; max-width: 760px; line-height: 1.6; }
+.vn-src a, .vn-link { color: var(--accent); border-bottom: 1px solid var(--accent-dim); }
+
+/* tags */
+.tag { display: inline-block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.07em; text-transform: uppercase; border-radius: 3px; padding: 2px 7px; margin-left: 6px; vertical-align: 2px; white-space: nowrap; }
+.tag-s { color: #7fd1a8; border: 1px solid rgba(127, 209, 168, 0.35); }
+.tag-i { color: #e6c172; border: 1px solid rgba(230, 193, 114, 0.35); }
+.tag-a { color: #f29b8f; border: 1px solid rgba(242, 155, 143, 0.35); }
+.legend { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 26px; font-size: 13.5px; color: var(--ink-dim); }
+.legend .tag { margin-left: 0; margin-right: 8px; }
+
+/* stat grid */
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; margin-top: 26px; }
+.stat { border: 1px solid var(--line); border-radius: 8px; padding: 18px 18px 16px; background: var(--bg-alt); }
+.stat b { display: block; font-family: var(--sans); font-size: 26px; font-weight: 600; color: var(--ink); letter-spacing: -0.01em; }
+.stat span { display: block; color: var(--ink-dim); font-size: 13.5px; line-height: 1.5; margin-top: 6px; }
+.stat i { display: block; font-style: normal; font-family: var(--mono); font-size: 10.5px; color: var(--ink-faint); margin-top: 8px; }
+
+/* tables */
+.tbl-wrap { border: 1px solid var(--line); border-radius: 8px; overflow-x: auto; margin-top: 22px; }
+.tbl { width: 100%; border-collapse: collapse; min-width: 640px; }
+.tbl th { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-faint); text-align: left; padding: 12px 14px; border-bottom: 1px solid rgba(255,255,255,0.13); background: var(--bg-alt); font-weight: 400; vertical-align: bottom; }
+.tbl td { padding: 13px 14px; border-bottom: 1px solid var(--line); vertical-align: top; font-size: 14px; line-height: 1.6; color: var(--ink-dim); }
+.tbl tr:last-child td { border-bottom: none; }
+.tbl td:first-child { color: var(--ink); font-weight: 500; }
+.tbl tr.hl td { background: rgba(77, 163, 255, 0.07); }
+.tbl tr.dim td { opacity: 0.35; }
+.tbl td.y { color: #7fd1a8; }
+.tbl td.n { color: var(--ink-faint); }
+.tbl td.p { color: #e6c172; }
+.tbl tr.total td { color: var(--ink); font-weight: 500; }
+
+/* tabs */
+.tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 24px; }
+.tabs button { font-family: var(--mono); font-size: 12px; letter-spacing: 0.04em; color: var(--ink-dim); background: transparent; border: 1px solid var(--line); border-radius: 999px; padding: 9px 16px; cursor: pointer; transition: all 0.2s; }
+.tabs button:hover { color: var(--ink); border-color: rgba(255,255,255,0.25); }
+.tabs button.active { color: var(--bg); background: var(--accent); border-color: var(--accent); }
+.tab-label { font-family: var(--mono); font-size: 11px; color: var(--ink-faint); letter-spacing: 0.08em; text-transform: uppercase; margin-top: 26px; }
+
+/* cards */
+.cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 12px; margin-top: 22px; }
+.card { border: 1px solid var(--line); border-radius: 8px; padding: 18px; background: var(--bg-alt); }
+.card h4 { font-family: var(--sans); font-size: 16px; font-weight: 600; color: var(--ink); margin-bottom: 8px; }
+.card p, .card li { font-size: 14px !important; line-height: 1.65 !important; color: var(--ink-dim); margin-bottom: 0 !important; }
+.card .k { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-faint); margin: 12px 0 4px; }
+.card .k:first-child { margin-top: 0; }
+
+.quote { border-left: 2px solid var(--accent); padding: 6px 0 6px 20px; margin: 22px 0; max-width: 760px; color: var(--ink); font-size: 17px; line-height: 1.7; }
+.quote small { display: block; color: var(--ink-faint); font-family: var(--mono); font-size: 11px; margin-top: 8px; }
+
+/* calculators */
+.calc { border: 1px solid var(--line); border-radius: 10px; background: var(--bg-alt); margin-top: 26px; overflow: hidden; }
+.calc__head { padding: 16px 20px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+.calc__head b { font-family: var(--sans); font-size: 16px; font-weight: 600; }
+.calc__body { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+.calc__inputs { padding: 18px 20px; border-right: 1px solid var(--line); }
+.calc__outputs { padding: 18px 20px; }
+.field { margin-bottom: 14px; }
+.field label { display: flex; justify-content: space-between; gap: 10px; font-size: 13px; color: var(--ink-dim); margin-bottom: 6px; }
+.field label output { font-family: var(--mono); color: var(--ink); font-size: 12.5px; }
+.field input[type=range] { width: 100%; accent-color: var(--accent); }
+.field small { display: block; font-size: 11.5px; color: var(--ink-faint); margin-top: 3px; line-height: 1.5; }
+.out-row { display: flex; justify-content: space-between; gap: 12px; padding: 9px 0; border-bottom: 1px solid var(--line); font-size: 14px; color: var(--ink-dim); }
+.out-row:last-child { border-bottom: none; }
+.out-row b { font-family: var(--mono); font-weight: 500; color: var(--ink); white-space: nowrap; }
+.out-row.big b { font-size: 20px; color: var(--accent); }
+.flag { margin-top: 12px; font-size: 12.5px; line-height: 1.6; padding: 10px 12px; border-radius: 6px; border: 1px dashed var(--line); color: var(--ink-faint); }
+.flag.warn { color: #f29b8f; border-color: rgba(242,155,143,0.35); }
+.fgroup { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin: 18px 0 10px; }
+.fgroup:first-child { margin-top: 0; }
+.flag.link { color: var(--accent); border-color: var(--accent-dim); }
+.toggle { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--ink-dim); margin-bottom: 14px; cursor: pointer; }
+.toggle input { accent-color: var(--accent); width: 16px; height: 16px; }
+.field.off { opacity: 0.4; pointer-events: none; }
+select.vn-sel { width: 100%; background: var(--bg); color: var(--ink); border: 1px solid var(--line); border-radius: 6px; padding: 8px 10px; font-family: var(--body); font-size: 13.5px; margin-bottom: 14px; }
+.flag.ok { color: #7fd1a8; border-color: rgba(127,209,168,0.35); }
+.seg-btns { display: flex; gap: 6px; flex-wrap: wrap; }
+.seg-btns button { font-family: var(--mono); font-size: 11px; color: var(--ink-dim); background: transparent; border: 1px solid var(--line); border-radius: 4px; padding: 6px 10px; cursor: pointer; }
+.seg-btns button.active { color: var(--bg); background: var(--accent); border-color: var(--accent); }
+
+/* plan timeline */
+.plan { margin-top: 24px; max-width: 860px; border-left: 1px solid var(--line); padding-left: 26px; }
+.plan__win { position: relative; margin-bottom: 30px; }
+.plan__win::before { content: ''; position: absolute; left: -31px; top: 6px; width: 9px; height: 9px; border-radius: 50%; background: var(--accent); }
+.plan__win h4 { font-family: var(--mono); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); margin-bottom: 10px; }
+.plan__win ul { list-style: none; }
+.plan__win li { color: var(--ink-dim); font-size: 14.5px; line-height: 1.65; padding: 4px 0; }
+.plan__win li b { color: var(--ink); font-weight: 500; }
+
+/* details */
+details.vn-acc { border: 1px solid var(--line); border-radius: 8px; margin-top: 10px; background: var(--bg-alt); }
+details.vn-acc summary { cursor: pointer; padding: 14px 18px; font-size: 15px; color: var(--ink); list-style: none; display: flex; justify-content: space-between; gap: 12px; }
+details.vn-acc summary::-webkit-details-marker { display: none; }
+details.vn-acc summary::after { content: '+'; font-family: var(--mono); color: var(--ink-faint); }
+details.vn-acc[open] summary::after { content: '\2212'; }
+details.vn-acc .acc-body { padding: 0 18px 16px; color: var(--ink-dim); font-size: 14.5px; line-height: 1.7; }
+details.vn-acc .acc-body p { font-size: 14.5px; margin-bottom: 8px; }
+
+.placeholder { border: 1px dashed rgba(230,193,114,0.5); border-radius: 8px; padding: 20px 22px; margin-top: 24px; max-width: 760px; color: #e6c172; font-size: 14.5px; line-height: 1.7; }
+.placeholder b { display: block; font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 8px; }
+
+.house { border: 1px solid var(--line); border-radius: 10px; overflow: hidden; margin-top: 22px; max-width: 900px; }
+.house__roof { padding: 18px 20px; background: rgba(77,163,255,0.08); border-bottom: 1px solid var(--line); color: var(--ink); font-size: 15.5px; line-height: 1.6; }
+.house__pillars { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.house__pillars div { padding: 16px 18px; border-right: 1px solid var(--line); color: var(--ink-dim); font-size: 14px; line-height: 1.6; }
+.house__pillars div:last-child { border-right: none; }
+.house__base { padding: 14px 20px; border-top: 1px solid var(--line); color: var(--ink-faint); font-size: 13.5px; line-height: 1.6; background: var(--bg-alt); }
+.house .k { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); display: block; margin-bottom: 6px; }
+
+@media (max-width: 860px) {
+  .calc__body { grid-template-columns: 1fr; }
+  .calc__inputs { border-right: none; border-bottom: 1px solid var(--line); }
+  .house__pillars { grid-template-columns: 1fr; }
+  .house__pillars div { border-right: none; border-bottom: 1px solid var(--line); }
+}
+@media (max-width: 560px) {
+  .wrap { padding: 0 16px; }
+}
+</style>
+</head>
+<body>
+
+<div class="cursor-glow"></div>
+
+<nav class="nav scrolled">
+  <a href="../index.html" class="nav__mark"><span class="nav__dot"></span>BRADLEY SERAPHIN</a>
+  <div class="nav__links" style="font-size: 12px;">
+    <a href="tel:8086470628">808.647.0628</a>
+    <a href="mailto:Brad.Seraphin@gmail.com">Brad.Seraphin@gmail.com</a>
+    <a href="../index.html">bradleyseraphin.com</a>
+  </div>
+</nav>
+
+<aside class="chapter-rail" aria-label="Sections">
+  <a href="#intro" data-ch="intro">Why me</a>
+  <a href="#market" data-ch="market">Market</a>
+  <a href="#customer" data-ch="customer">Customer</a>
+  <a href="#competition" data-ch="competition">Competition</a>
+  <a href="#current" data-ch="current">Current state</a>
+  <a href="#positioning" data-ch="positioning">Positioning</a>
+  <a href="#value" data-ch="value">Value and pricing</a>
+  <a href="#messaging" data-ch="messaging">Messaging</a>
+  <a href="#enablement" data-ch="enablement">Battlecards</a>
+  <a href="#gtm" data-ch="gtm">Go-to-market</a>
+  <a href="#measurement" data-ch="measurement">Measurement</a>
+  <a href="#plan" data-ch="plan">30-60-90</a>
+  <a href="#risks" data-ch="risks">Risks</a>
+</aside>
+
+<main>
+  <div class="wrap">
+
+    <!-- ================= 00 Framing ================= -->
+    <header class="page-hero reveal" id="top" style="padding-top: 130px;">
+      <div class="mono-tag" style="margin-bottom: 18px;">Product Marketing Manager &middot; ViewNexa &middot; Full-time</div>
+      <h1>ViewNexa: market, positioning and plan</h1>
+      <div class="page-hero__role">Built from public sources, October 2026. Every assumption is labeled.</div>
+      <div style="font-family: var(--mono); font-size: 12px; color: var(--ink-faint); margin-top: 14px; display: flex; flex-wrap: wrap; gap: 4px 0;">
+        <span style="margin-right: 16px;">Brad Seraphin</span>
+        <a href="tel:8086470628" style="color: var(--ink-faint); margin-right: 16px;">808.647.0628</a>
+        <a href="mailto:Brad.Seraphin@gmail.com" style="color: var(--ink-faint); margin-right: 16px;">Brad.Seraphin@gmail.com</a>
+        <a href="../index.html" style="color: var(--ink-faint);">bradleyseraphin.com</a>
+      </div>
+
+
+
+      <div class="legend">
+        <span><span class="tag tag-s">Sourced</span>public evidence, linked</span>
+        <span><span class="tag tag-i">Inferred</span>reasoned from the evidence; a hypothesis to test</span>
+        <span><span class="tag tag-a">Assumption</span>a placeholder until ViewNexa's data replaces it</span>
+      </div>
+    </header>
+
+
+    <!-- ================= 00 Opening ================= -->
+    <section class="chapter reveal" id="intro">
+      <div class="chapter__label"><span class="num">00</span><span class="mono-tag">Why I'm applying</span></div>
+      <h2 class="chapter__title">Scrappy SaaS marketing, applied to ViewNexa before day one</h2>
+      <p>Greg, you said you looked at 150 resumes and need scrappy SaaS marketing more than streaming experience. This page is my answer. It is a working first draft of the job: the market sized, buyers profiled, competitors torn down, positioning and messaging rebuilt, battlecards drafted, the pipeline math worked back to meetings a month, and a dated 30-60-90. I built it from public sources, with AI tools doing the heavy lifting and every assumption labeled, the same way I would run the role.</p>
+
+      <h3>Relevant experience</h3>
+      <ul class="vn-list">
+        <li><b><a class="vn-link" href="../work/veoh.html">Veoh</a>, online video.</b> Grew Veoh.com from 0 to 22M monthly unique users, moved the product from a downloadable client to web-based on-demand streaming, and built in-video pre-roll and post-roll ad units. Streaming video and video ads, from the early days of the category.</li>
+        <li><b><a class="vn-link" href="../work/hp.html">HP Smart</a>, platform product marketing.</b> Owned the product narrative and roadmap for a platform with three customer segments while the app grew from 6M to 66M monthly active users. Launched Memories and two-sided photo printing; lifted month-two retention 44% for photo printing users.</li>
+        <li><b><a class="vn-link" href="../work/shutterstock.html">Shutterstock</a>, SaaS go-to-market.</b> Led go-to-market for CreativeFlow. Lifted freemium-to-paid conversion from 3% to 12% in five months; sharpened competitive positioning that drove 400K+ new user sessions; built 100+ demo assets with sales that raised lead-to-order conversion 18%.</li>
+        <li><b><a class="vn-link" href="../work/proof-of-play.html">Proof of Play</a>, performance marketing.</b> The company's only marketing hire. Ran paid acquisition across Meta, Google, Apple Search Ads, Unity, TikTok, AppLovin and Mintegral, implemented attribution, and grew TikTok to 290K+ followers for a global launch.</li>
+        <li><b><a class="vn-link" href="../work/gift-hippo.html">Gift Hippo</a>, founder.</b> Founded a promotional products business in 2023 and sold $1M+ in promotional gifts.</li>
+      </ul>
+
+      <h3>The gap, plainly</h3>
+      <p>I have not sold to broadcasters or worked a NAB booth as a vendor. I have walked plenty of trade shows with business goals, and I learn new categories fast: twelve-plus startups over twenty years. This page is how I closed as much of the gap as public information allows before we talk.</p>
+
+      <h3>Why full-time</h3>
+      <p>The JD's first six months are a build: positioning, the asset library, search, the event program, the press calendar. That work needs daily presence in sales conversations, and I want to own the function and grow it as ViewNexa scales.</p>
+
+      <h3>How to read this page</h3>
+      <p>It runs from the foundation up: market, customer, competition, current state, then positioning, pricing, messaging, enablement, go-to-market, measurement, plan and risks. The calculators are live and linked: change the win rate in section 10 and every event breakeven in section 9 moves. Tags mark what is sourced, inferred or assumed.</p>
+    </section>
+
+    <!-- ================= 01 Market ================= -->
+    <section class="chapter reveal" id="market">
+      <div class="chapter__label"><span class="num">01</span><span class="mono-tag">Market</span></div>
+      <h2 class="chapter__title">Who buys streaming technology, and how much they spend</h2>
+      <p>Video reaches viewers over the air, through cable and satellite, and over the internet. The third path is split across dozens of TV platforms, free ad-supported streaming services (FAST) and apps, each with its own format, approval process, ad system and payments. That fragmentation is the reason a platform like ViewNexa exists.</p>
+
+      <div class="stat-grid">
+        <div class="stat"><b>1,777</b><span>Full-power TV stations (1,390 commercial, 387 public)</span><i>FCC, June 2026</i></div>
+        <div class="stat"><b>2,169</b><span>Class A and low-power stations</span><i>FCC, June 2026</i></div>
+        <div class="stat"><b>689</b><span>Stations producing their own local news</span><i>RTDNA/Newhouse, Sept 2026</i></div>
+        <div class="stat"><b>1,442</b><span>US FAST channels, up 9.4% a year; news channels up 52.9%</span><i>Gracenote, July 2026</i></div>
+        <div class="stat"><b>$29.3B</b><span>US connected TV ad spend, up 11%</span><i>IAB, 2026</i></div>
+        <div class="stat"><b>$4.8B</b><span>US FAST revenue</span><i>Omdia, 2025 estimate</i></div>
+        <div class="stat"><b>$19.8B</b><span>Local TV ad revenue, over the air plus digital and streaming</span><i>BIA, 2026</i></div>
+        <div class="stat"><b>20</b><span>NBA and NHL teams left without a regional sports network</span><i>ABC30, April 2026</i></div>
+      </div>
+      <div class="vn-src">Sources: <a href="https://docs.fcc.gov/public/attachments/DA-26-652A1.pdf">FCC</a>, <a href="https://www.rtdna.org/news/local-tv-news-employment-continues-to-decline">RTDNA</a>, <a href="https://thedesk.net/2026/08/gracenote-data-hub-q3-update-fast-channel-count/">Gracenote via The Desk</a>, <a href="https://www.mediapost.com/publications/article/416513/iab-ctv-ad-spend-estimated-to-grow-11-to-293b.html">IAB via MediaPost</a>, <a href="https://www.businesswire.com/news/home/20251117273854/en">Omdia</a>, <a href="https://www.tvtechnology.com/insights/analysis/bia-political-spending-lifts-2026-local-ad-market-to-usd186-1-billion">BIA via TV Tech</a>, <a href="https://abc30.com/post/nba-nhl-teams-told-main-street-sports-network-will-end-operations/18836353/">ABC30</a>. Also 1,850 megachurches (Hartford Institute) and 1,075 NCAA schools (NCAA).</div>
+
+      <h3>Market size</h3>
+      <p><strong>TAM</strong> (total addressable market) is the whole industry: US spending on streaming technology, about <strong>$5.1B to $5.2B</strong> <span class="tag tag-s">Sourced</span>, from GMI's estimate and a cross-check against Caretta's global media software figure. <strong>SAM</strong> (serviceable addressable market) is spending on platforms like ViewNexa that cover content management, channels, apps, distribution and monetization in one. <strong>SOM</strong> (serviceable obtainable market) is current revenue plus what the strategy on this page can win in three years.</p>
+
+      <div class="calc" id="calc-sam">
+        <div class="calc__head"><b>SAM and SOM calculator</b><span class="tag tag-a">Assumptions adjustable</span></div>
+        <div class="calc__body">
+          <div class="calc__inputs">
+            <div class="fgroup">Prices a year</div>
+            <div class="field"><label>Full-power station <output id="s-fp"></output></label><input type="range" id="i-fp" min="20000" max="90000" step="1000" value="45000"><small>Brightcove's OTT apps list at $50K a year (AWS Marketplace).</small></div>
+            <div class="field"><label>Class A and low-power station <output id="s-lp"></output></label><input type="range" id="i-lp" min="4000" max="30000" step="1000" value="12000"><small>2,169 stations. Brightcove Video Cloud lists at $12K.</small></div>
+            <div class="field"><label>Faith organization <output id="s-fa"></output></label><input type="range" id="i-fa" min="4000" max="30000" step="1000" value="12000"><small>About 2,850 buyers (1,850 megachurches plus about 1,000 media ministries).</small></div>
+            <div class="field"><label>Independent streamer <output id="s-in"></output></label><input type="range" id="i-in" min="10000" max="50000" step="1000" value="25000"><small>About 500 buyers. Vimeo Enterprise averaged $23K a year.</small></div>
+            <div class="field"><label>Group discount <output id="s-gd"></output></label><input type="range" id="i-gd" min="0" max="40" step="5" value="20"></div>
+            <div class="field"><label>Share of full-power stations in groups of 5+ <output id="s-gs"></output></label><input type="range" id="i-gs" min="0" max="100" step="5" value="80"></div>
+            <div class="fgroup">Growth</div>
+            <div class="field"><label>Current revenue <output id="s-cur"></output></label><input type="range" id="i-cur" min="1000000" max="5000000" step="250000" value="2500000"><small>Not public. Estimated two ways at $2.1M to $3.8M.</small></div>
+            <div class="field"><label>Sellers <output id="s-sel"></output></label><input type="range" id="i-sel" min="1" max="6" step="1" value="2"></div>
+            <div class="field"><label>New deals per seller a year <output id="s-dps"></output></label><input type="range" id="i-dps" min="2" max="20" step="1" value="8"></div>
+            <div class="field"><label>Expansion from the roadmap, a year <output id="s-ex"></output></label><input type="range" id="i-ex" min="0" max="30" step="1" value="10"><small>Placeholder until the roadmap is known.</small></div>
+            <div class="field"><label>Churn from consolidation, a year <output id="s-ch"></output></label><input type="range" id="i-ch" min="0" max="30" step="1" value="10"><small>Two of nine broadcast logos' stations moved to Gray within a year.</small></div>
+            <div class="fgroup">New-deal mix</div>
+            <div class="field"><label>Station-group deals <output id="s-mg"></output></label><input type="range" id="i-mg" min="0" max="100" step="5" value="40"><small>Groups of 5 stations at the full-power price, less the group discount.</small></div>
+            <div class="field"><label>Small deals (faith price) <output id="s-ms"></output></label><input type="range" id="i-ms" min="0" max="100" step="5" value="40"><small>The rest are mid-size deals at the independent price.</small></div>
+          </div>
+          <div class="calc__outputs">
+            <div class="out-row"><span>Full-power stations</span><b id="o-fp"></b></div>
+            <div class="out-row"><span>Class A and low-power</span><b id="o-lp"></b></div>
+            <div class="out-row"><span>Faith</span><b id="o-fa"></b></div>
+            <div class="out-row"><span>Sports (361 Division I schools at $20K; 20 pro teams at $150K)</span><b id="o-sp"></b></div>
+            <div class="out-row"><span>Independent streamers</span><b id="o-in"></b></div>
+            <div class="out-row big"><span>SAM</span><b id="o-sam"></b></div>
+            <div class="out-row"><span>New deals a year</span><b id="o-deals"></b></div>
+            <div class="out-row"><span>Blended new deal</span><b id="o-acv"></b></div>
+            <div class="out-row"><span>Deal mix</span><b id="o-mix"></b></div>
+            <div class="out-row"><span>SOM year 1 / 2 / 3</span><b id="o-som"></b></div>
+            <div class="out-row big"><span>Year 3 share of SAM</span><b id="o-share"></b></div>
+            <div class="flag" id="o-flag"></div>
+            <div class="flag link">New deals a year and the blended deal feed the funnel in section 10, which feeds the event breakevens in section 9.</div>
+          </div>
+        </div>
+      </div>
+      <div class="vn-src">Cross-check: 1,442 FAST channels at $1K to $5K a month is $17M to $87M for playout alone, one slice of SAM.</div>
+    </section>
+
+    <!-- ================= 02 Customer ================= -->
+    <section class="chapter reveal" id="customer">
+      <div class="chapter__label"><span class="num">02</span><span class="mono-tag">Customer</span></div>
+      <h2 class="chapter__title">Who ViewNexa serves today, and who it should go after</h2>
+      <p>The ideal customer profile comes from three lenses: what ViewNexa's current customers have in common, who the JD says signs (the GM and the CFO), and where competitors' customers are not.</p>
+
+      <h3>What current customers share <span class="tag tag-i">Inferred</span></h3>
+      <ul class="vn-list">
+        <li><b>Privately held or owner-run.</b> Hubbard, Bahakel, Griffin and Block are family-owned; KSL is church-owned; no publicly traded group is a customer.</li>
+        <li><b>Owners and business leaders decide,</b> matching the JD's named buyers.</li>
+        <li><b>Live or linear programming to distribute:</b> local news for broadcasters, services or networks for the rest.</li>
+        <li><b>Several screens and outlets at once:</b> apps plus FAST plus monetization.</li>
+        <li><b>Too large for a do-it-yourself tool, too small for an enterprise build.</b> Groups of about 2 to 20 stations sit in that gap.</li>
+      </ul>
+      <div class="vn-src">Customers compared: Hubbard, Bahakel, Griffin, Block, KSL, Allen Media, Real Life Network, CCB Holdings, SalemNOW, Sky Link TV, AZA and BlaCon, IMPACT Professionals. Block's and about ten of Allen's stations were sold to Gray in 2026.</div>
+
+      <h3>By segment: buyers, needs and fit</h3>
+      <p>Fit marks each buyer need against what ViewNexa offers today: <span class="tag tag-s">Proven</span> with public proof, <span class="tag tag-i">Unproven</span> with a feature and no proof, <span class="tag tag-a">Not relieved</span> with no stated answer.</p>
+      <div class="tabs" data-tabs="seg">
+        <button data-k="local" class="active">Local broadcast</button>
+        <button data-k="groups">Station groups</button>
+        <button data-k="sports">Sports</button>
+        <button data-k="faith">Faith and community</button>
+        <button data-k="intl">International</button>
+      </div>
+      <div id="seg-panel"></div>
+
+      <h3>Target ranking: lookalike station groups</h3>
+      <p>Privately held groups that share current customers' traits. Each is scored 1 to 5 on six factors from known public signals; the weights set what matters most. <span class="tag tag-a">Scores are estimates</span></p>
+      <div class="calc" id="calc-rank">
+        <div class="calc__head"><b>Weighted ranking</b><span class="tag tag-a">Weights adjustable</span></div>
+        <div class="calc__body">
+          <div class="calc__inputs">
+            <div class="field"><label>Pain: vendors juggled today <output id="r-w0-o"></output></label><input type="range" id="r-w0" min="0" max="5" step="1" value="3"></div>
+            <div class="field"><label>FAST gap: no channel of its own <output id="r-w1-o"></output></label><input type="range" id="r-w1" min="0" max="5" step="1" value="3"></div>
+            <div class="field"><label>Right to win: history, no locked-in rival <output id="r-w2-o"></output></label><input type="range" id="r-w2" min="0" max="5" step="1" value="3"></div>
+            <div class="field"><label>Deal size: station count <output id="r-w3-o"></output></label><input type="range" id="r-w3" min="0" max="5" step="1" value="2"></div>
+            <div class="field"><label>Trigger now: legacy stack, ownership change <output id="r-w4-o"></output></label><input type="range" id="r-w4" min="0" max="5" step="1" value="2"></div>
+            <div class="field"><label>Reference value of a win <output id="r-w5-o"></output></label><input type="range" id="r-w5" min="0" max="5" step="1" value="1"></div>
+          </div>
+          <div class="calc__outputs"><div id="rank-out"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 03 Competition ================= -->
+    <section class="chapter reveal" id="competition">
+      <div class="chapter__label"><span class="num">03</span><span class="mono-tag">Competition</span></div>
+      <h2 class="chapter__title">Seven named competitors, one unnamed, and an empty middle</h2>
+      <p>The seven competitors the JD names split two ways. By scope: specialists (Wurl in distribution and ads, Applicaster in apps) against platforms. By customer size: enterprise vendors (Amagi, Quickplay, Brightcove) against self-serve tools with published prices (Muvi, Lightcast). BLOX Digital, not named in the JD, powers websites and apps for many mid-size station groups.</p>
+
+      <h3>Feature and pricing comparison <span class="tag tag-s">Sourced</span></h3>
+      <div class="seg-btns" id="vendor-btns" style="margin-top: 14px;"></div>
+      <div class="tbl-wrap">
+        <table class="tbl" id="feat-tbl">
+          <thead><tr><th>Vendor</th><th>Content management</th><th>Live news tools</th><th>FAST playout with ad markers</th><th>App platforms</th><th>FAST distribution</th><th>Ad insertion</th><th>Ad sales help</th><th>Published service terms</th><th>Published pricing</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="vn-src">From each vendor's product and pricing pages and AWS Marketplace listings, October 2026. "Not stated" means not found on the vendor's site.</div>
+
+      <h3>Competitor SWOT, read from ViewNexa's side</h3>
+      <div class="cards" id="swot-cards"></div>
+
+      <h3>Openings for differentiation <span class="tag tag-i">Inferred</span></h3>
+      <ul class="vn-list">
+        <li><b>The middle of the market is empty.</b> Enterprise vendors sell large accounts; do-it-yourself tools have no news tools. Groups of 2 to 20 stations have no obvious fit.</li>
+        <li><b>No one else covers the full chain for local broadcasters.</b> Amagi and Wurl have no apps; Applicaster has only apps; Brightcove has no distribution program or ad sales help; Muvi and Lightcast have no ad sales help; BLOX has no FAST.</li>
+        <li><b>Local live news is a specialty few can claim.</b> Only Amagi, Quickplay and BLOX touch it, and ViewNexa's customer base is built on it.</li>
+        <li><b>Proof and transparency are thin at mid-market.</b> No rival publishes local TV results with numbers. A cost calculator and local news case studies would stand out.</li>
+        <li><b>AI is table stakes.</b> Every rival leads with AI, so ViewNexa needs parity in its messaging to avoid losing on it.</li>
+      </ul>
+
+      <h3>Alternatives beyond the eight</h3>
+      <ul class="vn-list">
+        <li><b>Build it yourself</b> from several vendors: the setup most groups run today.</li>
+        <li><b>Custom development agencies</b> hold page one for "OTT app development."</li>
+        <li><b>Small self-serve builders</b> (TvStartup, Flicknexs) fill AI answers through content volume.</li>
+        <li><b>Free aggregators</b> (Local Now, NewsON, Haystack) carry station news under their own brands.</li>
+        <li><b>Segment specialists:</b> Local Public for PBS stations, Hudl for college athletics, Subsplash and BoxCast for churches.</li>
+      </ul>
+    </section>
+
+    <!-- ================= 04 Current state ================= -->
+    <section class="chapter reveal" id="current">
+      <div class="chapter__label"><span class="num">04</span><span class="mono-tag">Current state</span></div>
+      <h2 class="chapter__title">An honest assessment of ViewNexa's positioning today</h2>
+      <p>ViewNexa has a strong claim: one contract for everything a station needs to stream. The market cannot see it yet. Each finding below was checked in October 2026.</p>
+
+      <ul class="vn-list">
+        <li><b>It still presents as Bitcentral.</b> The homepage reads "ViewNexa by Bitcentral," the live Google Ads account is registered to Bitcentral, Inc., and AI assistants describe it as "developed by Bitcentral."</li>
+        <li><b>The core claim is invisible where buyers ask.</b> In unpersonalized AI answers to seven buyer questions, including one that describes ViewNexa's offer almost word for word, ViewNexa is named in none.</li>
+        <li><b>The message speaks to engineers and creators.</b> Site copy leads with features, and paid search buys creator terms such as Restream and Wowza. Nothing speaks to a GM's revenue or a CFO's cost of running five vendors.</li>
+        <li><b>Proof has gone quiet.</b> The newsroom is empty, all six case-study and brochure links are broken, nine customer logos carry no stories, and since the split the trade press has covered only the split.</li>
+        <li><b>The AI story is missing.</b> Three AI tools launched in August 2025 with measured results (up to 70% less manual tagging, 25% to 40% faster clipping). No product page mentions them, while every named competitor leads with AI.</li>
+        <li><b>One claim needs reconciling.</b> The job post promises "24/7/365 support"; the published service agreement describes email support with a two-hour response target.</li>
+      </ul>
+      <p>Each of these is a marketing gap, and each is fixable within the first 90 days.</p>
+
+      <h3>The messaging house the site implies <span class="tag tag-i">Inferred</span></h3>
+      <div class="house">
+        <div class="house__roof"><span class="k">Main message</span>"Future-Proof Your Streaming Strategy"; "the A to Z of video content distribution"; "If You Can Stream It, We Can Do It."</div>
+        <div class="house__pillars">
+          <div><span class="k">Pillar</span>Apps: "Native app launch as easy as one, two, stream"</div>
+          <div><span class="k">Pillar</span>Channels: "FAST Channels in Seconds"</div>
+          <div><span class="k">Pillar</span>Monetization: "One size does not fit all"</div>
+        </div>
+        <div class="house__base"><span class="k">Foundation</span>"Reducing vendor fatigue," "simplifying engineering complexities," "expediting time to market"; 400 live feeds a day, 172 FAST feeds, 10M+ app installs; customer logos; the Bitcentral name. One house for every segment, written for the engineer.</div>
+      </div>
+    </section>
+
+    <!-- ================= 05 Positioning ================= -->
+    <section class="chapter reveal" id="positioning">
+      <div class="chapter__label"><span class="num">05</span><span class="mono-tag">Positioning</span></div>
+      <h2 class="chapter__title">Who it is for, who it is not for, and why it wins</h2>
+      <p>Built with April Dunford's five components (alternatives, unique attributes, value, best-fit customers, category) and Geoffrey Moore's positioning statement. <span class="tag tag-i">Inferred</span></p>
+
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr><th style="width: 22%;">Component</th><th>Draft</th></tr></thead>
+          <tbody>
+            <tr><td>Competitive alternatives</td><td>Stitching two to four vendors (BLOX or similar for web and apps, aggregators for distribution, Amagi or Frequency for FAST playout at about $3,000 per channel a month); do-it-yourself tools (Muvi, Lightcast); in-house builds; an enterprise platform (Quickplay); relying on aggregators and YouTube</td></tr>
+            <tr><td>Unique attributes</td><td>Live news to FAST in one platform; distribution and ad demand included; apps on every major screen, VIZIO included</td></tr>
+            <tr><td>Value</td><td>GM: launch FAST channels and apps from the newscasts you already produce, with advertisers plugged in, without hiring a streaming team. CFO: one contract in place of several vendors, one predictable bill. Engineer: live news flows to every outlet automatically, with ad markers preserved</td></tr>
+            <tr><td>Best-fit customers</td><td>Owner-operated broadcasters (privately held groups of about 2 to 20 stations, and single stations) and mission-driven media organizations with live programming</td></tr>
+            <tr><td>Not for</td><td>The largest groups on enterprise builds; groups with large in-house digital teams that build their own; creators and small churches that need a $100 to $400 a month tool; advertisers buying streaming inventory</td></tr>
+            <tr><td>Market category</td><td>Broadcast-grade streaming platform</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Differentiators the evidence supports</h3>
+      <ul class="vn-list">
+        <li><b>From live newsroom to FAST channel, at mid-market scale.</b> Only Amagi and Quickplay pair live news tools with FAST playout, and both sell at enterprise scale. BLOX has the newsroom and no FAST. Muvi and Lightcast are cheap and have no news tools. The strongest differentiator.</li>
+        <li><b>Distribution and demand included.</b> 100+ named outlets, including local news aggregators, and ad partnerships with revenue sharing. Whether those ad partnerships stayed with ViewNexa after the split is to verify.</li>
+        <li><b>Every major screen, VIZIO included.</b> VIZIO is missing from Brightcove, Applicaster, Muvi and BLOX. Weak on its own: LG is missing from ViewNexa's list.</li>
+        <li><b>Proof and transparency at mid-market.</b> A marketing opening more than a feature: a public cost calculator and local news case studies with numbers, which no rival at this level offers.</li>
+      </ul>
+      <p><strong>Not supported today:</strong> AI (ViewNexa trails and does not show its tools), price transparency (unknown), service terms (Muvi publishes stronger ones).</p>
+
+      <div class="quote">For owner-operated broadcasters and media organizations that want to turn live programming into streaming reach and revenue without a streaming engineering team, ViewNexa is a broadcast-grade streaming platform that takes a live feed to apps on every major screen and to FAST channels on 100+ outlets, with ad demand included, under one contract. Unlike stitching together a newsroom vendor, a playout service and an app builder, or buying an enterprise platform sized for the largest station groups, ViewNexa automates the path from live newsroom to paid stream for groups of 2 to 20 stations.<small>Positioning statement, draft</small></div>
+      <ul class="vn-list">
+        <li><b>For the GM:</b> launch your own FAST channels and apps from the newscasts you already produce, with advertisers plugged in and no streaming team to hire.</li>
+        <li><b>For the CFO:</b> replace several streaming vendors with one contract and one predictable bill; FAST playout alone lists at about $3,000 per channel a month elsewhere.</li>
+      </ul>
+    </section>
+
+    <!-- ================= 06 Value and pricing ================= -->
+    <section class="chapter reveal" id="value">
+      <div class="chapter__label"><span class="num">06</span><span class="mono-tag">Value and pricing</span></div>
+      <h2 class="chapter__title">What one contract saves against five vendors</h2>
+      <p>The JD describes broadcasters running five vendors: content management, playout, app development, distribution and ad technology. This model prices that stack from published list prices and compares it with one contract. ViewNexa's prices are not public, so its side is an assumption.</p>
+
+      <div class="calc" id="calc-tco">
+        <div class="calc__head"><b>Cost-of-ownership calculator</b>
+          <div class="seg-btns" id="tco-presets"><button data-p="group" class="active">10-station group</button><button data-p="single">Single station</button></div>
+        </div>
+        <div class="calc__body">
+          <div class="calc__inputs">
+            <div class="fgroup">Buyer</div>
+            <div class="field"><label>Stations <output id="t-st-o"></output></label><input type="range" id="t-st" min="1" max="20" step="1"></div>
+            <div class="field"><label>Streaming channels <output id="t-ch-o"></output></label><input type="range" id="t-ch" min="1" max="30" step="1"></div>
+            <div class="field"><label>FAST ad revenue per channel a month <output id="t-rev-o"></output></label><input type="range" id="t-rev" min="0" max="45000" step="1000"><small>Placeholder: $5K, $10K or $43K (CNN Newsource's modeled channel). <span class="tag tag-a">Assumption</span></small></div>
+            <div class="fgroup">Five-vendor stack</div>
+            <div class="field"><label>Playout per channel a month <output id="t-pl-o"></output></label><input type="range" id="t-pl" min="1000" max="4000" step="100"><small>Amagi CLOUDPORT and Frequency list at $3,000 (AWS Marketplace). <span class="tag tag-s">Sourced</span></small></div>
+            <div class="field"><label>Content management a year <output id="t-cms-o"></output></label><input type="range" id="t-cms" min="12000" max="108000" step="2000"><small>Brightcove lists $12K to $108K.</small></div>
+            <div class="field"><label>App license a year <output id="t-app-o"></output></label><input type="range" id="t-app" min="0" max="150000" step="5000" value="50000"><small>Brightcove Beacon lists at $50K. <span class="tag tag-s">Sourced</span></small></div>
+            <div class="field"><label>Distribution vendor's share of FAST ad revenue <output id="t-ds-o"></output></label><input type="range" id="t-ds" min="0" max="40" step="1" value="25"></div>
+            <div class="field"><label>Integration staff (full-time, $130K loaded) <output id="t-fte-o"></output></label><input type="range" id="t-fte" min="0" max="4" step="0.5"></div>
+            <div class="fgroup">One contract</div>
+            <div class="field"><label>ViewNexa price per station a year <output id="t-vn-o"></output></label><input type="range" id="t-vn" min="15000" max="90000" step="1000"><small>20% off at 5+ stations. <span class="tag tag-a">Assumption</span></small></div>
+            <label class="toggle"><input type="checkbox" id="t-plx"> ViewNexa also charges playout per channel</label>
+            <div class="field off" id="t-vpl-f"><label>ViewNexa playout per channel a month <output id="t-vpl-o"></output></label><input type="range" id="t-vpl" min="0" max="4000" step="100" value="1500"><small>Unknown; the biggest sensitivity in the model.</small></div>
+            <div class="field"><label>One-time migration cost <output id="t-mig-o"></output></label><input type="range" id="t-mig" min="0" max="250000" step="5000" value="50000"></div>
+            <label class="toggle"><input type="checkbox" id="t-hid"> Count costs that never appear on invoices</label>
+          </div>
+          <div class="calc__outputs">
+            <div class="out-row"><span>Playout</span><b id="t-o-pl"></b></div>
+            <div class="out-row"><span>Content management</span><b id="t-o-cms"></b></div>
+            <div class="out-row"><span>App license</span><b id="t-o-app"></b></div>
+            <div class="out-row"><span>Distribution vendor share</span><b id="t-o-dist"></b></div>
+            <div class="out-row"><span>Ad insertion (AWS MediaTailor list)</span><b>$6K</b></div>
+            <div class="out-row"><span>Integration staff</span><b id="t-o-lab"></b></div>
+            <div class="out-row"><span>Vendor management (10% of a manager per vendor)</span><b>$75K</b></div>
+            <div class="out-row" id="t-hid-row" style="display:none;"><span>Off-invoice: later launches, outages, lower ad fill</span><b id="t-o-hid"></b></div>
+            <div class="out-row big"><span>Five-vendor stack a year</span><b id="t-o-stack"></b></div>
+            <div class="out-row big"><span>One contract a year</span><b id="t-o-one"></b></div>
+            <div class="out-row big"><span>Annual savings</span><b id="t-o-save"></b></div>
+            <div class="out-row"><span>Three-year savings, after migration</span><b id="t-o-3y"></b></div>
+            <div class="out-row"><span>Payback on migration</span><b id="t-o-pb"></b></div>
+            <div class="flag" id="t-flag"></div>
+          </div>
+        </div>
+      </div>
+      <div class="vn-src">One-contract side: platform fee plus one integration person for a group (half for a single station) and light vendor management. Off-invoice costs, when counted: launches about 2.5 months later on each FAST channel (lost ad revenue), 2 outages a year at $10K each, and 5 points lower ad fill.</div>
+
+      <h3>Illustrative packaging <span class="tag tag-a">Assumption</span></h3>
+      <p>One price list for every segment, billed per station for broadcasters and per organization for everyone else. Per-channel pricing is what makes enterprise playout expensive for groups, so it is avoided.</p>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr><th>Tier</th><th>Includes</th><th>Expected fit</th><th>Price (placeholder)</th></tr></thead>
+          <tbody>
+            <tr><td>Stream</td><td>Apps on every listed platform; live and on-demand video; subscriptions, rentals, pay-per-view, donations</td><td>Faith, sports, low-power stations</td><td>About $12K a year; a published "from" price</td></tr>
+            <tr><td>Channel</td><td>Stream, plus a FAST channel with playout, distribution to 100+ outlets and ad insertion</td><td>Local broadcast, international</td><td>About $45K a station a year</td></tr>
+            <tr><td>Network</td><td>Channel, plus one workflow across stations, group FAST channels, ad revenue share, a migration package and a stronger uptime guarantee</td><td>Station groups</td><td>$45K a station, 20% off at 5+ stations</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul class="vn-list" style="margin-top: 18px;">
+        <li><b>Add-ons:</b> AI tools, extra FAST channels, a live-event uptime guarantee, pay-per-view event packs.</li>
+        <li><b>Revenue-share option:</b> a lower fee in exchange for a share of the channel's FAST ad revenue. It tests whether a station will pay when aggregators carry it free.</li>
+      </ul>
+      <div class="calc" id="calc-rs">
+        <div class="calc__head"><b>Revenue-share check</b><span class="tag tag-a">Assumptions adjustable</span></div>
+        <div class="calc__body">
+          <div class="calc__inputs">
+            <div class="field"><label>Standard Channel price per station a year <output id="rs-std-o"></output></label><input type="range" id="rs-std" min="15000" max="90000" step="1000" value="45000"></div>
+            <div class="field"><label>Revenue-share base fee <output id="rs-base-o"></output></label><input type="range" id="rs-base" min="0" max="60000" step="1000" value="25000"></div>
+            <div class="field"><label>ViewNexa's share of FAST ad revenue <output id="rs-sh-o"></output></label><input type="range" id="rs-sh" min="5" max="60" step="1" value="30"></div>
+            <div class="field"><label>Station's FAST ad revenue a year <output id="rs-rev-o"></output></label><input type="range" id="rs-rev" min="0" max="500000" step="5000" value="120000"><small>Placeholder: $10K a month per channel. Current customers' channels settle it.</small></div>
+          </div>
+          <div class="calc__outputs">
+            <div class="out-row"><span>ViewNexa earns on standard</span><b id="rs-o-std"></b></div>
+            <div class="out-row"><span>ViewNexa earns on revenue share</span><b id="rs-o-rs"></b></div>
+            <div class="out-row big"><span>Breakeven FAST revenue</span><b id="rs-o-be"></b></div>
+            <div class="out-row"><span>Station keeps on revenue share (after fee and share)</span><b id="rs-o-keep"></b></div>
+            <div class="flag" id="rs-flag"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= 07 Messaging ================= -->
+    <section class="chapter reveal" id="messaging">
+      <div class="chapter__label"><span class="num">07</span><span class="mono-tag">Messaging</span></div>
+      <h2 class="chapter__title">Five messaging houses, one per segment</h2>
+      <p>Today one generic house speaks to every segment, and to the engineer. Each segment's buyer has a different job: ad revenue, pay-per-view, donations, reach abroad. So each segment gets its own house, shown as a change from today: X becomes Y because Z. <span class="tag tag-i">Inferred</span></p>
+      <div class="tabs" data-tabs="msg">
+        <button data-k="local" class="active">Local broadcast</button>
+        <button data-k="groups">Station groups</button>
+        <button data-k="sports">Sports</button>
+        <button data-k="faith">Faith and community</button>
+        <button data-k="intl">International</button>
+        <button data-k="all">All five</button>
+      </div>
+      <div id="msg-panel"></div>
+      <div class="vn-src">Evidence strength, strongest to weakest: station groups and local broadcast (logo customers, news proof), faith (one logo, SalemNOW), international (partners only), sports (no confirmed customers). News-led houses go to market first while proof is built for the others.</div>
+    </section>
+
+    <!-- ================= 08 Enablement ================= -->
+    <section class="chapter reveal" id="enablement">
+      <div class="chapter__label"><span class="num">08</span><span class="mono-tag">Enablement</span></div>
+      <h2 class="chapter__title">Battlecards, outside-in</h2>
+      <p>Nine cards: the seven JD competitors, BLOX, and "build it yourself." Built from public evidence, to reconcile with ViewNexa's existing set. Win and lose hypotheses get tested against win and loss records. A tripwire is the competitor move that would make the card out of date. <span class="tag tag-i">Inferred</span></p>
+      <div class="seg-btns" id="bc-btns" style="margin-top: 20px;"></div>
+      <div id="bc-panel"></div>
+      <ul class="vn-list" style="margin-top: 22px;">
+        <li><b>ViewNexa most likely wins</b> when the buyer needs more than one piece: apps, live, FAST, distribution and ads together.</li>
+        <li><b>It most likely loses</b> when the buyer needs one piece only, or leads on price.</li>
+        <li><b>Three gaps recur across cards:</b> published pricing, a migration offer and a mid-size group reference.</li>
+      </ul>
+    </section>
+
+    <!-- ================= 09 Go-to-market ================= -->
+    <section class="chapter reveal" id="gtm">
+      <div class="chapter__label"><span class="num">09</span><span class="mono-tag">Go-to-market</span></div>
+      <h2 class="chapter__title">Search and AI visibility, events, trade press and analysts</h2>
+
+      <h3>Search: the JD's five terms <span class="tag tag-s">Sourced</span></h3>
+      <p>Each term was checked on Google (US), in two free keyword tools (Ahrefs, SpyFu) and in Google's AI Mode. ViewNexa ranks on page one for none of the five.</p>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr><th>Term</th><th>US monthly searches</th><th>Who holds page one</th><th>Who the searcher appears to be</th></tr></thead>
+          <tbody>
+            <tr><td>FAST channel platform</td><td>Under 100</td><td>FAST Channels TV, Muvi, TvStartup, Flicknexs, Wikipedia</td><td>Mixed; Google's AI Overview answers with consumer services</td></tr>
+            <tr><td>OTT app development</td><td>About 55 to 100+</td><td>Custom development agencies</td><td>Buyers commissioning a custom build</td></tr>
+            <tr><td>SSAI provider</td><td>Too small to measure</td><td>Ad-tech specialists and explainers (Yospace, AWS)</td><td>Ad operations and engineering staff</td></tr>
+            <tr><td>Streaming monetization</td><td>Over 100</td><td>YouTube Help, Reddit, Twitch guides</td><td>Individual creators</td></tr>
+            <tr><td>CTV app publishing</td><td>Too small to measure</td><td>CTV advertising firms</td><td>Advertisers buying CTV media</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>AI answers without personalization <span class="tag tag-s">Sourced</span></h3>
+      <p>Seven buyer questions asked in Brave Search's AI answer, which does not use account history. ViewNexa is named in none, including the question that describes its own offer.</p>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr><th>Buyer question</th><th>Vendors named</th></tr></thead>
+          <tbody>
+            <tr><td>Which companies help TV station groups launch FAST channels?</td><td>Broadcast Management Group, Wurl, Amagi, TvStartup, Flicknexs, TVU Networks, Strimm, FAST Channels TV</td></tr>
+            <tr><td>One vendor for CMS, OTT apps, FAST channels and server-side ad insertion for broadcasters</td><td>Gizmott, Innocrux, FAST Channels TV</td></tr>
+            <tr><td>How can a station group consolidate streaming vendors to cut costs?</td><td>No vendors; generic advice</td></tr>
+            <tr><td>Best platform for a church to stream services on Roku and Apple TV</td><td>Subsplash, Tappla, Resi, BoxCast, Vimeo, StreamingChurch.tv, OTTEngine</td></tr>
+            <tr><td>Alternatives to Amagi for a small broadcaster</td><td>Muvi Playout, Viloud, JW Player, Dacast, Vimeo, View TVx</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Where competitors invest in search <span class="tag tag-s">Sourced</span></h3>
+      <ul class="vn-list">
+        <li><b>The split follows customer size.</b> Enterprise players (Amagi, Quickplay, Brightcove, Applicaster) spend little or nothing on paid search. Self-serve players carry the spend: Lightcast about $12,370 a month, Muvi about $4,639 (SpyFu estimates).</li>
+        <li><b>ViewNexa is running Google Ads today,</b> about $1,427 a month on terms such as "live streaming," "Restream" and "Wowza," through an advertiser account still registered to Bitcentral, Inc. (<a class="vn-link" href="https://adstransparency.google.com/advertiser/AR04681335759309897729?region=US">Ads Transparency Center</a>). The terms reach creators; the JD's buyers are broadcasters.</li>
+        <li><b>Buyers name devices, not categories.</b> RFPs and job posts say "Roku, Apple TV and Fire TV apps" where vendors say "OTT platform." Executives say "monetize" and "revenue streams"; "SSAI" belongs to technical staff.</li>
+        <li><b>Earned media feeds AI answers.</b> 72% of B2B software buyers consult ChatGPT during evaluation, and AI assistants draw most vendor citations from trade press and reviews (Forrester, via MarketScale). Press work doubles as AI visibility work.</li>
+      </ul>
+
+
+      <h3>Paid search: cost per qualified meeting <span class="tag tag-a">Assumption</span></h3>
+      <p>The JD asks for paid search judged on cost per qualified lead. The free tools returned no cost-per-click data, so every input here is a placeholder until a Google Ads account gives real numbers.</p>
+      <div class="calc" id="calc-ps">
+        <div class="calc__head"><b>Paid search check</b><span class="tag tag-a">Assumptions adjustable</span></div>
+        <div class="calc__body">
+          <div class="calc__inputs">
+            <div class="field"><label>Monthly budget <output id="ps-b-o"></output></label><input type="range" id="ps-b" min="500" max="20000" step="250" value="3000"><small>ViewNexa spends about $1,427 a month today (SpyFu estimate).</small></div>
+            <div class="field"><label>Cost per click <output id="ps-c-o"></output></label><input type="range" id="ps-c" min="1" max="30" step="0.5" value="8"></div>
+            <div class="field"><label>Click to lead <output id="ps-l-o"></output></label><input type="range" id="ps-l" min="0.5" max="15" step="0.5" value="3"></div>
+            <div class="field"><label>Lead to qualified meeting <output id="ps-q-o"></output></label><input type="range" id="ps-q" min="5" max="60" step="1" value="20"></div>
+          </div>
+          <div class="calc__outputs">
+            <div class="out-row"><span>Clicks a month</span><b id="ps-o-cl"></b></div>
+            <div class="out-row"><span>Leads a month</span><b id="ps-o-ld"></b></div>
+            <div class="out-row"><span>Qualified meetings a month</span><b id="ps-o-qm"></b></div>
+            <div class="out-row big"><span>Cost per qualified meeting</span><b id="ps-o-cpq"></b></div>
+            <div class="out-row"><span>Expected revenue per meeting (section 10 rates)</span><b id="ps-o-val"></b></div>
+            <div class="out-row big"><span>Expected revenue per dollar spent</span><b id="ps-o-roi"></b></div>
+            <div class="flag" id="ps-flag"></div>
+          </div>
+        </div>
+      </div>
+
+      <h3>Events: budget and return <span class="tag tag-a">Assumption</span></h3>
+      <p>Every breakeven uses the funnel rates in section 10, so changing the win rate or deal size there moves every row here. <span id="ev-rate"></span></p>
+      <div class="tbl-wrap">
+        <table class="tbl" id="ev-tbl">
+          <thead><tr><th>Event</th><th>Tier</th><th>Cost (mid)</th><th>Meetings target</th><th>Breakeven meetings</th><th>Expected revenue at target</th></tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <div class="calc" id="calc-ev">
+        <div class="calc__head"><b>Event return calculator</b><span class="tag tag-a">Assumptions adjustable</span></div>
+        <div class="calc__body">
+          <div class="calc__inputs">
+            <select class="vn-sel" id="ev-pick"></select>
+            <div class="field"><label>All-in cost <output id="ev-c-o"></output></label><input type="range" id="ev-c" min="0" max="80000" step="500"><small>NAB floor space is about $10K for a 10x20 at the member rate; all-in assumes 3 to 4 times space.</small></div>
+            <div class="field"><label>Qualified meetings sourced <output id="ev-m-o"></output></label><input type="range" id="ev-m" min="0" max="30" step="1"></div>
+            <div class="field"><label>Influenced pipeline (deals already open) <output id="ev-i-o"></output></label><input type="range" id="ev-i" min="0" max="1000000" step="10000" value="0"></div>
+          </div>
+          <div class="calc__outputs">
+            <div class="out-row"><span>Pipeline sourced</span><b id="ev-o-p"></b></div>
+            <div class="out-row"><span>Expected revenue sourced</span><b id="ev-o-r"></b></div>
+            <div class="out-row big"><span>Breakeven meetings</span><b id="ev-o-be"></b></div>
+            <div class="out-row big"><span>Expected revenue per dollar</span><b id="ev-o-roi"></b></div>
+            <div class="flag" id="ev-flag"></div>
+          </div>
+        </div>
+      </div>
+      <ul class="vn-list" style="margin-top: 18px;">
+        <li><b>NAB carries about half the meetings and most of the cost,</b> so the meeting program and the announcement matter more than the booth.</li>
+        <li><b>Keep or cut:</b> cut an event after two runs below breakeven on sourced meetings, unless influenced pipeline covers the gap.</li>
+        <li><b>Playbook:</b> booked meetings six to two weeks out; badge scans qualified in the CRM the same day; leads sorted within 48 hours; event report at 30 and 90 days.</li>
+      </ul>
+
+      <h3>Trade press and analysts</h3>
+      <ul class="vn-list">
+        <li><b>Coverage has been release-driven and under "Bitcentral's ViewNexa."</b> Since the split, only the split has been covered; StreamTV Insider shows no coverage. <span class="tag tag-s">Sourced</span></li>
+        <li><b>Each announcement depends on another team:</b> release dates from product, customer approval from sales, partner sign-off from partnerships. The calendar is built from their timelines, with NAB 2027 as the anchor.</li>
+        <li><b>No analyst firm publishes a vendor landscape for this category.</b> The FAST data that names vendors comes from vendors themselves (Amagi's AIRTIME, Wurl's CTV Trends). A ViewNexa data report on local news streaming may be the faster route into analysts' and editors' work. <span class="tag tag-i">Inferred</span></li>
+        <li><b>Who buyers likely read, by niche:</b> BIA, S&amp;P Kagan and Magid for local TV economics; TV[R]EV, Parks, Hub, Omdia and Gracenote for FAST and streaming; IAB for connected TV advertising.</li>
+      </ul>
+    </section>
+
+    <!-- ================= 10 Measurement ================= -->
+    <section class="chapter reveal" id="measurement">
+      <div class="chapter__label"><span class="num">10</span><span class="mono-tag">Measurement</span></div>
+      <h2 class="chapter__title">Measured on pipeline, worked back to meetings a month</h2>
+      <p>The KPI tree runs from new revenue to pipeline created (marketing-sourced and marketing-influenced), win rate, deal size and cycle length, then pipeline by channel and segment, then leading indicators such as meetings booked per show and cost per qualified lead. Impressions and traffic appear only as early signals.</p>
+
+      <div class="calc" id="calc-fun">
+        <div class="calc__head"><b>Funnel calculator</b>
+          <div class="seg-btns" id="fun-presets"><button data-s="2" data-d="8" class="active">Low case</button><button data-s="3" data-d="12">Mid</button><button data-s="4" data-d="15">High</button></div>
+        </div>
+        <div class="calc__body">
+          <div class="calc__inputs">
+            <label class="toggle"><input type="checkbox" id="f-link" checked> Take deals and deal size from the market model (section 1)</label>
+            <div class="field" id="f-d-f"><label>New deals a year <output id="f-d-o"></output></label><input type="range" id="f-d" min="4" max="80" step="1" value="16"><small>Cases set sellers and deals per seller in the market model: 2 x 8, 3 x 12, 4 x 15.</small></div>
+            <div class="field" id="f-a-f"><label>Average new deal <output id="f-a-o"></output></label><input type="range" id="f-a" min="10000" max="200000" step="1000" value="82000"></div>
+            <div class="field"><label>Win rate <output id="f-w-o"></output></label><input type="range" id="f-w" min="10" max="50" step="1" value="25"><small><span class="tag tag-a">Assumption</span> until CRM data. Feeds every event breakeven.</small></div>
+            <div class="field"><label>Meeting to opportunity <output id="f-m-o"></output></label><input type="range" id="f-m" min="20" max="80" step="5" value="50"></div>
+            <div class="field"><label>Marketing-sourced share <output id="f-s-o"></output></label><input type="range" id="f-s" min="10" max="90" step="5" value="50"></div>
+            <div class="fgroup">Channel weights (normalized to 100%)</div>
+            <div class="field"><label>Events <output id="f-c0-o"></output></label><input type="range" id="f-c0" min="0" max="100" step="5" value="40"></div>
+            <div class="field"><label>Search and paid <output id="f-c1-o"></output></label><input type="range" id="f-c1" min="0" max="100" step="5" value="25"></div>
+            <div class="field"><label>Email and nurture <output id="f-c2-o"></output></label><input type="range" id="f-c2" min="0" max="100" step="5" value="20"></div>
+            <div class="field"><label>Press, analysts, content <output id="f-c3-o"></output></label><input type="range" id="f-c3" min="0" max="100" step="5" value="15"></div>
+          </div>
+          <div class="calc__outputs">
+            <div class="out-row"><span>Opportunities a year</span><b id="f-o-opp"></b></div>
+            <div class="out-row"><span>Qualified meetings a year</span><b id="f-o-mtg"></b></div>
+            <div class="out-row big"><span>Marketing-sourced meetings a month</span><b id="f-o-mkt"></b></div>
+            <div class="out-row big"><span>Pipeline needed</span><b id="f-o-pipe"></b></div>
+            <div class="out-row"><span>New annual revenue</span><b id="f-o-rev"></b></div>
+            <div class="out-row"><span>Value of one qualified meeting: pipeline / expected revenue</span><b id="f-o-val"></b></div>
+            <div class="fgroup" style="margin-top:18px;">Marketing-sourced meetings a year, by channel</div>
+            <div class="out-row"><span id="f-l0">Events</span><b id="f-o-c0"></b></div>
+            <div class="out-row"><span id="f-l1">Search and paid</span><b id="f-o-c1"></b></div>
+            <div class="out-row"><span id="f-l2">Email and nurture</span><b id="f-o-c2"></b></div>
+            <div class="out-row"><span id="f-l3">Press, analysts, content</span><b id="f-o-c3"></b></div>
+            <div class="fgroup" style="margin-top:18px;">New revenue by deal type (market model mix)</div>
+            <div class="out-row"><span>Station groups</span><b id="f-o-sg"></b></div>
+            <div class="out-row"><span>Small deals</span><b id="f-o-ss"></b></div>
+            <div class="out-row"><span>Mid-size deals</span><b id="f-o-sm"></b></div>
+          </div>
+        </div>
+      </div>
+      <ul class="vn-list" style="margin-top: 20px;">
+        <li><b>Station groups carry most of the revenue with a minority of the deals</b> (about 88% from 40% at the default mix), so effort follows revenue. <span class="tag tag-i">Inferred</span></li>
+        <li><b>Group cycles run 6 to 12 months,</b> so year-one pipeline mostly closes in year two. Pipeline created is the fair year-one measure.</li>
+        <li><b>Reporting:</b> daily leads, meetings and spend; weekly pipeline created, sourced and influenced; monthly pipeline by channel and segment, win rate, cycle, cost per qualified lead; quarterly event return and rate updates from the CRM.</li>
+        <li><b>Attribution comes first.</b> Conversion tracking, lead source capture and a shared qualified-lead definition, tested end to end before spending.</li>
+      </ul>
+    </section>
+
+    <!-- ================= 11 Plan ================= -->
+    <section class="chapter reveal" id="plan">
+      <div class="chapter__label"><span class="num">11</span><span class="mono-tag">30-60-90</span></div>
+      <h2 class="chapter__title">The first six months, dated to the JD's milestones</h2>
+      <p>Two tracks run in parallel: quick wins that show progress in the first month, and a foundation that every lasting asset depends on. The work on this page gives the foundation a head start: after hire it gets validated against inside data instead of starting from nothing. Dates assume a November 2, 2026 start.</p>
+      <div class="plan">
+        <div class="plan__win"><h4>Days 1 to 30 &middot; to Dec 1</h4><ul>
+          <li><b>Listen and audit:</b> sit in on sales calls, win and loss review, customer interviews, asset inventory, day-one baselines.</li>
+          <li><b>Check this page against inside data,</b> and run the three riskiest-assumption tests that need only internal data (section 12).</li>
+          <li><b>Quick wins:</b> site fixes and broken links; Bitcentral identity corrected at the source (site, LinkedIn, Capterra, directories, Google Ads account); battlecard refresh with a named owner; one core deck; recruit customers for case studies.</li>
+          <li><b>Instrument</b> analytics and attribution; audit the live Google Ads spend; agree the KPI tree with the Head of Sales.</li>
+          <li><b>Events and press:</b> confirm NAB 2027; Streaming Media Connect; fix press materials; inventory everything announceable.</li>
+          <li><b>Day 30:</b> written gap assessment and prioritized plan.</li>
+        </ul></div>
+        <div class="plan__win"><h4>Days 31 to 60 &middot; to Dec 31</h4><ul>
+          <li><b>Choose the lead segments</b> and confirm the ideal customer and buying committees.</li>
+          <li><b>Position</b> against named competitors with real pricing; decide on a published entry price and a migration offer.</li>
+          <li><b>Day 60:</b> messaging draft (five houses and persona versions); six-month announcement calendar.</li>
+          <li><b>Press:</b> leadership briefings introducing independent ViewNexa. <b>Events:</b> OTT.X; tiered calendar and budget.</li>
+        </ul></div>
+        <div class="plan__win"><h4>Days 61 to 90 &middot; to Jan 30, 2027</h4><ul>
+          <li><b>Test messaging</b> with sales and customers; revise.</li>
+          <li><b>Day 90 in the field:</b> refreshed core deck, segment one-pagers, persona decks, cost model, updated battlecards, rewritten site with a page per segment and a public cost calculator.</li>
+          <li><b>Search baseline set, content program running;</b> capped paid search test on researched terms.</li>
+          <li><b>Enablement starts:</b> training on positioning, objection handling and competitive plays.</li>
+        </ul></div>
+        <div class="plan__win"><h4>Days 91 to 180 &middot; to Apr 30, 2027</h4><ul>
+          <li><b>NAB 2027, April:</b> announcement, pre-show meeting program, press program, event report with a keep or cut call.</li>
+          <li><b>KPI dashboard</b> reporting daily, weekly and monthly against baselines; first case studies published.</li>
+          <li><b>Build proof for sports and international</b> before those houses go to market.</li>
+          <li><b>Day 180:</b> review against the JD's six-month goals: lift in qualified leads, a working event program, reps using the asset library, defensible positioning against every named competitor.</li>
+        </ul></div>
+      </div>
+    </section>
+
+    <!-- ================= 12 Risks ================= -->
+    <section class="chapter reveal" id="risks">
+      <div class="chapter__label"><span class="num">12</span><span class="mono-tag">Risks</span></div>
+      <h2 class="chapter__title">What I would verify first</h2>
+      <p>A lean canvas per segment shows the assumption that sinks each segment if it is wrong. Three of the five can be tested with ViewNexa's own data in the first weeks.</p>
+      <div class="tbl-wrap">
+        <table class="tbl">
+          <thead><tr><th>Order</th><th>Segment</th><th>Riskiest assumption</th><th>Test</th></tr></thead>
+          <tbody>
+            <tr><td>1</td><td>Station groups</td><td>ViewNexa's price, including playout, undercuts what a group pays today</td><td>Real pricing against two current customers' former stacks</td></tr>
+            <tr><td>2</td><td>Local broadcast</td><td>Stations will pay for their own apps and channel when aggregators carry them free</td><td>Revenue before and after a station launched its own channel</td></tr>
+            <tr><td>3</td><td>Faith</td><td>Ministries will pay above Lightcast's price for ad revenue and FAST</td><td>One faith customer's ad revenue against Lightcast's published tiers</td></tr>
+            <tr><td>4</td><td>International</td><td>Distribution partners will carry international channels</td><td>Check which partners carry them today</td></tr>
+            <tr><td>5</td><td>Sports</td><td>Teams will trust a 99.5% uptime guarantee for live games</td><td>ViewNexa's terms, plus two team conversations</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h3>Questions only ViewNexa can answer</h3>
+      <details class="vn-acc"><summary>Pricing and packaging</summary><div class="acc-body"><p>Actual prices and billing unit; whether playout and a FAST channel are included per station. The cost model and the CFO message both depend on it.</p></div></details>
+      <details class="vn-acc"><summary>Reliability and support</summary><div class="acc-body"><p>Whether a stronger guarantee exists for live events, and how "24/7/365 support" squares with the published two-hour email target.</p></div></details>
+      <details class="vn-acc"><summary>Revenue and partners</summary><div class="acc-body"><p>Whether Bitcentral's ad partnerships carried over after the split; what current FAST channels earn per station; which partners carry international channels.</p></div></details>
+      <details class="vn-acc"><summary>Customers and proof</summary><div class="acc-body"><p>Which logo accounts remain active since the split; which customers would join case studies; whether sports or international customers exist.</p></div></details>
+      <details class="vn-acc"><summary>Product and AI</summary><div class="acc-body"><p>Status of the August 2025 AI tools; LG app support; the date for the Roku and Apple program-guide SDK; migration support for groups.</p></div></details>
+      <details class="vn-acc"><summary>Funnel</summary><div class="acc-body"><p>Real conversion rates, win rate, cycle length and lead sources from the CRM, which replace every rate on this page.</p></div></details>
+
+      <h3 style="margin-top: 56px;">What happens next</h3>
+      <p>Everything on this page is a hypothesis until it meets ViewNexa's data. In the first 30 days I would sit in on sales calls, check each model against the CRM, and run the three tests above that need only internal numbers. By day 30 you would have a written gap assessment and a plan you can hold me to, measured on pipeline.</p>
+      <p>If this is the work you want done, I want to be the one doing it.</p>
+      <p style="font-family: var(--mono); font-size: 13px; color: var(--ink-faint);">Brad Seraphin &middot; <a class="vn-link" href="tel:8086470628">808.647.0628</a> &middot; <a class="vn-link" href="mailto:Brad.Seraphin@gmail.com">Brad.Seraphin@gmail.com</a></p>
+    </section>
+
+  </div>
+</main>
+
+<script src="../js/main.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  function $(id) { return document.getElementById(id); }
+  function esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+  function money(v) {
+    var a = Math.abs(v), s = v < 0 ? "-" : "";
+    if (a >= 1e9) return s + "$" + (a / 1e9).toFixed(2) + "B";
+    if (a >= 1e6) return s + "$" + (a / 1e6).toFixed(1) + "M";
+    if (a >= 1e4) return s + "$" + Math.round(a / 1e3) + "K";
+    if (a >= 1e3) return s + "$" + (a / 1e3).toFixed(1).replace(/\.0$/, "") + "K";
+    return s + "$" + Math.round(a);
+  }
+  var FIT = {
+    P: '<span class="tag tag-s">Proven</span>',
+    U: '<span class="tag tag-i">Unproven</span>',
+    N: '<span class="tag tag-a">Not relieved</span>'
+  };
+
+  /* ---------------- 02 Customer: segments ---------------- */
+  var SEG = {
+    local: {
+      buyer: "The GM, deciding largely alone, with a digital or engineering lead. About 3 to 6 months. Reached through state broadcaster associations and TVNewsCheck.",
+      jobs: "Hold the local audience as viewing moves to connected TVs; grow digital revenue; keep pace with group-owned rivals in the same market.",
+      rows: [
+        ["Pain: no staff to run streaming", "No-touch live news workflow; \"publish once\" updates every app", "U"],
+        ["Pain: little connected TV ad revenue", "Ad insertion with SCTE-35 ad markers, ad partnerships, FAST revenue sharing", "U"],
+        ["Pain: aggregators carry the news under their own brand", "The station's own apps and FAST channel, while still feeding Local Now, NewsON and Haystack", "P"],
+        ["Gain: a new revenue line without new headcount", "Automation plus revenue sharing", "U"],
+        ["Gain: the station's own channel on Samsung TV Plus and similar", "100+ named distribution partners; 172 FAST feeds", "P"],
+        ["Gain: launch fast", "\"FAST Channels in Seconds\" (claim only)", "U"]
+      ]
+    },
+    groups: {
+      buyer: "Owner or GM decides; CFO approves; digital lead evaluates; engineer can block. About 6 to 9 months, timed to the budget year. Triggers: a vendor contract ending, an ownership change, 2027 budget pressure as election spending falls away.",
+      jobs: "Run streaming the same way in every market; cut vendor cost; launch group or regional FAST channels.",
+      rows: [
+        ["Pain: several vendors and contracts per market", "One contract across apps, channels, distribution and ads", "U"],
+        ["Pain: per-channel playout costs ($2,100 to $3,000 a month list)", "Playout inside the platform, if included in the price", "N"],
+        ["Pain (engineer): uneven quality across markets", "\"Manage once, distribute many\"; ad markers preserved; 99.5% uptime guarantee", "P"],
+        ["Pain: risk of moving off current vendors", "None stated; no migration program on the site", "N"],
+        ["Gain (CFO): one bill and a lower total cost", "One contract; the cost model's mid case saves about 46%", "U"],
+        ["Gain: group-level ad revenue", "Ad partnerships, revenue sharing", "U"]
+      ],
+      extra: '<div class="vn-src">Lookalike groups are ranked in the target ranking below.</div>'
+    },
+    sports: {
+      buyer: "Team or league business and media leads. A placeholder: no sports customer is confirmed and the buyer is not yet profiled.",
+      jobs: "Reach fans directly as regional sports network deals disappear; earn from games; deliver for sponsors.",
+      rows: [
+        ["Pain: lost rights revenue", "Pay-per-view, subscriptions, ads", "U"],
+        ["Pain: a live game cannot fail", "99.5% uptime allows about 3.6 hours of downtime a month; Quickplay claims 99.999%", "N"],
+        ["Pain: sponsors want placements", "Sponsor integrations not stated", "N"],
+        ["Gain: fan revenue the team controls", "Direct apps and pay models", "U"],
+        ["Gain: reach beyond the home market", "FAST distribution", "U"],
+        ["Gain: data on fans", "None stated", "N"]
+      ]
+    },
+    faith: {
+      buyer: "Executive director, executive pastor or media director. About 1 to 3 months. Decides fast, reads reviews, asks for simplicity.",
+      jobs: "Carry services to members wherever they watch; grow giving; reach new audiences.",
+      rows: [
+        ["Pain: little technical staff", "Managed apps; live workflow", "P"],
+        ["Pain: tight budgets funded by giving", "Price unknown; Lightcast publishes $5,990 to $17,990 a year", "N"],
+        ["Pain: friction in online giving", "Donations built into apps", "U"],
+        ["Gain: more giving and new revenue", "Donations plus ad insertion, which Lightcast does not state", "U"],
+        ["Gain: reach new audiences", "FAST channel and distribution; Lightcast offers FAST only in its top tier", "U"],
+        ["Gain: on the TVs members own", "Apps on 9 platforms, VIZIO included", "P"]
+      ]
+    },
+    intl: {
+      buyer: "The owner or CEO. About 2 to 4 months, through referrals and trade press. Current example: Sky Link TV (4.7M viewers).",
+      jobs: "Reach audiences abroad and in the US; get carried on FAST outlets; earn in new markets.",
+      rows: [
+        ["Pain: getting carried by FAST outlets", "100+ named partners; which take international channels is unconfirmed", "U"],
+        ["Pain: app approvals platform by platform", "Apps on 9 platforms; country coverage not stated", "U"],
+        ["Pain: no ad demand in new markets", "Ad partners appear US-focused", "N"],
+        ["Gain: distribution plus ad revenue", "Distribution and ad partners", "U"],
+        ["Gain: subscriptions from audiences abroad", "Subscription model supported", "U"],
+        ["Gain: one partner for every market", "One contract", "U"]
+      ]
+    }
+  };
+  function renderSeg(k) {
+    var s = SEG[k];
+    var h = '<div class="cards" style="grid-template-columns:repeat(auto-fill,minmax(320px,1fr));">' +
+      '<div class="card"><div class="k">Who buys</div><p>' + esc(s.buyer) + '</p></div>' +
+      '<div class="card"><div class="k">Jobs to be done</div><p>' + esc(s.jobs) + '</p></div></div>';
+    h += '<div class="tbl-wrap"><table class="tbl"><thead><tr><th style="width:34%;">Buyer need</th><th>ViewNexa\'s answer today</th><th style="width:130px;">Fit</th></tr></thead><tbody>';
+    s.rows.forEach(function (r) { h += "<tr><td>" + esc(r[0]) + "</td><td>" + esc(r[1]) + "</td><td>" + FIT[r[2]] + "</td></tr>"; });
+    h += "</tbody></table></div>";
+    if (s.extra) h += s.extra;
+    $("seg-panel").innerHTML = h;
+  }
+
+  /* ---------------- 03 Competition ---------------- */
+  var FEAT = [
+    ["ViewNexa", "y:Yes", "y:Break to Live, live clipping, no-touch news", "y:SCTE-35, program-guide SDK, 172 FAST feeds", "y:9 incl. VIZIO; LG not named", "y:100+ named partners", "y:Google DAI, ad-server agnostic", "p:Ad partnerships and revenue sharing (post-split to verify)", "p:99.5% uptime, 2-hour response", "n:No"],
+    ["Amagi", "p:Partial", "y:Yes (enterprise)", "y:Yes", "n:No apps", "y:300+", "y:Yes", "y:Marketplace", "n:Not stated", "y:$2,100 to $3,000 per channel a month (AWS)"],
+    ["Wurl", "n:No", "p:Partial", "y:Yes", "n:No apps", "y:60 to 65+", "y:Yes", "y:AppLovin demand", "n:Not stated", "n:No"],
+    ["Brightcove", "y:Yes", "p:Partial", "p:Partial (Cloud Playout)", "p:8; no VIZIO", "n:No program", "y:Yes", "n:No", "n:Not stated", "y:$12K to $108K a year (AWS)"],
+    ["Quickplay", "y:Yes", "y:Yes (enterprise)", "y:Yes", "y:10 incl. VIZIO", "p:Via customer deals", "y:Yes", "n:No", "y:99.999% claimed", "n:No"],
+    ["Applicaster", "p:Partial", "n:Not stated", "n:No", "p:9; no VIZIO", "n:No", "p:Via partners", "n:No", "n:Not stated", "n:No"],
+    ["Muvi", "y:Yes", "p:Partial", "y:Yes", "p:11; no VIZIO", "p:Unnamed", "p:Playout only", "n:No", "y:99.9 to 99.99%, 24x7x365", "y:$399 to $3,900 a month"],
+    ["Lightcast", "y:Yes", "p:Partial", "p:Partial", "y:10 incl. VIZIO", "p:Unnamed", "n:Not stated", "n:No", "y:24/7 phone line", "y:$5,990 to $17,990 a year"],
+    ["BLOX Digital", "y:Newsroom-native", "y:Yes", "n:No FAST", "p:3 TV platforms plus mobile", "n:No", "y:Yes", "p:Guaranteed-CPM buying", "n:Not stated", "n:No"]
+  ];
+  function renderFeat(active) {
+    var tb = document.querySelector("#feat-tbl tbody"), h = "";
+    FEAT.forEach(function (r) {
+      var cls = r[0] === "ViewNexa" ? "hl" : (active && active !== r[0] ? "dim" : "");
+      if (active && active === r[0]) cls = "hl";
+      h += '<tr class="' + cls + '"><td>' + esc(r[0]) + "</td>";
+      for (var i = 1; i < r.length; i++) { var p = r[i].split(":"); h += '<td class="' + p[0] + '">' + esc(p.slice(1).join(":")) + "</td>"; }
+      h += "</tr>";
+    });
+    tb.innerHTML = h;
+  }
+  var vb = $("vendor-btns");
+  if (vb) {
+    var vh = '<button data-v="" class="active">All</button>';
+    FEAT.slice(1).forEach(function (r) { vh += '<button data-v="' + esc(r[0]) + '">ViewNexa vs ' + esc(r[0]) + "</button>"; });
+    vb.innerHTML = vh;
+    vb.addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      vb.querySelectorAll("button").forEach(function (x) { x.classList.toggle("active", x === b); });
+      renderFeat(b.getAttribute("data-v"));
+    });
+    renderFeat("");
+  }
+
+  var SWOT = [
+    ["Amagi", "Scale (9,000+ channel deliveries, 300+ platforms); top groups (Sinclair, Cox, NBCU); newsroom AI; public-company proof", "No apps or app-facing content management; priced per channel; built for large accounts (about $320K per customer, estimated)", "Mid-size groups priced out of per-channel playout who also need apps", "A lower-cost package and station-group marketing reaching down-market"],
+    ["Wurl", "AppLovin ad demand; 60 to 65+ outlets; advertiser research", "No content management or apps; no local TV focus", "Demand plus apps plus local news in one contract", "Buyers who care only about ad revenue"],
+    ["Brightcove", "Brand and logo wall; apps on 8 platforms; AI suite; cloud playout", "Ownership change and heavy 2025 layoffs; apps built on Applicaster; no US local TV customers; no VIZIO", "Unsettled customers; a built-for-broadcast contrast", "A 40% lower entry price and the Gen 2 relaunch"],
+    ["Quickplay", "Gray across 113 markets with a consolidation and speed story; deep AI with Google Cloud", "Enterprise only; no pricing; one flagship reference; rollouts take months", "\"What Gray built, sized for groups of 2 to 20 stations\"", "A lighter package; Gray absorbing ViewNexa customers' stations"],
+    ["Applicaster", "No-code apps; large international brands; TBN", "Apps only, partners for everything else; no AI claims; quiet since 2024; no VIZIO", "Buyers who need more than apps", "Partnership bundles with Amagi"],
+    ["Muvi", "Published prices; free trial; 95 G2 reviews; comparison pages; published 99.9% to 99.99% uptime", "No news tools; no local TV customers; FAST partners unnamed; no ad sales help; no VIZIO", "Live news and managed revenue against a do-it-yourself tool", "Sets the price anchor; wins search and AI answers through content volume"],
+    ["Lightcast", "Published prices; faith-heavy logos; VIZIO apps; donations; 24/7 phone line", "Ad insertion not stated; FAST only in its top tier; no news tools; narrow \"free-speech\" positioning", "Faith networks that need broadcast-grade live, FAST and ad revenue", "Owns the faith conversation"],
+    ["BLOX Digital", "Newsroom-native content management at about 26% of US news; websites and apps for many mid-size groups", "No FAST channels or FAST distribution; 3 TV platforms", "Add FAST and distribution to groups already on BLOX", "Adds FAST and becomes the default for mid-size groups"]
+  ];
+  var sc = $("swot-cards");
+  if (sc) {
+    var sh = "";
+    SWOT.forEach(function (r) {
+      sh += '<div class="card"><h4>' + esc(r[0]) + '</h4><div class="k">Strengths</div><p>' + esc(r[1]) + '</p><div class="k">Weaknesses</div><p>' + esc(r[2]) + '</p><div class="k">Opening for ViewNexa</div><p style="color:var(--ink) !important;">' + esc(r[3]) + '</p><div class="k">Threat</div><p>' + esc(r[4]) + "</p></div>";
+    });
+    sc.innerHTML = sh;
+  }
+
+  /* ---------------- 07 Messaging ---------------- */
+  var MSG = {
+    local: {
+      rows: [
+        ["Main message", "\"Future-Proof Your Streaming Strategy\"", "\"Your news on every TV in your market, plus a FAST channel of your own, with the staff you already have.\"", "A single-station GM wants reach and revenue without adding headcount; \"future-proof\" names neither"],
+        ["Pillars", "Apps, Channels, Monetization", "Reach viewers on the TVs they use; a news channel that earns ad revenue; runs itself", "The GM buys outcomes; modules describe what is sold"],
+        ["Buyer", "Engineer", "The GM, deciding largely alone", "At a single station the GM is the committee"],
+        ["Proof", "Scale stats; broken case studies", "Break to Live, live news workflow, logo customers. Gap: a single-station case study and price", "News is ViewNexa's strongest proof"]
+      ],
+      personas: [
+        ["GM", "Holding the audience; revenue; headcount", "\"Your news on every TV in your market, plus a FAST channel that earns, run by the team you have.\"", "\"Aggregators already carry us for free.\" Aggregators keep the brand and a share of the ad revenue; your own apps and channel keep both, and ViewNexa still feeds the aggregators.", "Use: your audience, your channel, revenue. Avoid: OTT, SSAI, future-proof"]
+      ]
+    },
+    groups: {
+      rows: [
+        ["Main message", "\"the A to Z of video content distribution\"", "\"One platform for every station's streaming, built for groups your size.\"", "The middle of the market is empty, and \"A to Z\" does not claim it"],
+        ["Pillars", "Apps, Channels, Monetization", "One workflow across every market; group-level FAST and ad revenue; one contract at about half the cost", "A group's pain is many markets on many vendors; the cost model gives a number to test"],
+        ["Buyer", "Engineer", "Owner or GM, CFO, digital lead, engineer", "Four seats on the committee; the CFO needs a cost case"],
+        ["Proof", "\"Reducing vendor fatigue\"", "Multi-station logo customers; the cost model. Gap: a mid-size group reference", "Quickplay owns the consolidation story with Gray; ViewNexa needs a version sized for smaller groups"]
+      ],
+      personas: [
+        ["Owner or GM", "Competing with the largest groups; one way of working across markets", "\"What the largest groups built, sized for a group your size.\"", "\"Quickplay did this for Gray.\" Quickplay is built for 100+ market rollouts that take months; groups of 2 to 20 need the same outcome without the enterprise project.", "Use: your markets, your group. Avoid: enterprise, platform-agnostic"],
+        ["CFO", "Total cost; predictable spend; contract risk", "\"Replace several streaming vendors with one contract and one predictable bill.\"", "\"What does switching cost us?\" Answered by a migration offer, which does not exist yet. \"Muvi lists $399 a month.\" Muvi has no news tools or ad sales; compare total cost across the vendors replaced.", "Use: total cost, one bill, contract term. Avoid: end-to-end, seamless"],
+        ["Digital lead", "Launch speed; audience growth; workload", "\"Launch apps and FAST channels for every station from one place, and update them all at once.\"", "\"We already run our apps on BLOX.\" Keep BLOX for web and news; add the FAST channels and distribution BLOX does not offer, or consolidate.", "Use: launch, every screen, one place. Avoid: effortless"],
+        ["Engineer", "Reliability; ad markers; fit with playout and newsroom systems; support", "\"Live feeds go to every outlet automatically, with SCTE-35 markers preserved and a published uptime guarantee.\"", "\"Is 99.5% enough, and who answers at 2 a.m.?\" Today's terms are 99.5% uptime and a two-hour email response; claim no more until the terms back it.", "Use: SCTE-35, ad insertion, uptime, response time. Avoid: seamless"]
+      ]
+    },
+    sports: {
+      rows: [
+        ["Main message", "\"If You Can Stream It, We Can Do It\"", "\"Stream your games straight to fans and get paid, with or without a TV deal.\"", "Teams are losing regional sports network deals and need their own distribution"],
+        ["Pillars", "Apps, Channels, Monetization", "Own your distribution; pay-per-view, subscriptions and ads; reliable enough for live events (flagged: needs a stronger guarantee than 99.5%)", "Sports revenue is direct-to-fan, and a missed live game is costly"],
+        ["Buyer", "Engineer", "Team or league business and media leads (assumed)", "Not yet profiled"],
+        ["Proof", "Sports listed as a segment", "Supported revenue models. Gap: no confirmed sports customers", "The sports case study link is broken; the weakest proof of the five"]
+      ],
+      personas: [
+        ["Business lead (placeholder)", "Replacing rights revenue; fan reach; sponsors", "\"Stream your games straight to fans and get paid, with or without a TV deal.\"", "\"Can it handle game night?\" Depends on a stronger guarantee. \"Do sponsors get placements?\" Not stated; to verify.", "Use: fans, game night, sponsors. Avoid: linear, FAST without explanation"]
+      ]
+    },
+    faith: {
+      rows: [
+        ["Main message", "\"One size does not fit all\"", "\"Carry your services to every screen your community watches, funded by giving and ads.\"", "Ministries fund media through giving; the current line leaves the matching to them"],
+        ["Pillars", "Apps, Channels, Monetization", "Apps on major TVs, VIZIO included; donations plus ad revenue; broadcast-grade live with a FAST channel", "Lightcast leads this segment and states no ad insertion, an opening on revenue"],
+        ["Buyer", "Engineer", "Executive director or ministry leader", "A mission buyer, often without technical staff"],
+        ["Proof", "Real Life Network logo; broken faith case study", "SalemNOW; donation support. Gap: a faith case study", "Lightcast sets the price anchor, so the value case has to be clear"]
+      ],
+      personas: [
+        ["Executive director", "Reaching members; giving; cost; small staff", "\"Carry your services to every screen your community watches, funded by giving and ads.\"", "\"Lightcast is $6,000 a year.\" The case is total value: ad revenue Lightcast does not state, and FAST without a top-tier upgrade.", "Use: community, members, giving, mission. Avoid: monetize, inventory"]
+      ]
+    },
+    intl: {
+      rows: [
+        ["Main message", "\"Future-Proof Your Streaming Strategy\"", "\"Put your channel in front of US and global audiences on FAST and apps.\"", "These owners want audiences abroad; distribution is the product they need"],
+        ["Pillars", "Apps, Channels, Monetization", "FAST distribution to 100+ outlets; apps with subscriptions; ad demand included", "Named distribution partners are the clearest asset for this buyer"],
+        ["Buyer", "Engineer", "The owner", "Owner-led companies"],
+        ["Proof", "\"92\" or \"100+\" FAST partnerships (the site says both)", "Named partners. Gap: which outlets take international channels", "Most of this house is a hypothesis"]
+      ],
+      personas: [
+        ["Owner", "Reaching US and global audiences; carriage; revenue", "\"Put your channel in front of US and global audiences on FAST and apps.\"", "\"Will outlets actually carry us?\" No promise; show partners that carry comparable channels, once identified.", "Use: audiences abroad, carriage, your channel"]
+      ]
+    },
+    all: {
+      rows: [
+        ["Foundation", "\"Vendor fatigue\"; Bitcentral name", "One contract; no streaming team needed; SCTE-35 and the published uptime guarantee", "True everywhere and wins nowhere on its own, so it supports rather than leads; removing Bitcentral ends the brand confusion"],
+        ["Competitor named", "None", "The real alternative in each house", "Unnamed alternatives leave buyers to compare on their own"],
+        ["AI", "Absent from product pages", "Proof under automation: up to 70% less tagging, 25 to 40% faster clipping", "Every rival leads with AI; claiming only what ships keeps it credible"]
+      ],
+      personas: []
+    }
+  };
+  function renderMsg(k) {
+    var m = MSG[k];
+    var h = '<div class="tbl-wrap"><table class="tbl"><thead><tr><th style="width:12%;">Element</th><th style="width:22%;">Today (X)</th><th>New (Y)</th><th style="width:28%;">Because (Z)</th></tr></thead><tbody>';
+    m.rows.forEach(function (r) { h += "<tr><td>" + esc(r[0]) + "</td><td>" + esc(r[1]) + '</td><td style="color:var(--ink);">' + esc(r[2]) + "</td><td>" + esc(r[3]) + "</td></tr>"; });
+    h += "</tbody></table></div>";
+    if (m.personas.length) {
+      h += '<div class="tab-label">By buyer</div><div class="cards">';
+      m.personas.forEach(function (p) {
+        h += '<div class="card"><h4>' + esc(p[0]) + '</h4><div class="k">Cares about</div><p>' + esc(p[1]) + '</p><div class="k">Message</div><p style="color:var(--ink) !important;">' + esc(p[2]) + '</p><div class="k">Likely objection and answer</div><p>' + esc(p[3]) + '</p><div class="k">Words</div><p>' + esc(p[4]) + "</p></div>";
+      });
+      h += "</div>";
+    }
+    $("msg-panel").innerHTML = h;
+  }
+
+  /* ---------------- 08 Battlecards ---------------- */
+  var BC = [
+    ["Amagi", "Station groups; engineer and digital lead; larger groups", "\"The Media Industry Cloud\"; Sinclair and Cox references; newsroom AI", "No apps or app content management; priced per channel; built for large accounts", "Scale and public-company proof; newsroom AI; top-group references", "A group of 2 to 20 stations needs apps and FAST together, and per-channel playout cost matters", "The buyer needs playout only and wants the vendor the largest groups use, or newsroom AI is a requirement", "\"Who builds and maintains your apps?\" \"What do 12 channels cost a month at list?\"", "\"Amagi runs Sinclair and Cox.\" At list, 12 channels cost about $300K to $430K a year before any apps. Compare what you need at your size.", "$2,100 to $3,000 per channel a month (AWS list); a $4.10-an-hour entry package", "A lower-cost package for mid-size groups, or an app bundle with Applicaster"],
+    ["Wurl", "Any segment focused on FAST ad revenue; GM and digital lead", "\"We make streaming TV possible\"; exclusive AppLovin ad demand", "No content management or apps; no local TV focus", "Ad demand; advertiser research; 13 case studies with metrics", "The buyer needs apps and live news as well as FAST, in one contract", "The buyer already has apps and wants the most ad revenue for an existing FAST channel", "\"Who runs your apps and live workflow alongside Wurl?\" \"What share of ad revenue do you keep?\"", "\"Wurl brings more ad demand.\" ViewNexa works with any ad server, including Google's; compare net revenue after the vendors Wurl does not replace.", "Not published", "Wurl adds apps, content management or a local news program"],
+    ["Brightcove", "Station groups; digital lead; buyers who want a known brand", "\"Drive engagement through video\"; Gen 2 with an \"AI Agentic Hub\"", "Owner change and heavy 2025 layoffs; apps built on Applicaster; no US local TV customers; no VIZIO; no distribution program", "Brand and logo wall; customer stories with metrics; a cost calculator; AI suite; cloud playout", "A US local broadcaster needs distribution, ad revenue and VIZIO, or is wary of vendor stability", "A corporate or brand-led buyer, or AI features weigh heavily", "\"Who builds Brightcove's apps?\" \"Which US local stations run on it?\" \"Which FAST outlets does it get you onto?\"", "\"Brightcove is the safe choice.\" It changed owners in 2025 and cut staff; ViewNexa's customers are US broadcasters like you.", "$12K to $108K a year (AWS list)", "Gen 2 adds a US local TV program or a distribution offer"],
+    ["Quickplay", "Station groups; owner or GM; larger groups", "\"The Content to Value Operating System\"; Gray across 113+ markets; AI \"built in, not bolted on\"", "Enterprise only; no published pricing; rollouts take months; one flagship reference", "Gray proof at scale, including reported savings; deep AI with Google Cloud; 99.999% uptime claim", "A group of 2 to 20 stations wants Gray's outcome without an enterprise project", "A group of 30+ stations, or a buyer who values the Gray reference above cost", "\"How long did Gray's rollout take?\" \"Who else your size runs Quickplay?\"", "\"Quickplay did this for Gray.\" Built for 100+ market rollouts that take months; groups of 2 to 20 need the same outcome without the enterprise project.", "Not published", "A lighter package for mid-size groups; Gray buying more stations from ViewNexa customers"],
+    ["Applicaster", "Any segment when the buyer starts with \"we need apps\"; digital lead", "\"Accelerate Your Streaming Business\"; no-code app builder", "Apps only, with partners for everything else; no VIZIO; quiet since 2024", "No-code builder; large international brands; TBN in faith", "The buyer needs more than apps: live, FAST, ad insertion", "The buyer already has playout and distribution and wants only an app builder", "\"Who runs your live feed, FAST channel and ad insertion, and how many contracts is that?\"", "\"Applicaster partners with Amagi.\" That is two vendors and two contracts; ViewNexa is one.", "Not published", "A bundled offer with Amagi"],
+    ["Muvi", "Price-led buyers, faith and smaller organizations; CFO and digital lead; in search results", "\"One Platform Infinite Streaming Possibilities\"; \"Why pay 3.5x more for Amagi Cloudport?\"", "No news tools; no local TV customers; FAST partners unnamed; no ad sales help; no VIZIO", "Published pricing; free trial; 95 G2 reviews; stronger published service terms; comparison and migration pages", "The buyer runs live news or needs named distribution and ad revenue", "The buyer is price-led, wants a self-serve trial and does not run live news", "\"Which FAST outlets will carry your channel?\" \"Who sells ads on it?\"", "\"Muvi lists $399 a month.\" Muvi has no news tools or ad sales; compare total cost across the vendors replaced.", "$399, $1,499 and $3,900 a month; playout from $199", "A ViewNexa comparison page, or news tools added"],
+    ["Lightcast", "Faith and community; executive director", "\"Own It. Stream Everywhere. Get Paid.\"", "Ad insertion not stated; FAST only in its top tier; no news tools", "Published pricing; faith logos (Joyce Meyer Ministries, InTouch); VIZIO apps; 24/7 phone line; case studies with growth figures", "The buyer wants ad revenue, a FAST channel below Lightcast's top tier, or broadcast-grade live", "Budget under about $6K to $18K a year, and only apps and donations are needed", "\"How will your channel earn ad revenue?\" \"Which tier includes FAST?\"", "\"Lightcast is $6,000 a year.\" The case is total value: ad revenue Lightcast does not state, and FAST without a top-tier upgrade.", "$5,990, $9,990 and $17,990 a year", "Ad insertion added to lower tiers"],
+    ["BLOX Digital", "Local broadcast and station groups; digital lead; often already installed", "Newsroom content management for station websites and apps (paraphrased)", "No FAST channels or FAST distribution; apps on 3 TV platforms", "Newsroom-native, about 26% of US news content management; already installed", "A group already on BLOX wants FAST channels and distribution; position alongside BLOX first", "The buyer's priority is websites and newsroom workflow, with streaming secondary", "\"How will you launch a FAST channel and get it carried?\" \"Which TV platforms do your apps reach?\"", "\"We already run on BLOX.\" Keep BLOX for web and news; add the FAST channels and distribution BLOX does not offer, or consolidate.", "Not published", "BLOX adds FAST channels or distribution"],
+    ["Build it yourself", "Station groups; CFO and engineer; the status quo", "\"We already have this working.\"", "Several contracts; per-channel playout costs; staff time to keep vendors working together", "Switching risk; contracts in force; it works well enough", "A contract renewal or price rise is near, or the person who held the stack together has left", "Contracts run for years and the stack works", "\"How many vendors touch one stream today, and when do they renew?\" \"Who keeps them working together?\"", "\"Switching is risky.\" Gap: needs a migration offer.", "Cost model: about $726K to $1.3M a year for a 10-station group (modeled)", "A key vendor exits or raises prices"]
+  ];
+  var BCF = ["When you meet them", "Their pitch", "Where we win", "Where we lose", "Win hypothesis", "Lose hypothesis", "Questions to ask", "If they say", "Pricing reference", "Tripwire"];
+  function renderBC(i) {
+    var r = BC[i], h = '<div class="tbl-wrap"><table class="tbl" style="min-width:0;"><tbody>';
+    for (var j = 1; j < r.length; j++) {
+      var st = (j === 5) ? ' style="color:#7fd1a8;"' : (j === 6 ? ' style="color:#f29b8f;"' : "");
+      h += '<tr><td style="width:24%;">' + BCF[j - 1] + "</td><td" + st + ">" + esc(r[j]) + "</td></tr>";
+    }
+    h += "</tbody></table></div>";
+    $("bc-panel").innerHTML = h;
+  }
+  var bb = $("bc-btns");
+  if (bb) {
+    var bh = "";
+    BC.forEach(function (r, i) { bh += '<button data-i="' + i + '"' + (i === 0 ? ' class="active"' : "") + ">" + esc(r[0]) + "</button>"; });
+    bb.innerHTML = bh;
+    bb.addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      bb.querySelectorAll("button").forEach(function (x) { x.classList.toggle("active", x === b); });
+      renderBC(+b.getAttribute("data-i"));
+    });
+    renderBC(0);
+  }
+
+  /* ---------------- Tabs ---------------- */
+  document.querySelectorAll(".tabs").forEach(function (t) {
+    var grp = t.getAttribute("data-tabs");
+    var fn = grp === "seg" ? renderSeg : renderMsg;
+    t.addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      t.querySelectorAll("button").forEach(function (x) { x.classList.toggle("active", x === b); });
+      fn(b.getAttribute("data-k"));
+    });
+    fn(t.querySelector("button.active").getAttribute("data-k"));
+  });
+
+  /* ================= Calculators (linked) ================= */
+  function v(id) { return +$(id).value; }
+  function setOut(id, txt) { var e = $(id); if (e) e.textContent = txt; }
+  function pct(x) { return Math.round(x * 100) + "%"; }
+  var M = {};
+
+  /* ---- 01 SAM / SOM ---- */
+  function calcSam() {
+    var fp = v("i-fp"), lp = v("i-lp"), fa = v("i-fa"), ind = v("i-in");
+    var gd = v("i-gd") / 100, gs = v("i-gs") / 100;
+    var mg = v("i-mg") / 100, ms = v("i-ms") / 100;
+    if (mg + ms > 1) { ms = 1 - mg; $("i-ms").value = Math.round(ms * 100); }
+    var mm = Math.max(0, 1 - mg - ms);
+    var fpT = 1777 * fp * (1 - gs * gd), lpT = 2169 * lp, faT = 2850 * fa, spT = 361 * 20000 + 20 * 150000, inT = 500 * ind;
+    var sam = fpT + lpT + faT + spT + inT;
+    var vals = { g: 5 * fp * (1 - gd), s: fa, m: ind };
+    var acv = mg * vals.g + ms * vals.s + mm * vals.m;
+    var deals = v("i-sel") * v("i-dps");
+    var ex = v("i-ex") / 100, ch = v("i-ch") / 100;
+    var base = v("i-cur"), ys = [];
+    for (var y = 0; y < 3; y++) { base = base * (1 + ex - ch) + deals * acv; ys.push(base); }
+    var share = ys[2] / sam * 100;
+    setOut("s-fp", money(fp)); setOut("s-lp", money(lp)); setOut("s-fa", money(fa)); setOut("s-in", money(ind));
+    setOut("s-gd", pct(gd)); setOut("s-gs", pct(gs)); setOut("s-cur", money(v("i-cur"))); setOut("s-sel", v("i-sel")); setOut("s-dps", v("i-dps"));
+    setOut("s-ex", pct(ex)); setOut("s-ch", pct(ch)); setOut("s-mg", pct(mg)); setOut("s-ms", pct(ms));
+    setOut("o-fp", money(fpT)); setOut("o-lp", money(lpT)); setOut("o-fa", money(faT)); setOut("o-sp", money(spT)); setOut("o-in", money(inT));
+    setOut("o-sam", money(sam)); setOut("o-deals", deals); setOut("o-acv", money(acv));
+    setOut("o-mix", pct(mg) + " / " + pct(ms) + " / " + pct(mm));
+    setOut("o-som", ys.map(money).join(" / ")); setOut("o-share", share.toFixed(1) + "%");
+    var f = $("o-flag");
+    if (share <= 5) { f.className = "flag ok"; f.textContent = "Within a 3 to 5% share-of-SAM sanity check for a company this size."; }
+    else { f.className = "flag warn"; f.textContent = "Above a 3 to 5% share-of-SAM sanity check: either the deal pace is aggressive for 6 to 9 month broadcast cycles, or the check is too conservative. ViewNexa's deal history settles it."; }
+    M.deals = deals; M.acv = acv; M.mix = { g: mg, s: ms, m: mm }; M.vals = vals;
+    calcFun();
+  }
+
+  /* ---- 10 Funnel ---- */
+  function calcFun() {
+    if (!$("calc-fun")) return;
+    var linked = $("f-link").checked;
+    $("f-d-f").classList.toggle("off", linked); $("f-a-f").classList.toggle("off", linked);
+    if (linked && M.deals) { $("f-d").value = M.deals; $("f-a").value = Math.round(M.acv / 1000) * 1000; }
+    var d = v("f-d"), a = linked && M.acv ? M.acv : v("f-a"), w = v("f-w") / 100, m = v("f-m") / 100, s = v("f-s") / 100;
+    var opp = d / w, mtg = opp / m, mkt = mtg * s;
+    setOut("f-d-o", d); setOut("f-a-o", money(a)); setOut("f-w-o", pct(w)); setOut("f-m-o", pct(m)); setOut("f-s-o", pct(s));
+    setOut("f-o-opp", Math.round(opp)); setOut("f-o-mtg", Math.round(mtg) + " (" + (mtg / 12).toFixed(1) + " a month)");
+    setOut("f-o-mkt", (mkt / 12).toFixed(1)); setOut("f-o-pipe", money(opp * a)); setOut("f-o-rev", money(d * a));
+    M.meetPipe = m * a; M.meetRev = m * w * a; M.win = w;
+    setOut("f-o-val", money(M.meetPipe) + " / " + money(M.meetRev));
+    var cw = [0, 1, 2, 3].map(function (i) { return v("f-c" + i); }), tot = cw.reduce(function (x, y) { return x + y; }, 0) || 1;
+    cw.forEach(function (c, i) { setOut("f-c" + i + "-o", Math.round(c / tot * 100) + "%"); setOut("f-o-c" + i, Math.round(mkt * c / tot) + " a year"); });
+    if (M.mix) {
+      var parts = { g: M.mix.g * M.vals.g, s: M.mix.s * M.vals.s, m: M.mix.m * M.vals.m }, sum = parts.g + parts.s + parts.m || 1;
+      setOut("f-o-sg", money(d * a * parts.g / sum) + " (" + pct(parts.g / sum) + " of revenue, " + pct(M.mix.g) + " of deals)");
+      setOut("f-o-ss", money(d * a * parts.s / sum) + " (" + pct(parts.s / sum) + ")");
+      setOut("f-o-sm", money(d * a * parts.m / sum) + " (" + pct(parts.m / sum) + ")");
+    }
+    renderEvents(); calcEv(); calcPs();
+  }
+
+  /* ---- 09 Events ---- */
+  var EV = [
+    ["NAB Show 2027", "1: exhibit", 40000, "12 to 15", 13.5],
+    ["StreamTV Show 2027", "2: attend and meet", 4500, "2 to 3", 2.5],
+    ["TVNewsCheck NewsTECHForum", "2", 4500, "2 to 3", 2.5],
+    ["TVNewsCheck Local TV Strategies", "2", 4500, "2 to 3", 2.5],
+    ["Texas Association of Broadcasters (Aug 3 to 4, 2027)", "2", 4500, "2 to 3", 2.5],
+    ["Alabama broadcasters association", "2", 3200, "2", 2],
+    ["Georgia broadcasters association", "2", 3500, "2", 2],
+    ["Streaming Media Connect (Nov 9 to 11, 2026)", "3: low cost", 1000, "0 to 1", 0.5],
+    ["OTT.X (Dec 15 to 16, 2026)", "3", 1000, "0 to 1", 0.5],
+    ["TVNewsCheck webinars", "3", 500, "0 to 1", 0.5]
+  ];
+  function renderEvents() {
+    var tb = document.querySelector("#ev-tbl tbody"); if (!tb || !M.meetRev) return;
+    var h = "", tc = 0, tm = 0, tr = 0;
+    EV.forEach(function (e) {
+      var be = e[2] / M.meetRev, rev = e[4] * M.meetRev; tc += e[2]; tm += e[4]; tr += rev;
+      h += "<tr><td>" + esc(e[0]) + "</td><td>" + esc(e[1]) + "</td><td>" + money(e[2]) + "</td><td>" + e[3] + "</td><td>" + (be < 1 ? "Under 1" : be.toFixed(1)) + "</td><td>" + money(rev) + "</td></tr>";
+    });
+    h += '<tr><td>IBC</td><td>Skip in year one</td><td>$0</td><td>0</td><td>n/a</td><td>n/a</td></tr>';
+    h += '<tr class="total"><td>Total</td><td></td><td>' + money(tc) + "</td><td>About " + Math.round(tm) + "</td><td></td><td>" + money(tr) + "</td></tr>";
+    tb.innerHTML = h;
+    setOut("ev-rate", "At current rates a qualified meeting is worth " + money(M.meetPipe) + " in pipeline and " + money(M.meetRev) + " in expected revenue.");
+  }
+  function calcEv() {
+    if (!$("calc-ev") || !M.meetRev) return;
+    var c = v("ev-c"), m = v("ev-m"), inf = v("ev-i");
+    var be = c / M.meetRev, rev = m * M.meetRev, infRev = inf * M.win;
+    setOut("ev-c-o", money(c)); setOut("ev-m-o", m); setOut("ev-i-o", money(inf));
+    setOut("ev-o-p", money(m * M.meetPipe)); setOut("ev-o-r", money(rev));
+    setOut("ev-o-be", be < 1 ? "Under 1" : be.toFixed(1)); setOut("ev-o-roi", c ? (rev / c).toFixed(1) + "x" : "n/a");
+    var f = $("ev-flag");
+    if (m >= be) { f.className = "flag ok"; f.textContent = "Above breakeven on sourced meetings: keep."; }
+    else if (rev + infRev >= c) { f.className = "flag"; f.textContent = "Below breakeven on sourced meetings, but influenced pipeline covers the gap: keep and watch."; }
+    else { f.className = "flag warn"; f.textContent = "Below breakeven: cut after a second run like this."; }
+  }
+  var pick = $("ev-pick");
+  if (pick) {
+    pick.innerHTML = EV.map(function (e, i) { return '<option value="' + i + '">' + esc(e[0]) + "</option>"; }).join("");
+    pick.addEventListener("change", function () { var e = EV[+pick.value]; $("ev-c").value = e[2]; $("ev-m").value = Math.round(e[4]); calcEv(); });
+    $("ev-c").value = EV[0][2]; $("ev-m").value = 13;
+    ["ev-c", "ev-m", "ev-i"].forEach(function (id) { $(id).addEventListener("input", calcEv); });
+  }
+
+  /* ---- 09 Paid search ---- */
+  function calcPs() {
+    if (!$("calc-ps") || !M.meetRev) return;
+    var b = v("ps-b"), c = v("ps-c"), l = v("ps-l") / 100, q = v("ps-q") / 100;
+    var cl = b / c, ld = cl * l, qm = ld * q, cpq = qm ? b / qm : 0;
+    setOut("ps-b-o", money(b)); setOut("ps-c-o", "$" + c.toFixed(2)); setOut("ps-l-o", (l * 100).toFixed(1) + "%"); setOut("ps-q-o", pct(q));
+    setOut("ps-o-cl", Math.round(cl)); setOut("ps-o-ld", ld.toFixed(1)); setOut("ps-o-qm", qm.toFixed(1));
+    setOut("ps-o-cpq", money(cpq)); setOut("ps-o-val", money(M.meetRev)); setOut("ps-o-roi", (qm * M.meetRev / b).toFixed(1) + "x");
+    var f = $("ps-flag");
+    if (cpq && cpq < M.meetRev) { f.className = "flag ok"; f.textContent = "Each qualified meeting costs less than its expected revenue: worth a capped test."; }
+    else { f.className = "flag warn"; f.textContent = "Costs more than it returns at these rates: fix terms and targeting before spending more."; }
+  }
+  ["ps-b", "ps-c", "ps-l", "ps-q"].forEach(function (id) { if ($(id)) $(id).addEventListener("input", calcPs); });
+
+  /* ---- 06 Cost of ownership ---- */
+  var PRE = {
+    group: { st: 10, ch: 12, pl: 3000, cms: 60000, fte: 2, rev: 10000, vn: 45000, app: 50000, ds: 25 },
+    single: { st: 1, ch: 2, pl: 3000, cms: 12000, fte: 1, rev: 10000, vn: 45000, app: 50000, ds: 25 }
+  };
+  function setPre(k) { var p = PRE[k]; Object.keys(p).forEach(function (x) { $("t-" + x).value = p[x]; }); calcTco(); }
+  function calcTco() {
+    var st = v("t-st"), ch = v("t-ch"), pl = v("t-pl"), cms = v("t-cms"), fte = v("t-fte"), rev = v("t-rev"), vn = v("t-vn"), app = v("t-app"), ds = v("t-ds") / 100;
+    var plx = $("t-plx").checked, vpl = v("t-vpl"), mig = v("t-mig"), hid = $("t-hid").checked;
+    $("t-vpl-f").classList.toggle("off", !plx);
+    var fast = st > 1 ? 2 : 1;
+    var playout = ch * pl * 12, dist = fast * rev * 12 * ds, lab = fte * 130000;
+    var hidden = fast * rev * 2.5 + 20000 + fast * rev * 12 * (5 / 30);
+    var stack = cms + playout + app + dist + 6000 + lab + 75000 + (hid ? hidden : 0);
+    var one = st * vn * (st >= 5 ? 0.8 : 1) + (st > 1 ? 1 : 0.5) * 130000 + 15000 + (plx ? ch * vpl * 12 : 0);
+    var save = stack - one;
+    setOut("t-st-o", st); setOut("t-ch-o", ch + " (" + fast + " FAST)"); setOut("t-pl-o", money(pl)); setOut("t-cms-o", money(cms)); setOut("t-fte-o", fte);
+    setOut("t-rev-o", money(rev)); setOut("t-vn-o", money(vn)); setOut("t-app-o", money(app)); setOut("t-ds-o", pct(ds)); setOut("t-vpl-o", money(vpl)); setOut("t-mig-o", money(mig));
+    setOut("t-o-pl", money(playout)); setOut("t-o-cms", money(cms)); setOut("t-o-app", money(app)); setOut("t-o-dist", money(dist)); setOut("t-o-lab", money(lab));
+    $("t-hid-row").style.display = hid ? "" : "none"; setOut("t-o-hid", money(hidden));
+    setOut("t-o-stack", money(stack)); setOut("t-o-one", money(one));
+    setOut("t-o-save", money(save) + " (" + Math.round(save / stack * 100) + "%)");
+    setOut("t-o-3y", money(save * 3 - mig));
+    setOut("t-o-pb", save > 0 ? (mig / (save / 12)).toFixed(1) + " months" : "Never");
+    var f = $("t-flag");
+    if (save <= 0) { f.className = "flag warn"; f.textContent = "One contract costs more than the stack at these inputs. Per-channel playout pricing would undo the savings case."; }
+    else if (plx) { f.className = "flag"; f.textContent = "With ViewNexa charging " + money(vpl) + " per channel a month, savings fall to " + money(save) + ". Playout pricing is the first thing to confirm."; }
+    else { f.className = "flag"; f.textContent = "Assumes playout is included in the per-station price. Tick the box to test the biggest sensitivity."; }
+  }
+  ["t-st", "t-ch", "t-pl", "t-cms", "t-fte", "t-rev", "t-vn", "t-app", "t-ds", "t-vpl", "t-mig"].forEach(function (id) { if ($(id)) $(id).addEventListener("input", calcTco); });
+  ["t-plx", "t-hid"].forEach(function (id) { if ($(id)) $(id).addEventListener("change", calcTco); });
+  var tp = $("tco-presets");
+  if (tp) {
+    tp.addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      tp.querySelectorAll("button").forEach(function (x) { x.classList.toggle("active", x === b); });
+      setPre(b.getAttribute("data-p"));
+    });
+    setPre("group");
+  }
+
+  /* ---- 06 Revenue-share check ---- */
+  function calcRs() {
+    if (!$("calc-rs")) return;
+    var std = v("rs-std"), base = v("rs-base"), sh = v("rs-sh") / 100, rev = v("rs-rev");
+    var rs = base + sh * rev, be = sh ? (std - base) / sh : 0;
+    setOut("rs-std-o", money(std)); setOut("rs-base-o", money(base)); setOut("rs-sh-o", pct(sh)); setOut("rs-rev-o", money(rev));
+    setOut("rs-o-std", money(std)); setOut("rs-o-rs", money(rs)); setOut("rs-o-be", be > 0 ? money(be) + " a year" : "Always above");
+    setOut("rs-o-keep", money(rev - rs) + " (vs " + money(rev - std) + " on standard)");
+    var f = $("rs-flag");
+    if (rs < std) { f.className = "flag"; f.textContent = "Below breakeven: the option works as a discount, " + money(std - rs) + " less for ViewNexa. Useful for winning stations with small channels."; }
+    else { f.className = "flag ok"; f.textContent = "Above breakeven: ViewNexa earns " + money(rs - std) + " more, and the station pays less up front."; }
+  }
+  ["rs-std", "rs-base", "rs-sh", "rs-rev"].forEach(function (id) { if ($(id)) $(id).addEventListener("input", calcRs); });
+  calcRs();
+
+  /* ---- 02 Target ranking ---- */
+  var RANK = [
+    ["Heartland Media", [4, 4, 4, 4, 3, 4], "Earlier Bitcentral streaming customer, group-wide; 11 stations. Relationship may sit with Bitcentral."],
+    ["Heritage Media", [5, 5, 3, 3, 3, 3], "At least two app vendors; no FAST channel found. Station count unconfirmed."],
+    ["Morris Multimedia", [4, 4, 3, 3, 3, 3], "Separate vendors for mobile and TV apps; family-owned."],
+    ["News-Press & Gazette", [3, 5, 3, 3, 2, 3], "On the Zeam aggregator; no FAST channels of its own."],
+    ["Cowles (KHQ)", [3, 3, 3, 2, 2, 3], "Earlier Bitcentral customer; now on BLOX apps."],
+    ["Morgan Murphy", [3, 5, 2, 3, 2, 3], "On Zeam; BLOX mobile apps incumbent."],
+    ["Lilly Broadcasting", [3, 3, 3, 2, 4, 2], "Legacy Frankly setup suggests a stack due for replacement."],
+    ["Sarkes Tarzian", [3, 3, 3, 2, 4, 2], "Former Frankly customer (2019); current vendors unconfirmed."],
+    ["WFMZ", [2, 3, 2, 1, 2, 2], "Independent single station; BLOX and Syncbak incumbents."],
+    ["Lockwood", [2, 3, 1, 2, 1, 2], "Recent BLOX and Blackbird commitment (2024)."]
+  ];
+  function calcRank() {
+    if (!$("calc-rank")) return;
+    var w = [0, 1, 2, 3, 4, 5].map(function (i) { var x = v("r-w" + i); setOut("r-w" + i + "-o", x); return x; });
+    var wt = w.reduce(function (a, b) { return a + b; }, 0) || 1;
+    var rows = RANK.map(function (r) { var sc = r[1].reduce(function (a, s, i) { return a + s * w[i]; }, 0) / wt; return [r[0], sc, r[2]]; });
+    rows.sort(function (a, b) { return b[1] - a[1]; });
+    var h = '<div class="tbl-wrap" style="margin-top:0;"><table class="tbl" style="min-width:0;"><thead><tr><th>#</th><th>Group</th><th>Score</th><th>Tier</th></tr></thead><tbody>';
+    rows.forEach(function (r, i) {
+      var tier = r[1] >= 3.6 ? "1" : (r[1] >= 2.8 ? "2" : "3");
+      h += '<tr title="' + esc(r[2]) + '"><td>' + (i + 1) + "</td><td>" + esc(r[0]) + '<div style="color:var(--ink-faint);font-weight:400;font-size:12.5px;line-height:1.5;margin-top:3px;">' + esc(r[2]) + "</div></td><td>" + r[1].toFixed(1) + "</td><td>" + tier + "</td></tr>";
+    });
+    $("rank-out").innerHTML = h + "</tbody></table></div>";
+  }
+  [0, 1, 2, 3, 4, 5].forEach(function (i) { if ($("r-w" + i)) $("r-w" + i).addEventListener("input", calcRank); });
+  calcRank();
+
+  /* ---- wiring ---- */
+  ["i-fp", "i-lp", "i-fa", "i-in", "i-gd", "i-gs", "i-cur", "i-sel", "i-dps", "i-ex", "i-ch", "i-mg", "i-ms"].forEach(function (id) { if ($(id)) $(id).addEventListener("input", calcSam); });
+  ["f-d", "f-a", "f-w", "f-m", "f-s", "f-c0", "f-c1", "f-c2", "f-c3"].forEach(function (id) { if ($(id)) $(id).addEventListener("input", calcFun); });
+  if ($("f-link")) $("f-link").addEventListener("change", calcFun);
+  var fp2 = $("fun-presets");
+  if (fp2) {
+    fp2.addEventListener("click", function (e) {
+      var b = e.target.closest("button"); if (!b) return;
+      fp2.querySelectorAll("button").forEach(function (x) { x.classList.toggle("active", x === b); });
+      var s = +b.getAttribute("data-s"), d = +b.getAttribute("data-d");
+      if ($("f-link").checked) { $("i-sel").value = s; $("i-dps").value = d; calcSam(); }
+      else { $("f-d").value = s * d; calcFun(); }
+    });
+  }
+  if ($("calc-sam")) calcSam(); else calcFun();
+
+})();
+
+</script>
+</body>
+</html>
