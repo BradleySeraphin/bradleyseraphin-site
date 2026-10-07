@@ -1521,14 +1521,21 @@ details.vn-acc .acc-body p { font-size: 14.5px; margin-bottom: 8px; }
       }
       window.addEventListener("scroll", onScroll, { passive: true });
     }
-    var gate = document.getElementById("vn-gate");
-    if (!gate || getComputedStyle(gate).display === "none") {
-      startCues();
+    function startAfterGate() {
+      var gate = document.getElementById("vn-gate");
+      if (!gate || getComputedStyle(gate).display === "none") {
+        startCues();
+      } else {
+        var mo = new MutationObserver(function () {
+          if (!document.getElementById("vn-gate")) { mo.disconnect(); startCues(); }
+        });
+        mo.observe(document.body, { childList: true });
+      }
+    }
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", startAfterGate);
     } else {
-      var mo = new MutationObserver(function () {
-        if (!document.getElementById("vn-gate")) { mo.disconnect(); startCues(); }
-      });
-      mo.observe(document.body, { childList: true });
+      startAfterGate();
     }
   })();
 })();
