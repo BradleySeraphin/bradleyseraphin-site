@@ -1510,15 +1510,26 @@ details.vn-acc .acc-body p { font-size: 14.5px; margin-bottom: 8px; }
         }, i * 110);
       });
     }
-    setTimeout(blinkRail, 800);
-    var scrollDone = false;
-    function onScroll() {
-      if (scrollDone) return;
-      scrollDone = true;
-      window.removeEventListener("scroll", onScroll, { passive: true });
-      if (!railClicked) blinkRail();
+    function startCues() {
+      setTimeout(blinkRail, 800);
+      var scrollDone = false;
+      function onScroll() {
+        if (scrollDone) return;
+        scrollDone = true;
+        window.removeEventListener("scroll", onScroll, { passive: true });
+        if (!railClicked) blinkRail();
+      }
+      window.addEventListener("scroll", onScroll, { passive: true });
     }
-    window.addEventListener("scroll", onScroll, { passive: true });
+    var gate = document.getElementById("vn-gate");
+    if (!gate || getComputedStyle(gate).display === "none") {
+      startCues();
+    } else {
+      var mo = new MutationObserver(function () {
+        if (!document.getElementById("vn-gate")) { mo.disconnect(); startCues(); }
+      });
+      mo.observe(document.body, { childList: true });
+    }
   })();
 })();
 
