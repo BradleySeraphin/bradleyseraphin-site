@@ -192,6 +192,11 @@ details.vn-acc .acc-body p { font-size: 14.5px; margin-bottom: 8px; }
 .vn-info.vn-cue { background: var(--accent); color: var(--bg); transform: scale(1.35); }
 .tabs button.vn-cue-btn, .seg-btns button.vn-cue-btn { color: var(--ink) !important; border-color: var(--accent) !important; background: rgba(77,163,255,0.22) !important; box-shadow: 0 0 20px rgba(77,163,255,0.75); transform: translateY(-2px) scale(1.06); }
 .tabs button.active.vn-cue-btn, .seg-btns button.active.vn-cue-btn { color: var(--bg) !important; background: var(--accent) !important; }
+/* rail blink cue */
+.chapter-rail a { transition: color 0.2s ease; }
+.chapter-rail a::before { transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease; }
+.chapter-rail a.vn-cue-rail { color: var(--accent); }
+.chapter-rail a.vn-cue-rail::before { background: var(--accent) !important; transform: scale(2) !important; box-shadow: 0 0 12px rgba(77,163,255,0.8) !important; }
 /* clearer resting affordance for buttons */
 .tabs button:not(.active), .seg-btns button:not(.active) { border-color: rgba(255,255,255,0.22); color: var(--ink); }
 .tabs button:not(.active):hover, .seg-btns button:not(.active):hover { border-color: var(--accent); background: rgba(77,163,255,0.1); }
@@ -1486,6 +1491,34 @@ details.vn-acc .acc-body p { font-size: 14.5px; margin-bottom: 8px; }
       });
     }, { rootMargin: "-15% 0px -30% 0px", threshold: 0.6 });
     document.querySelectorAll(".vn-info, .tabs, .seg-btns, .field, .toggle, select.vn-sel, details.vn-acc summary").forEach(function (el) { io.observe(el); });
+  })();
+
+  /* ================= Rail blink cue: step through section links on load and first scroll ================= */
+  (function () {
+    var rail = document.querySelector(".chapter-rail");
+    if (!rail) return;
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var railClicked = false;
+    rail.addEventListener("click", function () { railClicked = true; }, true);
+    function blinkRail() {
+      if (getComputedStyle(rail).display === "none") return;
+      var links = Array.prototype.slice.call(rail.querySelectorAll("a"));
+      links.forEach(function (a, i) {
+        setTimeout(function () {
+          a.classList.add("vn-cue-rail");
+          setTimeout(function () { a.classList.remove("vn-cue-rail"); }, 450);
+        }, i * 110);
+      });
+    }
+    setTimeout(blinkRail, 800);
+    var scrollDone = false;
+    function onScroll() {
+      if (scrollDone) return;
+      scrollDone = true;
+      window.removeEventListener("scroll", onScroll, { passive: true });
+      if (!railClicked) blinkRail();
+    }
+    window.addEventListener("scroll", onScroll, { passive: true });
   })();
 })();
 
