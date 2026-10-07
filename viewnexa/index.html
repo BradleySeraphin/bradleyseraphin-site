@@ -10,6 +10,45 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="../css/style.css">
 <style>
+/* ---- Visitor gate ---- */
+#vn-gate {
+  position: fixed; inset: 0; z-index: 9999;
+  background: rgba(10, 10, 18, 0.92);
+  backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+}
+#vn-gate-box {
+  background: #13131f; border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px; padding: 40px 36px 36px;
+  width: 100%; max-width: 380px; text-align: center;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.6);
+}
+#vn-gate-box p {
+  font-family: var(--sans); font-size: 15px; color: var(--ink-dim);
+  margin: 8px 0 24px; line-height: 1.6;
+}
+#vn-gate-box h2 {
+  font-family: var(--sans); font-size: 20px; font-weight: 600;
+  color: var(--ink); margin: 0 0 4px;
+}
+#vn-gate-name {
+  width: 100%; box-sizing: border-box;
+  background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 7px; color: var(--ink); font-family: var(--sans); font-size: 15px;
+  padding: 11px 14px; outline: none; margin-bottom: 14px;
+  transition: border-color 0.2s;
+}
+#vn-gate-name:focus { border-color: var(--accent); }
+#vn-gate-btn {
+  width: 100%; padding: 11px; border-radius: 7px;
+  background: var(--accent); color: #fff; border: none;
+  font-family: var(--sans); font-size: 15px; font-weight: 600;
+  cursor: pointer; transition: opacity 0.2s;
+}
+#vn-gate-btn:hover { opacity: 0.85; }
+#vn-gate-btn:disabled { opacity: 0.5; cursor: default; }
+#vn-gate-msg { font-family: var(--sans); font-size: 13px; color: var(--ink-dim); margin-top: 10px; min-height: 18px; }
+
 /* ---- ViewNexa page components ---- */
 .vn-lede { color: var(--ink-dim); font-size: 17px; line-height: 1.8; max-width: 760px; margin-top: 22px; }
 .chapter h3 { font-family: var(--sans); font-size: 19px; font-weight: 600; margin: 40px 0 14px; color: var(--ink); }
@@ -1450,6 +1489,64 @@ details.vn-acc .acc-body p { font-size: 14.5px; margin-bottom: 8px; }
   })();
 })();
 
+</script>
+
+<!-- Visitor gate -->
+<div id="vn-gate">
+  <div id="vn-gate-box">
+    <h2>Hi there</h2>
+    <p>Enter your name so Brad knows who's viewing this page.</p>
+    <input id="vn-gate-name" type="text" placeholder="Your name" autocomplete="off" />
+    <button id="vn-gate-btn">View page</button>
+    <div id="vn-gate-msg"></div>
+  </div>
+</div>
+<script>
+(function () {
+  var gate = document.getElementById('vn-gate');
+  var input = document.getElementById('vn-gate-name');
+  var btn = document.getElementById('vn-gate-btn');
+  var msg = document.getElementById('vn-gate-msg');
+
+  function dismiss() {
+    gate.style.transition = 'opacity 0.4s';
+    gate.style.opacity = '0';
+    setTimeout(function () { gate.remove(); }, 420);
+  }
+
+  function submit() {
+    var name = input.value.trim();
+    if (!name) { input.focus(); return; }
+    btn.disabled = true;
+    msg.textContent = 'Just a moment…';
+
+    fetch('https://api.web3forms.com/submit', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        access_key: 'b240f876-2189-43b6-a412-a91f79387bc3',
+        subject: 'ViewNexa page viewed by ' + name,
+        from_name: 'ViewNexa Gate',
+        name: name,
+        message: name + ' just opened your ViewNexa page.\n\nTime: ' + new Date().toUTCString() + '\nPage: ' + window.location.href
+      })
+    })
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      dismiss();
+    })
+    .catch(function () {
+      // If the request fails, let them through anyway
+      dismiss();
+    });
+  }
+
+  btn.addEventListener('click', submit);
+  input.addEventListener('keydown', function (e) { if (e.key === 'Enter') submit(); });
+
+  // Focus the input as soon as the gate is visible
+  setTimeout(function () { input.focus(); }, 100);
+})();
 </script>
 </body>
 </html>
