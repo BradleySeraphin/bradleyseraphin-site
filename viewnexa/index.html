@@ -127,6 +127,30 @@ details.vn-acc .acc-body p { font-size: 14.5px; margin-bottom: 8px; }
 .house__base { padding: 14px 20px; border-top: 1px solid var(--line); color: var(--ink-faint); font-size: 13.5px; line-height: 1.6; background: var(--bg-alt); }
 .house .k { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); display: block; margin-bottom: 6px; }
 
+@media (max-width: 1480px) { .chapter-rail { display: none; } }
+
+/* info button and modal */
+.vn-info { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; margin-left: 12px; vertical-align: 6px; border-radius: 50%; border: 1px solid var(--accent-dim); background: transparent; color: var(--accent); font-family: var(--mono); font-size: 12px; font-weight: 500; cursor: pointer; transition: all 0.2s; }
+.vn-info:hover, .vn-info:focus-visible { background: var(--accent); color: var(--bg); border-color: var(--accent); outline: none; }
+.vn-modal { position: fixed; inset: 0; z-index: 200; background: rgba(4,5,8,0.72); backdrop-filter: blur(4px); display: flex; align-items: center; justify-content: center; padding: 20px; }
+.vn-modal[hidden] { display: none; }
+.vn-modal__panel { position: relative; width: 100%; max-width: 620px; max-height: 85vh; overflow-y: auto; background: var(--bg-alt); border: 1px solid rgba(255,255,255,0.14); border-radius: 12px; padding: 28px 28px 22px; outline: none; }
+.vn-modal__x { position: absolute; top: 12px; right: 14px; background: transparent; border: none; color: var(--ink-faint); font-size: 24px; cursor: pointer; line-height: 1; }
+.vn-modal__x:hover { color: var(--ink); }
+.vn-modal h3 { font-family: var(--sans); font-size: 22px; font-weight: 600; color: var(--ink); margin-bottom: 6px; }
+.vn-modal .k { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-faint); margin: 18px 0 6px; }
+.vn-modal p, .vn-modal li { color: var(--ink-dim); font-size: 14.5px; line-height: 1.7; }
+.vn-modal ul { list-style: none; }
+.vn-modal li { position: relative; padding: 3px 0 3px 16px; }
+.vn-modal li::before { content: ''; position: absolute; left: 0; top: 13px; width: 5px; height: 5px; border-radius: 50%; background: var(--accent-dim); }
+.vn-modal__foot { margin-top: 20px; padding-top: 12px; border-top: 1px solid var(--line); font-family: var(--mono); font-size: 11px !important; color: var(--ink-faint) !important; }
+
+/* scroll cue for interactive elements */
+.vn-info, .tabs, .seg-btns, .field, .toggle, select.vn-sel, details.vn-acc summary { transition: box-shadow 0.25s ease, border-color 0.25s ease, background 0.25s ease; border-radius: 8px; }
+.vn-cue { box-shadow: 0 0 0 1px var(--accent), 0 0 18px rgba(77,163,255,0.55) !important; }
+.vn-info.vn-cue { background: var(--accent); color: var(--bg); }
+.field.vn-cue { background: rgba(77,163,255,0.06); }
+
 @media (max-width: 860px) {
   .calc__body { grid-template-columns: 1fr; }
   .calc__inputs { border-right: none; border-bottom: 1px solid var(--line); }
@@ -1273,6 +1297,138 @@ details.vn-acc .acc-body p { font-size: 14.5px; margin-bottom: 8px; }
     });
   }
   if ($("calc-sam")) calcSam(); else calcFun();
+
+
+  /* ================= Info pop-ups: how each section was built ================= */
+  var INFO = {
+    market: {
+      t: "Market",
+      a: "Started from sourced counts (FCC, Gracenote, IAB, Omdia, BIA, Pew), then sized the market with definitions set up front: TAM is the whole industry, SAM is all spending on platforms like ViewNexa, and SOM is current revenue plus what this strategy and the product roadmap can win in three years.",
+      d: ["Textbook definitions (SOM as a share of SAM) against SOM tied to a plan. Kept the plan version so the number connects to sellers, deals and pricing.", "First-pass guesses were replaced with benchmarks wherever they were cheap to find. The FAST ad-share estimate, for example, was rebuilt from ad load, sell-through, fill and CPM benchmarks.", "The mid case lands at 7.6% of SAM, above a 3 to 5% sanity check. It is flagged in the calculator, and the low case became the target."],
+      s: ["Prices per segment anchored to list prices (Brightcove, Vimeo, Lightcast, Muvi).", "80% of full-power stations in groups of 5+, with a 20% group discount.", "Current revenue about $2.5M, estimated two ways because it is not public.", "Expansion and churn at 10% a year each; new-deal mix of 40% groups, 40% small, 20% mid-size."]
+    },
+    customer: {
+      t: "Customer",
+      a: "Built the ideal customer from three lenses: what current customers share, who the JD says signs (the GM and the CFO), and where competitors' customers are not. Then mapped each segment's buyer, jobs, pains and gains against what ViewNexa offers today.",
+      d: ["The first pass was a best-guess profile. It was thrown out in favor of evidence: customer logos compared side by side, the JD's named buyers, and competitors' customer lists.", "A segment label was renamed to \"international and multicultural\" to match the JD's language.", "The lookalike scores are estimates, so the weights are left adjustable instead of presenting one fixed ranking."],
+      s: ["Buying committees and cycle lengths: 6 to 9 months for groups, 3 to 6 for single stations, 1 to 3 for faith.", "The sports buyer is a placeholder; no sports customer is confirmed.", "Lookalike scores of 1 to 5 come from public signals only."]
+    },
+    competition: {
+      t: "Competition",
+      a: "Tore down the seven JD competitors on their product pages, pricing pages and AWS Marketplace listings, then read a SWOT for each from ViewNexa's side. To see who actually powers mid-size station streaming, checked station apps' package names, which surfaced BLOX Digital.",
+      d: ["Whether to stay inside the JD's seven. BLOX and \"build it yourself\" were added because they are what mid-size groups run today.", "Research stayed on what was easy to find, to avoid rabbit holes.", "Facts were corrected along the way: Brightcove does offer FAST playout, and Wurl is still owned by AppLovin."],
+      s: ["\"Not stated\" means not found on the vendor's site.", "Amagi's revenue per customer is an estimate from its investor deck."]
+    },
+    current: {
+      t: "Current state",
+      a: "Audited every page of viewnexa.com, the live Google Ads account, the YouTube channel, trade coverage and AI answers, then inferred the messaging house the site implies.",
+      d: ["An early AI test from a signed-in Google account named ViewNexa. Rerun without personalization, ViewNexa disappeared from every answer, so the page reports the unpersonalized result.", "\"Two decades of broadcast\" was dropped as the lead strength; it says little a buyer can act on."],
+      s: ["The current messaging house is inferred; ViewNexa may have an internal one.", "Findings reflect October 2026."]
+    },
+    positioning: {
+      t: "Positioning",
+      a: "Used April Dunford's five components plus an explicit \"who it is not for,\" a Geoffrey Moore positioning statement, and GM and CFO versions.",
+      d: ["The first draft leaned on heritage. It was replaced with differentiation drawn from the competitor SWOT and the feature and pricing comparison.", "\"Every screen\" was downgraded to weak once LG turned out to be missing from ViewNexa's own list."],
+      s: ["Bitcentral's ad partnerships carried over after the split (to verify).", "Category name: broadcast-grade streaming platform."]
+    },
+    value: {
+      t: "Value and pricing",
+      a: "Priced the five-vendor stack the JD describes from published list prices and compared it with one contract. Packaging follows a good-better-best structure.",
+      d: ["One price list against segment pricing. Kept one list with no segment discounts.", "Per-station against per-channel billing. Per-station, because per-channel playout pricing is what makes enterprise vendors expensive for groups.", "Whether playout is included is the biggest sensitivity in the model, so it became a switch."],
+      s: ["ViewNexa at $45K per station a year, 20% off at 5+ stations.", "Integration labor at $130K loaded; FAST ad revenue of $10K per channel a month; $50K migration.", "Every tier price is a placeholder until real pricing replaces it."]
+    },
+    messaging: {
+      t: "Messaging",
+      a: "Inferred today's messaging house from site copy, built new ones, and showed every change as X becomes Y because Z.",
+      d: ["Four versions before landing. One house on the original pillars; one rebuilt on the differentiators, which only worked for news; one house that flexed by segment; and finally five houses, one per JD segment, because each segment's buyer has a different job.", "The sports reliability pillar was kept and flagged: 99.5% uptime is weak for live games."],
+      s: ["Buyers per segment come from the buying-committee work.", "Evidence is strongest for station groups and local news, weakest for sports."]
+    },
+    enablement: {
+      t: "Battlecards",
+      a: "Nine outside-in cards with identical fields, win and lose hypotheses, and a tripwire. The \"if they say\" lines come from the objections in the persona messaging.",
+      d: ["The JD's seven names only, against adding BLOX and \"build it yourself.\" Added both, since they are the real alternatives in most deals."],
+      s: ["A foundation set exists inside ViewNexa (per the JD); these get reconciled with it.", "Win and lose hypotheses are meant to be tested against win and loss records."]
+    },
+    gtm: {
+      t: "Go-to-market",
+      a: "Checked the JD's five search terms on Google and in keyword tools, competitors' search spend, the live Ads account and unpersonalized AI answers, plus buyer vocabulary from RFPs and job posts. Events were tiered with budgets; trade press and analysts were mapped by niche.",
+      d: ["How much search matters here. Volumes are tiny, so search is treated mainly as AI visibility and earned-media work, with paid search as a capped test.", "A content topic map and an announcement calendar were dropped: too many unknowns before hire.", "IBC is skipped in year one because the international segment has the weakest evidence."],
+      s: ["NAB all-in at 3 to 4 times floor space; Tier 2 events at $3K to $6K.", "Cost per click and conversion rates are placeholders until there is Google Ads data."]
+    },
+    measurement: {
+      t: "Measurement",
+      a: "Put pipeline contribution at the center, as the JD asks, and worked back from the market model's low case to qualified meetings a month.",
+      d: ["Low case or mid case as the target. Low, because the mid case fails the share-of-market check.", "Marketing-sourced and marketing-influenced pipeline are reported separately."],
+      s: ["50% meeting to opportunity, 25% win rate, 50% marketing-sourced.", "Channel split of 40% events, 25% search and paid, 20% email, 15% press and content. All until CRM data replaces them."]
+    },
+    plan: {
+      t: "30-60-90",
+      a: "Consolidated every to-do from every workstream into one sequence, dated to the JD's 30, 90 and 180-day milestones, then checked it for gaps.",
+      d: ["Seven gaps turned up and were slotted: validating the pre-hire models, the riskiest-assumption tests, open product questions, two pricing decisions, a page per segment and a public cost calculator, proof for sports and international, and battlecard tripwires with quarterly rate updates.", "Quick wins and the foundation run in parallel, so progress shows in month one."],
+      s: ["Start date of November 2, 2026."]
+    },
+    risks: {
+      t: "Risks",
+      a: "Built a lean canvas per segment to surface the assumption that sinks it, then ordered the tests by cost and strength of evidence.",
+      d: ["One canvas per buyer (eight) against one per segment (five). Segment, because buyers in a segment share one purchase, so revenue, channels and costs are the same."],
+      s: ["Three of the five tests need only ViewNexa's internal data."]
+    }
+  };
+  (function () {
+    var modal = document.createElement("div");
+    modal.className = "vn-modal"; modal.setAttribute("role", "dialog"); modal.setAttribute("aria-modal", "true"); modal.hidden = true;
+    modal.innerHTML = '<div class="vn-modal__panel" tabindex="-1"><button class="vn-modal__x" aria-label="Close">&times;</button><div class="vn-modal__body"></div></div>';
+    document.body.appendChild(modal);
+    var body = modal.querySelector(".vn-modal__body"), lastBtn = null;
+    function open(k, btn) {
+      var i = INFO[k]; if (!i) return; lastBtn = btn;
+      var h = '<div class="mono-tag" style="margin-bottom:10px;">How this section was built</div><h3>' + esc(i.t) + "</h3>";
+      h += '<div class="k">Approach</div><p>' + esc(i.a) + "</p>";
+      h += '<div class="k">What we debated</div><ul>' + i.d.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul>";
+      h += '<div class="k">Assumptions we landed on</div><ul>' + i.s.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul>";
+      h += '<p class="vn-modal__foot">Worked through in conversation with Claude; the calls and edits are mine.</p>';
+      body.innerHTML = h; modal.hidden = false; document.body.style.overflow = "hidden";
+      modal.querySelector(".vn-modal__panel").focus();
+    }
+    function close() { modal.hidden = true; document.body.style.overflow = ""; if (lastBtn) lastBtn.focus(); }
+    modal.addEventListener("click", function (e) { if (e.target === modal || e.target.closest(".vn-modal__x")) close(); });
+    document.addEventListener("keydown", function (e) { if (e.key === "Escape" && !modal.hidden) close(); });
+    Object.keys(INFO).forEach(function (k) {
+      var t = document.querySelector("#" + k + " .chapter__title"); if (!t) return;
+      var b = document.createElement("button");
+      b.className = "vn-info"; b.type = "button"; b.setAttribute("aria-label", "How this section was built"); b.textContent = "i";
+      b.addEventListener("click", function () { open(k, b); });
+      t.appendChild(b);
+    });
+  })();
+
+  /* ================= Scroll cue: briefly light up what's interactive ================= */
+  (function () {
+    if (!("IntersectionObserver" in window)) return;
+    if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    var SEL = ".vn-info, .tabs button, .seg-btns button, .field, .toggle, select.vn-sel, details.vn-acc summary";
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (en) {
+        if (!en.isIntersecting) return;
+        io.unobserve(en.target);
+        var els = Array.prototype.slice.call(en.target.querySelectorAll(SEL)).filter(function (el) { return el.offsetParent !== null; });
+        var picked = [], seenBtnGroup = [];
+        els.forEach(function (el) {
+          var grp = el.closest(".tabs, .seg-btns");
+          if (grp) { if (seenBtnGroup.indexOf(grp) === -1) { seenBtnGroup.push(grp); picked.push(grp); } return; }
+          picked.push(el);
+        });
+        picked = picked.slice(0, 12);
+        picked.forEach(function (el, i) {
+          setTimeout(function () {
+            el.classList.add("vn-cue");
+            setTimeout(function () { el.classList.remove("vn-cue"); }, 650);
+          }, 350 + i * 110);
+        });
+      });
+    }, { threshold: 0.18 });
+    document.querySelectorAll("section.chapter[id]").forEach(function (s) { io.observe(s); });
+  })();
 
 })();
 
