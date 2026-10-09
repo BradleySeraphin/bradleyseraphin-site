@@ -1,0 +1,563 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Qualcomm 101 | Brad Seraphin</title>
+<meta name="description" content="A plain-English working model of Qualcomm's AI portfolio: the NPU, models, device vs. cloud, Snapdragon, Dragonwing, Dragonfly, AI Stack, AI Hub and Modular.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: scrollytelling. Text steps scroll on the left; one persistent diagram stays pinned on the right and evolves with scroll (scroll-scrubbed). */
+:root{
+  --bg:#F3F5F4;
+  --panel:#FFFFFF;
+  --ink:#13212A;
+  --muted:#5E6C72;
+  --line:#CBD4D6;
+  --teal:#0C8A80;
+  --tealSoft:#D3EEEA;
+  --orange:#DE6127;
+  --orangeSoft:#FBE3D6;
+  --font:"IBM Plex Sans",-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#0F1619;--panel:#172125;--ink:#E5EDEB;--muted:#93A6A6;--line:#2E3D42;--teal:#3CC4B6;--tealSoft:#163A38;--orange:#FF8A52;--orangeSoft:#3A2419;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0F1619;--panel:#172125;--ink:#E5EDEB;--muted:#93A6A6;--line:#2E3D42;--teal:#3CC4B6;--tealSoft:#163A38;--orange:#FF8A52;--orangeSoft:#3A2419;color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--font);font-size:17px;line-height:1.6}
+.wrap{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,.7fr);gap:3vw;max-width:1400px;margin:0 auto;padding-inline:max(16px,3vw)}
+.text{min-width:0}
+.stage{position:sticky;top:0;height:100vh;display:flex;align-items:center;min-width:0;align-self:start}
+.stage svg{width:100%;height:auto;max-height:92vh;overflow:visible}
+.step{min-height:96vh;display:flex;flex-direction:column;justify-content:center;gap:12px;padding-block:8vh;max-width:34rem}
+.step.intro{min-height:100vh}
+h1{font-size:clamp(2.6rem,5vw,4rem);line-height:1;margin:0;font-weight:700;letter-spacing:-.02em}
+h2{font-size:1.6rem;line-height:1.15;margin:0;font-weight:600;letter-spacing:-.01em}
+p,ul,ol{margin:0}
+ul{padding-left:1.1em;display:flex;flex-direction:column;gap:6px}
+ol{padding-left:1.3em;display:flex;flex-direction:column;gap:6px}
+.lede{font-size:1.25rem;line-height:1.45;color:var(--ink)}
+.num{font-family:var(--mono);font-size:.78rem;letter-spacing:.12em;color:var(--teal)}
+.muted{color:var(--muted)}
+.fine{font-size:.82rem;color:var(--muted)}
+a{color:var(--teal)}
+.hyp{border:1.5px dashed var(--orange);background:var(--orangeSoft);border-radius:10px;padding:12px 14px;display:flex;flex-direction:column;gap:4px}
+.hyp .num{color:var(--orange)}
+.term{font:inherit;color:var(--teal);font-weight:600;background:var(--tealSoft);border:0;border-radius:5px;padding:0 4px 0 5px;cursor:pointer;display:inline;line-height:inherit;transition:background .15s,color .15s}
+.term::after{content:"+";display:inline-block;margin-left:3px;width:1.05em;height:1.05em;line-height:1.02em;text-align:center;border-radius:50%;font-size:.72em;font-weight:700;vertical-align:.18em;background:var(--teal);color:var(--panel)}
+.term:hover{background:var(--teal);color:var(--panel)}
+.term:hover::after{background:var(--panel);color:var(--teal)}
+.term:focus-visible{outline:2px solid var(--teal);outline-offset:2px}
+.tapb{cursor:pointer}
+.tapb .ring{transform-box:fill-box;transform-origin:center;animation:pulse 2.2s infinite ease-out}
+svg [data-k]:hover > rect, svg rect[data-k]:hover{stroke:var(--teal)!important;stroke-width:3.5!important}
+.pop{position:fixed;z-index:20;width:min(380px,calc(100vw - 32px));background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--teal);border-radius:12px;box-shadow:0 20px 50px rgba(0,0,0,.18);padding:16px 18px 18px;display:flex;flex-direction:column;gap:8px}
+.pop h3{margin:0;font-size:1.1rem}
+.pop p{font-size:.95rem;line-height:1.5}
+.pop .ex{color:var(--muted)}
+.pop .x{position:absolute;top:8px;right:10px;background:none;border:0;font-size:1.3rem;cursor:pointer;color:var(--muted);line-height:1}
+.hint{font-family:var(--mono);font-size:.72rem;color:var(--muted);letter-spacing:.06em}
+svg [data-k]{cursor:pointer}
+@media (max-width:860px){.pop{left:16px!important;right:16px;bottom:16px;top:auto!important;width:auto}}
+.sources{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:.88rem}
+/* diagram */
+svg text{font-family:var(--mono);fill:var(--ink)}
+.lbl{font-size:17px;letter-spacing:.05em}
+.sm{font-size:15px;fill:var(--muted);letter-spacing:.03em}
+.big{font-family:var(--font);font-size:22px;font-weight:600}
+.box{fill:var(--panel);stroke:var(--line);stroke-width:2}
+.boxT{fill:var(--tealSoft);stroke:var(--teal);stroke-width:2.5}
+.boxO{fill:var(--orangeSoft);stroke:var(--orange);stroke-width:2.5}
+.ln{fill:none;stroke:var(--line);stroke-width:2.5}
+.lnI{fill:none;stroke:var(--ink);stroke-width:2.5}
+.lnT{fill:none;stroke:var(--teal);stroke-width:3}
+.lnO{fill:none;stroke:var(--orange);stroke-width:3}
+.t{fill:var(--teal)} .o{fill:var(--orange)} .i{fill:var(--ink)} .m{fill:var(--muted)}
+.tT{fill:var(--teal)!important} .tO{fill:var(--orange)!important}
+.scene{opacity:0;pointer-events:none}
+.wave{animation:wave 1.8s infinite ease-out;opacity:0}
+@keyframes wave{0%{transform:translateY(0);opacity:0}30%{opacity:.9}100%{transform:translateY(-40px);opacity:0}}
+.pulse{transform-box:fill-box;transform-origin:center;animation:pulse 1.6s infinite ease-out}
+@keyframes pulse{0%{transform:scale(1);opacity:.7}100%{transform:scale(2.8);opacity:0}}
+.cap{font-size:15px;letter-spacing:.12em;fill:var(--teal)}
+@media (max-width:860px){
+  .wrap{grid-template-columns:minmax(0,1fr)}
+  .stage{order:-1;height:48vh;top:0;z-index:2;background:var(--bg);border-bottom:1px solid var(--line)}
+  .stage svg{max-height:46vh}
+  .step{min-height:80vh;padding-block:6vh}
+  .step.intro{min-height:70vh}
+}
+</style>
+<style>html,body{margin:0} img{max-width:100%} [hidden]{display:none!important}</style>
+</head>
+<body>
+<div class="wrap">
+<div class="stage" aria-hidden="true">
+<svg id="d" viewBox="0 0 1000 700" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="heat"><stop offset="0" stop-color="var(--orange)" stop-opacity=".45"/><stop offset="1" stop-color="var(--orange)" stop-opacity="0"/></radialGradient>
+    <radialGradient id="cool"><stop offset="0" stop-color="var(--teal)" stop-opacity=".35"/><stop offset="1" stop-color="var(--teal)" stop-opacity="0"/></radialGradient>
+    <marker id="ar" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" class="m"/></marker>
+    <marker id="arT" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" class="t"/></marker>
+    <marker id="arO" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 z" class="o"/></marker>
+  </defs>
+
+  <!-- persistent phone -->
+  <g id="phone">
+    <circle id="phHeat" r="170" fill="url(#heat)" opacity="0"/>
+    <rect x="-70" y="-130" width="140" height="260" rx="24" class="box" style="stroke:var(--ink);stroke-width:3"/>
+    <rect x="-58" y="-112" width="116" height="214" rx="10" style="fill:var(--bg);stroke:var(--line);stroke-width:1.5"/>
+    <rect x="-18" y="-124" width="36" height="6" rx="3" class="m"/>
+    <circle cx="0" cy="116" r="7" style="fill:none;stroke:var(--line);stroke-width:2"/>
+    <g id="phWaves" opacity="0"><path class="wave" style="animation-delay:0.0s" d="M-30 -150 q8 -10 0 -20 q-8 -10 0 -20" fill="none" stroke="var(--orange)" stroke-width="3" stroke-linecap="round"/><path class="wave" style="animation-delay:0.6s" d="M0 -150 q8 -10 0 -20 q-8 -10 0 -20" fill="none" stroke="var(--orange)" stroke-width="3" stroke-linecap="round"/><path class="wave" style="animation-delay:1.2s" d="M30 -150 q8 -10 0 -20 q-8 -10 0 -20" fill="none" stroke="var(--orange)" stroke-width="3" stroke-linecap="round"/></g>
+    <text id="phTxt" x="0" y="6" text-anchor="middle" class="sm">AI</text>
+  </g>
+
+  <g id="server"></g>
+  <g id="robot" opacity="0"><rect x="-50" y="40" width="100" height="22" rx="6" class="i"/><path d="M-10 40 L-10 0 L40 -30" fill="none" stroke="var(--teal)" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/><circle cx="-10" cy="0" r="10" class="i"/><path d="M40 -30 l16 -10 M40 -30 l18 6" stroke="var(--ink)" stroke-width="6" stroke-linecap="round"/></g>
+  <text id="cap" x="20" y="36" class="cap mono"></text>
+  <g id="hyp" opacity="0"><circle class="pulse" r="12" class="o" fill="var(--orange)"/><circle r="12" fill="var(--orange)"/><text x="0" y="5" text-anchor="middle" style="font-size:13px;font-weight:600;fill:#fff">H</text></g>
+  <!-- S1 problem -->
+  <g id="s1" class="scene">
+    
+    <path id="p1" d="M370 300 C480 160 620 160 720 230" class="lnO" marker-end="url(#arO)"/>
+    
+    <text x="780" y="400" text-anchor="middle" class="lbl">IN THE CLOUD</text>
+    <text x="780" y="425" text-anchor="middle" class="sm tO">cost · wait · privacy</text>
+    <text x="300" y="560" text-anchor="middle" class="lbl">ON THE WRONG PROCESSOR</text>
+    <text x="300" y="585" text-anchor="middle" class="sm tO">heat · battery drain</text>
+    <circle id="dot1" r="9" class="o"/>
+  </g>
+
+  <!-- S2 NPU chip -->
+  <g id="s2" class="scene">
+    <g id="chip" transform="translate(500 360)">
+      <g id="pins"></g>
+      <rect x="-240" y="-230" width="480" height="460" rx="26" class="box"/>
+      <text x="0" y="-195" text-anchor="middle" class="sm">ONE CHIP</text>
+      <circle id="chipHeat" r="260" fill="url(#heat)"/>
+      <rect id="bCPU" x="-210" y="-160" width="130" height="310" rx="12" class="box"/>
+      <rect id="bGPU" x="-65" y="-160" width="130" height="310" rx="12" class="box"/>
+      <rect id="bNPU" x="80" y="-160" width="130" height="310" rx="12" class="box"/>
+      <circle id="npuGlow" cx="145" cy="-5" r="160" fill="url(#cool)" opacity="0"/>
+      <text x="-145" y="0" text-anchor="middle" class="big">CPU</text><text x="-145" y="30" text-anchor="middle" class="sm">runs the phone</text>
+      <text x="0" y="0" text-anchor="middle" class="big">GPU</text><text x="0" y="30" text-anchor="middle" class="sm">graphics</text>
+      <text x="145" y="0" text-anchor="middle" class="big">NPU</text><text id="npuCap" x="145" y="30" text-anchor="middle" class="sm">built for AI</text>
+      <text id="npuNote" x="0" y="205" text-anchor="middle" class="sm tT" opacity="0">AI math → NPU: a fraction of the power</text>
+    </g>
+  </g>
+
+  <!-- S3 open vs closed -->
+  <g id="s3" class="scene">
+    
+    <g id="lock3" opacity="0"></g>
+    <g id="cOpen"></g><g id="cClosed"></g>
+    <text x="280" y="575" text-anchor="middle" class="lbl tT">OPEN</text>
+    <text x="280" y="600" text-anchor="middle" class="sm">runs on your hardware · Llama, Gemma</text>
+    <text x="760" y="520" text-anchor="middle" class="lbl">CLOSED</text>
+    <text x="760" y="545" text-anchor="middle" class="sm">maker's servers only · ChatGPT, Claude</text>
+  </g>
+
+  <!-- S4 shrinking -->
+  <g id="s4" class="scene">
+    <rect id="slot" x="250" y="380" width="60" height="40" rx="6" fill="none" stroke="var(--teal)" stroke-width="2" stroke-dasharray="5 5"/>
+    <g id="shr">
+      <rect id="shrBox" x="-180" y="-90" width="360" height="180" rx="12" class="box"/>
+      <text id="shrNum" x="0" y="8" text-anchor="middle" class="big">0.371204</text>
+      <text id="shrBits" x="0" y="44" text-anchor="middle" class="sm">32-bit</text>
+      <g id="cracks" opacity="0" class="lnO"><path d="M-20 -60 l12 30 l-14 18 l16 26"/><path d="M30 -50 l-10 24 l14 22"/></g>
+    </g>
+    <text x="640" y="120" text-anchor="middle" class="sm">ONE OF A MODEL'S BILLIONS OF NUMBERS (ILLUSTRATIVE)</text>
+    <g transform="translate(470 520)">
+      <text x="0" y="-14" class="sm">MODEL SIZE</text>
+      <rect x="0" y="0" width="360" height="16" rx="8" class="box"/>
+      <rect id="sizeBar" x="0" y="0" width="360" height="16" rx="8" class="t"/>
+      <text id="sizeTxt" x="370" y="14" class="sm">100%</text>
+    </g>
+    <text id="fitTxt" x="280" y="600" text-anchor="middle" class="lbl tT" opacity="0">FITS ON THE PHONE</text>
+    <text id="tooFar" x="640" y="610" text-anchor="middle" class="lbl tO" opacity="0">TOO FAR: MISTAKES START</text>
+  </g>
+
+  <!-- S5 cloud or device -->
+  <g id="s5" class="scene">
+    
+    <path id="p5out" d="M290 320 C440 110 640 110 760 300" class="ln" stroke-dasharray="8 8"/>
+    <path id="p5back" d="M760 430 C640 620 440 620 290 440" class="ln" stroke-dasharray="8 8"/>
+    <text x="525" y="150" text-anchor="middle" class="sm">THE NETWORK</text>
+    <circle id="dot5" r="10" class="o"/>
+    <circle id="dotL" r="10" class="t"/>
+    <text id="lblLocal" x="220" y="585" text-anchor="middle" class="lbl tT" opacity="0">ON DEVICE: DONE</text>
+    <text x="220" y="610" text-anchor="middle" class="sm">faster · cheaper · private</text>
+    <g id="dollars"><text class="dl lbl tO" x="420" y="170" text-anchor="middle" style="font-size:22px;font-weight:600" opacity="0">$</text><text class="dl lbl tO" x="620" y="165" text-anchor="middle" style="font-size:22px;font-weight:600" opacity="0">$</text><text class="dl lbl tO" x="600" y="600" text-anchor="middle" style="font-size:22px;font-weight:600" opacity="0">$</text><text class="dl lbl tO" x="420" y="600" text-anchor="middle" style="font-size:22px;font-weight:600" opacity="0">$</text></g><text x="800" y="560" text-anchor="middle" class="lbl tO">IN THE CLOUD</text>
+    <text x="800" y="585" text-anchor="middle" class="sm">cost · wait · data leaves</text>
+  </g>
+
+  <!-- S6 three customers -->
+  <g id="s6" class="scene">
+    <g id="n6"></g>
+  </g>
+
+  <!-- S7 / S13 axis -->
+  <g id="axis" class="scene">
+    <line x1="90" y1="0" x2="910" y2="0" class="lnI"/>
+    <circle cx="90" cy="0" r="7" class="i"/><circle cx="910" cy="0" r="7" class="i"/>
+    <text x="90" y="-26" text-anchor="start" class="sm">YOUR POCKET · DEVICE</text>
+    <text x="910" y="-26" text-anchor="end" class="sm">THE DATA CENTER · CLOUD</text>
+    <text x="500" y="-26" text-anchor="middle" class="sm">THE FACTORY FLOOR</text><g id="seg"></g>
+  </g>
+  <g id="band" class="scene">
+    <rect x="90" y="470" width="820" height="74" rx="12" class="boxT"/>
+    <text x="500" y="503" text-anchor="middle" class="lbl">AI STACK · AI HUB · MODULAR</text>
+    <text x="500" y="527" text-anchor="middle" class="sm">one software layer across all three</text>
+    <g id="dots13"></g>
+    <text x="500" y="640" text-anchor="middle" class="sm">FROM YOUR POCKET TO THE DATA CENTER</text>
+  </g>
+
+  <!-- S8 / S11 fan -->
+  <g id="fan" class="scene">
+    <g id="fanSrc"></g>
+    <g id="fanArms"></g>
+    <g id="cuda"></g>
+  </g>
+
+  <!-- S9 stack -->
+  <g id="s9" class="scene">
+    <g id="L1"><rect x="250" y="120" width="500" height="90" rx="12" class="box"/><text x="500" y="160" text-anchor="middle" class="lbl">THE DEVELOPER'S AI MODEL</text><text x="500" y="185" text-anchor="middle" class="sm">built in common tools</text></g>
+    <g id="L2"><rect x="150" y="270" width="700" height="110" rx="14" class="boxT"/><text x="500" y="320" text-anchor="middle" class="big">Qualcomm AI Stack</text><text x="500" y="350" text-anchor="middle" class="sm">gets it running on the NPU</text></g>
+    <g id="L3"></g>
+    <path id="s9a" d="M500 212 L500 266" class="lnI" marker-end="url(#ar)"/>
+  </g>
+
+  <!-- S10 hub -->
+  <g id="s10" class="scene">
+    <g id="h10"></g>
+  </g>
+
+  <!-- S12 agents -->
+  <g id="s12" class="scene">
+    <g id="a12"></g>
+  </g>
+
+  <!-- S0 intro mark -->
+  <g id="s0" class="scene">
+    <text x="500" y="600" text-anchor="middle" class="sm">SCROLL</text>
+  </g>
+</svg>
+</div>
+
+<div class="text">
+  <section class="step intro" data-step="0">
+    <h1>Qualcomm 101</h1>
+    <p class="lede">A working mental model of Qualcomm's AI portfolio, developed in one night, with grace for anything I got wrong.</p>
+    <p class="hint">TAP ANYTHING MARKED + TO GO DEEPER, IN THE TEXT OR THE DIAGRAM</p>
+  </section>
+
+  <section class="step" data-step="1">
+    <span class="num">01</span><h2>The problem</h2>
+    <p>AI is power-hungry. It's mostly huge amounts of repetitive math, and every calculation uses electricity, which becomes heat.</p>
+    <p>On a phone that work has two outlets. It runs locally on processors that weren't built for it, which wastes energy, so you get heat and battery drain. Or it gets shipped to a data center, which costs money, time and privacy.</p>
+  </section>
+
+  <section class="step" data-step="2">
+    <span class="num">02</span><h2>The NPU</h2>
+    <p>Every phone chip has three processors: a <button class="term" data-k="cpu">CPU</button> that runs the phone, a <button class="term" data-k="gpu">GPU</button> for graphics, and an <button class="term" data-k="npu">NPU</button> (neural processing unit) built for AI.</p>
+    <p>For AI, the NPU is the one that matters. AI is the same simple math repeated billions of times. The NPU is designed to do only that, so it uses a fraction of the power the CPU or GPU would. Less power means less heat and a longer battery. That's how AI can run on a phone all day.</p>
+    <div class="hyp"><span class="num">HYPOTHESIS</span><p>The NPU's best work is <button class="term" data-k="invisible">invisible</button> (night-mode photos, live captions), so people credit the phone. Selling outcomes people feel, like battery, speed and privacy, may land better than specs.</p></div>
+  </section>
+
+  <section class="step" data-step="3">
+    <span class="num">03</span><h2>The model</h2>
+    <p>An <button class="term" data-k="model">AI model</button> is the engine inside an AI app. There are two kinds.</p>
+    <ul>
+      <li><b><button class="term" data-k="open">Open</button>:</b> anyone can download it and run it on their own hardware. Meta's Llama, Google's Gemma.</li>
+      <li><b><button class="term" data-k="closed">Closed</button>:</b> only the company that made it decides where it runs. ChatGPT and Claude run only on their makers' servers.</li>
+    </ul>
+    <div class="hyp"><span class="num">HYPOTHESIS</span><p>On-device AI rises or falls with open models. That may make model makers like Meta and Google some of Qualcomm's most important partners.</p></div>
+  </section>
+
+  <section class="step" data-step="4">
+    <span class="num">04</span><h2>Shrinking a model</h2>
+    <p>Most open models are too big to run on your phone. A model is billions of numbers, and it gets shrunk by <button class="term" data-k="rounding">rounding them off</button>.</p>
+    <p>Shrink it too much, though, and it starts breaking and making mistakes.</p>
+  </section>
+
+  <section class="step" data-step="5">
+    <span class="num">05</span><h2>Cloud or device</h2>
+    <ul>
+      <li><b>In the <button class="term" data-k="cloud">cloud</button>:</b> every request costs money, you wait on the network, and your data leaves your device.</li>
+      <li><b>On your <button class="term" data-k="device">device</button>:</b> faster, cheaper and private, but limited to smaller models.</li>
+    </ul>
+    <div class="hyp"><span class="num">HYPOTHESIS</span><p>Most AI still runs in the cloud. Until people and developers choose on-device, the case is as much a marketing problem as an engineering one.</p></div>
+  </section>
+
+  <section class="step" data-step="6">
+    <span class="num">06</span><h2>Three customers</h2>
+    <p>Qualcomm makes chips and sells to three kinds of customers.</p>
+    <ul>
+      <li><b><button class="term" data-k="oem">Device makers</button></b> (Samsung, Microsoft, Mercedes) buy the chips.</li>
+      <li><b>Developers</b> build the apps and AI features that run on them.</li>
+      <li><b>Consumers</b> never buy a chip directly but can ask for one by name, the way people once looked for "<button class="term" data-k="intel">Intel Inside</button>."</li>
+    </ul>
+    <div class="hyp"><span class="num">HYPOTHESIS</span><p>One truth, three messages: device makers buy performance, developers buy ease, consumers buy outcomes.</p></div>
+  </section>
+
+  <section class="step" data-step="7">
+    <span class="num">07</span><h2>Three brands</h2>
+    <p>Qualcomm sells its chips under three brands, one per market.</p>
+    <ul>
+      <li><b><button class="term" data-k="snapdragon">Snapdragon</button>:</b> phones, laptops, cars, glasses. Buyers want speed and battery life.</li>
+      <li><b><button class="term" data-k="dragonwing">Dragonwing</button>:</b> robots, drones, factory equipment. Buyers want reliability for a decade.</li>
+      <li><b><button class="term" data-k="dragonfly">Dragonfly</button>:</b> data centers. Buyers want lower cost and power use per answer.</li>
+    </ul>
+    <p>Snapdragon for the device, Dragonfly for the cloud: Qualcomm's pitch for the <button class="term" data-k="hybrid">best of both worlds</button>. The thread Qualcomm sells across all three is decades of making chips that sip power.</p>
+    <div class="hyp"><span class="num">HYPOTHESIS</span><p>Dragonwing and Dragonfly may be as much about reducing reliance on phones as about new markets.</p></div>
+  </section>
+
+  <section class="step" data-step="8">
+    <span class="num">08</span><h2>The developer's problem</h2>
+    <p>To use a chip's NPU, a developer has to adapt their AI model to that specific chip. Every chipmaker's NPU is different (Qualcomm, Apple, Google, MediaTek), so the work repeats for each one. Many developers skip it and use the cloud.</p>
+    <p>In data centers the lock-in is different: most AI software was written for <button class="term" data-k="cuda">CUDA</button>, Nvidia's toolkit, which only works on Nvidia chips. Twenty years of habit make switching hard. That lock-in is called a <button class="term" data-k="moat">moat</button>.</p>
+    <div class="hyp"><span class="num">HYPOTHESIS</span><p>Developers adopt whatever is easiest. Friction shows up in three numbers: time to first run, time to production quality, and whether they come back.</p></div>
+  </section>
+
+  <section class="step" data-step="9">
+    <span class="num">09</span><h2>Qualcomm AI Stack</h2>
+    <p>Qualcomm's set of <button class="term" data-k="aistack">software tools</button> that takes a developer's AI model and gets it running on Qualcomm's NPU.</p>
+    <p>The same tools work across Qualcomm's phones, PCs, cars and industrial chips, so developers learn them once.</p>
+  </section>
+
+  <section class="step" data-step="10">
+    <span class="num">10</span><h2>Qualcomm AI Hub</h2>
+    <p>A <button class="term" data-k="aihub">website</button> where developers grab AI models already shrunk and tuned for Qualcomm chips. There are 300+ to choose from, or they can upload their own. It's built on AI Stack, with the hard parts done for you.</p>
+    <p>Before shipping, they can test on 50+ real Qualcomm devices that Qualcomm hosts online, so nobody has to buy every phone.</p>
+    <div class="hyp"><span class="num">HYPOTHESIS</span><p>AI Hub may be the most demo-friendly product in the portfolio, and one of the few places Qualcomm can see what developers actually do.</p></div>
+  </section>
+
+  <section class="step" data-step="11">
+    <span class="num">11</span><h2>Modular</h2>
+    <p>Qualcomm bought <button class="term" data-k="modular">Modular</button> in 2026. Its software is built to let developers write AI code once and run it on many kinds of chips: Qualcomm's, Nvidia's and others.</p>
+    <p>Qualcomm's bet: if code runs anywhere, CUDA loses its grip, and customers choose chips on cost and power, where Qualcomm is strongest.</p>
+    <div class="hyp"><span class="num">HYPOTHESIS</span><p>Level the field, then win on efficiency. It only works if developers trust a chipmaker to keep Modular neutral.</p></div>
+  </section>
+
+  <section class="step" data-step="12">
+    <span class="num">12</span><h2>AI agents</h2>
+    <p>A chatbot answers questions. An <button class="term" data-k="agent">AI agent</button> gets things done: "Move my 3pm, tell the team, and book dinner near the new office." It works across your apps, in many steps.</p>
+    <p>Agents need your personal data and work all day. Qualcomm's pitch: that's safer, faster and cheaper on your device than in the cloud.</p>
+    <div class="hyp"><span class="num">HYPOTHESIS</span><p>Trust is the barrier. Running on the device doesn't automatically make an agent trusted.</p></div>
+  </section>
+
+  <section class="step" data-step="13">
+    <span class="num">THE TAKEAWAY</span>
+    <p>The right processor, the right mix of device and cloud, and tools that make it easy for developers.</p>
+    <p class="lede">Decades of design perfecting efficiency, keeping your devices cool and your costs low. From your pocket to the data center.</p>
+  </section>
+
+  <section class="step" data-step="13">
+    <span class="num">SOURCES</span>
+    <div class="sources">
+      <a href="https://aihub.qualcomm.com/" target="_blank" rel="noopener">Qualcomm AI Hub</a>
+      <a href="https://www.qualcomm.com/developer/software/qualcomm-ai-runtime-sdk-qairt" target="_blank" rel="noopener">Qualcomm AI Runtime (AI Stack)</a>
+      <a href="https://www.qualcomm.com/news/onq/2026/06/qualcomm-dragonfly-ai-data-center-brand" target="_blank" rel="noopener">Qualcomm: Dragonfly brand</a>
+      <a href="https://www.techradar.com/pro/qualcomm-unveils-dragonwing-the-new-name-for-its-fight-against-nvidia-intel-and-amd" target="_blank" rel="noopener">TechRadar: Dragonwing launch</a>
+      <a href="https://modular.com/blog/qualcomm-completes-acquisition-of-modular" target="_blank" rel="noopener">Modular: acquisition completed</a>
+      <a href="https://idc.com/resource-center/blog/snapdragon-summit-2026-qualcomms-bid-to-be-the-silicon-behind-every-agent-on-every-device" target="_blank" rel="noopener">IDC: Snapdragon Summit 2026</a>
+    </div>
+    <p class="fine">A personal study by Brad Seraphin. Not affiliated with or endorsed by Qualcomm. Product names belong to their owners.</p>
+  </section>
+</div>
+</div>
+<div class="pop" id="pop" role="dialog" aria-modal="false" aria-labelledby="popT" hidden><button class="x" id="popX" aria-label="Close">×</button><h3 id="popT"></h3><p id="popD"></p><p class="ex" id="popE"></p></div>
+
+<script>
+(function(){
+"use strict";
+const $=id=>document.getElementById(id), NS="http://www.w3.org/2000/svg";
+const clamp=(x,a=0,b=1)=>Math.max(a,Math.min(b,x));
+const ease=t=>t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;
+const lerp=(a,b,t)=>a+(b-a)*t;
+const vis=(pos,k)=>clamp(1-(Math.abs(pos-k)-.3)/.2);
+const lp=(pos,k)=>clamp((pos-k+.45)/.6);
+
+/* ---------- static drawing ---------- */
+const server=(x,y)=>`<g transform="translate(${x} ${y})"><rect x="-60" y="-80" width="120" height="160" rx="10" class="box" style="stroke:var(--ink)"/>${[0,1,2,3].map(i=>`<rect x="-46" y="${-64+i*36}" width="92" height="24" rx="4" class="box"/><circle cx="32" cy="${-52+i*36}" r="4" class="t"/>`).join('')}</g>`;
+$('lock3').innerHTML=`<g transform="translate(760 250)"><path d="M-16 0 v-14 a16 16 0 0 1 32 0 v14" class="lnI"/><rect x="-24" y="-2" width="48" height="38" rx="6" class="i"/></g>`;
+const card=(lab,cls)=>`<rect x="-62" y="-38" width="124" height="76" rx="10" class="${cls}"/><text x="0" y="-6" text-anchor="middle" class="sm">AI MODEL</text><text x="0" y="20" text-anchor="middle" class="lbl">${lab}</text>`;
+$('cOpen').innerHTML=card('OPEN','boxT');
+$('cClosed').innerHTML=card('CLOSED','box');
+$('pins').innerHTML=Array.from({length:9},(_,i)=>{const o=-200+i*50;return `<rect x="${o-6}" y="-252" width="12" height="22" class="m"/><rect x="${o-6}" y="230" width="12" height="22" class="m"/><rect x="-262" y="${o-6}" width="22" height="12" class="m"/><rect x="240" y="${o-6}" width="22" height="12" class="m"/>`;}).join('');
+
+/* S6 value chain */
+const node=(x,y,w,t1,t2,cls)=>`<rect x="${x-w/2}" y="${y-42}" width="${w}" height="84" rx="12" class="${cls||'box'}"/><text x="${x}" y="${y-4}" text-anchor="middle" class="lbl">${t1}</text>${t2?`<text x="${x}" y="${y+22}" text-anchor="middle" class="sm">${t2}</text>`:''}`;
+$('n6').innerHTML=`${node(120,380,170,'QUALCOMM','makes chips','boxT')}${node(360,380,200,'DEVICE MAKERS','Samsung · Microsoft')}<text x="360" y="440" text-anchor="middle" class="sm">· Mercedes</text>${node(615,380,170,'DEVICES','phones · PCs · cars')}${node(870,380,170,'CONSUMERS','use the devices')}${node(615,170,200,'DEVELOPERS','build apps & AI')}
+ <path class="a6" d="M206 380 L258 380" marker-end="url(#ar)"/><text class="a6t sm" x="232" y="364" text-anchor="middle">chips</text>
+ <path class="a6" d="M461 380 L528 380" marker-end="url(#ar)"/>
+ <path class="a6" d="M615 213 L615 336" marker-end="url(#ar)"/><text class="a6t sm" x="625" y="280">apps</text>
+ <path class="a6" d="M701 380 L783 380" marker-end="url(#ar)"/>
+ <path class="a6" d="M870 424 C870 600 120 600 120 426" stroke-dasharray="7 7" marker-end="url(#ar)"/><text class="a6t sm" x="495" y="585" text-anchor="middle">"ask for it by name"</text>`;
+const a6=[...document.querySelectorAll('#n6 .a6')];a6.forEach(p=>{p.setAttribute('class','lnI');const L=p.getTotalLength();p.dataset.L=L;if(p.getAttribute('stroke-dasharray')){p.dataset.dash='1';}else{p.style.strokeDasharray=L;}});
+const a6t=[...document.querySelectorAll('#n6 .a6t')];
+
+/* S7 segments */
+const segs=[{x1:100,x2:360,n:'SNAPDRAGON',a:'phones · PCs · cars',w:'speed, battery'},{x1:380,x2:620,n:'DRAGONWING',a:'robots · drones',w:'10-year reliability'},{x1:640,x2:900,n:'DRAGONFLY',a:'data centers',w:'cost & power per answer'}];
+$('seg').innerHTML=segs.map((s,i)=>`<g class="sg"><rect x="${s.x1}" y="-14" width="${s.x2-s.x1}" height="28" rx="14" class="boxT"/><text x="${(s.x1+s.x2)/2}" y="54" text-anchor="middle" class="lbl">${s.n}</text><text x="${(s.x1+s.x2)/2}" y="78" text-anchor="middle" class="sm">${s.a}</text><text class="want sm" x="${(s.x1+s.x2)/2}" y="102" text-anchor="middle">${s.w}</text></g>`).join('');
+const sg=[...document.querySelectorAll('#seg .sg')], wants=[...document.querySelectorAll('#seg .want')];
+
+/* S8/S11 fan */
+const ty=[130,250,370,490];
+$('fanSrc').innerHTML=`<g transform="translate(200 310)"><rect x="-80" y="-45" width="160" height="90" rx="12" class="box" id="srcBox"/><text x="0" y="-8" text-anchor="middle" class="sm" id="srcTop">AI MODEL</text><text x="0" y="20" text-anchor="middle" class="lbl" id="srcLbl">ONE MODEL</text></g>`;
+$('fanArms').innerHTML=ty.map((y,i)=>`<path class="arm" d="M282 310 C480 310 520 ${y} 690 ${y}" style="fill:none;stroke-width:3"/>
+ <g class="tgt"><rect x="700" y="${y-30}" width="170" height="60" rx="10" class="box"/><text class="tgtL lbl" x="785" y="${y+5}" text-anchor="middle"></text></g>
+ <g class="pill"><rect x="880" y="${y-15}" width="96" height="30" rx="15" class="boxO"/><text class="pillT sm" x="928" y="${y+5}" text-anchor="middle">REWORK</text></g>`).join('');
+const arms=[...document.querySelectorAll('#fanArms .arm')],pills=[...document.querySelectorAll('#fanArms .pill')],tgtL=[...document.querySelectorAll('#fanArms .tgtL')];
+arms.forEach(p=>{p.dataset.L=p.getTotalLength();p.style.strokeDasharray=p.dataset.L;});
+$('cuda').innerHTML=`<g transform="translate(0 0)"><rect x="140" y="580" width="120" height="60" rx="10" class="box"/><text x="200" y="616" text-anchor="middle" class="sm">AI SOFTWARE</text>
+ <path d="M262 610 L690 610" class="lnI" marker-end="url(#ar)"/><rect x="700" y="580" width="170" height="60" rx="10" class="box"/><text x="785" y="616" text-anchor="middle" class="lbl">NVIDIA</text>
+ <g id="lk" transform="translate(470 610)"><path id="shk" d="M-14 -4 v-14 a14 14 0 0 1 28 0 v14" class="lnI"/><rect x="-22" y="-6" width="44" height="34" rx="6" class="i" id="lkb"/></g>
+ <text id="cudaT" x="470" y="670" text-anchor="middle" class="sm">CUDA: Nvidia only</text></g>`;
+
+/* S9 bottom row */
+$('L3').innerHTML=['PHONES','PCS','CARS','INDUSTRIAL'].map((t,i)=>`<g class="l3"><rect x="${150+i*180}" y="450" width="160" height="80" rx="12" class="box"/><text x="${230+i*180}" y="496" text-anchor="middle" class="lbl">${t}</text><path d="M${230+i*180} 382 L${230+i*180} 446" class="ln" marker-end="url(#ar)"/></g>`).join('');
+const l3=[...document.querySelectorAll('#L3 .l3')];
+
+/* S10 hub */
+let h='';
+h+=`<text x="215" y="150" text-anchor="middle" class="lbl">PICK A MODEL</text><text x="215" y="172" text-anchor="middle" class="sm">300+, or upload your own</text>`;
+for(let r=0;r<6;r++)for(let c=0;c<5;c++)h+=`<rect x="${125+c*38}" y="${195+r*38}" width="30" height="30" rx="5" class="${(r*5+c)===12?'boxT':'box'}"/>`;
+h+=`<path d="M320 310 L400 310" class="lnI" marker-end="url(#ar)"/><g id="tune"><rect x="410" y="260" width="150" height="100" rx="12" class="box"/><text x="485" y="305" text-anchor="middle" class="lbl">SHRINK</text><text x="485" y="328" text-anchor="middle" class="lbl">& TUNE</text></g>`;
+h+=`<path d="M566 310 L630 310" class="lnI" marker-end="url(#ar)"/><text x="790" y="150" text-anchor="middle" class="lbl">TEST ON REAL DEVICES</text><text x="790" y="172" text-anchor="middle" class="sm">50+, hosted by Qualcomm</text>`;
+for(let r=0;r<5;r++)for(let c=0;c<10;c++)h+=`<rect data-o="${c+r}" class="dev box" x="${642+c*30}" y="${200+r*44}" width="22" height="36" rx="4"/>`;
+h+=`<text id="ship" x="790" y="460" text-anchor="middle" class="lbl tT" opacity="0">✓ READY TO SHIP</text>`;
+h+=`<rect x="90" y="560" width="820" height="56" rx="12" class="boxT"/><text x="500" y="594" text-anchor="middle" class="lbl">BUILT ON QUALCOMM AI STACK</text>`;
+$('h10').innerHTML=h;const devs=[...document.querySelectorAll('#h10 .dev')];
+
+/* S12 agents */
+const steps12=['Read your calendar','Check team messages','Find the new office','Move the 3pm, tell the team','Book dinner nearby'];
+$('a12').innerHTML=steps12.map((t,i)=>{const y=160+i*90;return `<path d="M335 ${360} C400 ${360} 420 ${y} 470 ${y}" class="ln"/><g class="ag"><circle cx="490" cy="${y}" r="16" class="box"/><text class="agc" x="490" y="${y+6}" text-anchor="middle" style="font-size:16px">✓</text><text x="520" y="${y+5}" class="lbl">${t}</text><text x="520" y="${y+26}" class="sm">uses your data</text></g>`;}).join('')+
+ `<g opacity=".7"><path d="M870 60 c-30 0 -40 30 -20 40 c-20 10 0 40 30 34 h60 c30 0 34 -40 6 -44 c0 -30 -46 -40 -76 -30z" class="ln" stroke-dasharray="6 6"/><path d="M850 70 L960 140" class="lnO"/><text x="905" y="175" text-anchor="middle" class="sm tO">no trip to the cloud</text></g>`;
+const ag=[...document.querySelectorAll('#a12 .ag')];
+
+/* S13 dots */
+const d13=[[230,300,'2'],[100,345,'5'],[910,345,'5'],[230,410,'7'],[500,410,'7'],[770,410,'7'],[160,507,'9'],[220,507,'10'],[280,507,'11'],[90,250,'12']];
+$('dots13').innerHTML='';void d13.map(d=>`<g><circle cx="${d[0]}" cy="${d[1]}" r="13" class="i"/><text x="${d[0]}" y="${d[1]+5}" text-anchor="middle" style="font-size:12px;fill:var(--bg)">${d[2]}</text></g>`).join('');
+
+/* ---------- phone keyframes ---------- */
+const H={x:220,y:380,k:.6,o:0};
+$('server').innerHTML=server(0,0);
+const SV={x:800,y:370,k:.6,o:0};
+const SK=[{x:780,y:300,k:1,o:0},{x:780,y:300,k:1,o:1},{x:780,y:300,k:1,o:0},{x:760,y:360,k:1,o:1},{x:760,y:360,k:1,o:0},{x:800,y:370,k:1,o:1},SV,SV,SV,SV,SV,SV,SV,{x:880,y:215,k:.5,o:1}];
+const HK=[[710,190],[710,190],[710,190],[280,215],[800,270],[800,270],[500,300],[630,330],[520,240],[930,190],[930,190],[470,565],[905,95],[905,95]];
+const HS=[2,3,5,6,7,8,10,11,12];
+const CAP=['','01 · THE PROBLEM','02 · THE NPU','03 · THE MODEL','04 · SHRINKING A MODEL','05 · CLOUD OR DEVICE','06 · THREE CUSTOMERS','07 · THREE BRANDS','08 · THE DEVELOPER\'S PROBLEM','09 · QUALCOMM AI STACK','10 · QUALCOMM AI HUB','11 · MODULAR','12 · AI AGENTS','THE TAKEAWAY'];
+const PK=[{x:500,y:330,k:1.25,o:1},{x:300,y:360,k:1,o:1},{x:500,y:360,k:2.8,o:0},{x:280,y:380,k:1,o:1},{x:280,y:420,k:1,o:1},{x:220,y:380,k:1,o:1},H,H,H,H,H,H,{x:260,y:360,k:1.1,o:1},{x:130,y:215,k:.45,o:1}];
+
+/* ---------- scroll mapping ---------- */
+const secs=[...document.querySelectorAll('.step')];let cs=[];
+function measure(){cs=secs.map(s=>{const r=s.getBoundingClientRect();return r.top+scrollY+r.height/2-innerHeight/2;});}
+function posAt(y){const k=i=>+secs[i].dataset.step;if(y<=cs[0])return k(0);
+  for(let i=0;i<cs.length-1;i++){if(y<cs[i+1]){const t=(y-cs[i])/(cs[i+1]-cs[i]);return k(i)+(k(i+1)-k(i))*t;}}return k(cs.length-1);}
+measure();addEventListener('resize',measure);addEventListener('load',measure);
+if('ResizeObserver' in window)new ResizeObserver(measure).observe(document.querySelector('.text'));
+
+const op=(id,v)=>{const e=$(id);e.style.opacity=v.toFixed(3);e.style.pointerEvents=v>.5?'auto':'none';};
+function draw(pos){
+  /* phone */
+  const a=Math.max(0,Math.min(PK.length-1,Math.floor(pos))),b=Math.min(PK.length-1,a+1),f=ease(clamp((pos-a-.3)/.4));
+  const P={};['x','y','k','o'].forEach(q=>P[q]=lerp(PK[a][q],PK[b][q],f));
+  $('phone').setAttribute('transform',`translate(${P.x} ${P.y}) scale(${P.k})`);$('phone').style.opacity=P.o;
+  $('phHeat').setAttribute('opacity',(vis(pos,1)*.95).toFixed(2));$('phWaves').setAttribute('opacity',vis(pos,1).toFixed(2));
+  {const S={};['x','y','k','o'].forEach(q=>S[q]=lerp(SK[a][q],SK[b][q],f));$('server').setAttribute('transform',`translate(${S.x} ${S.y}) scale(${S.k})`);$('server').style.opacity=S.o;$('server').style.pointerEvents=S.o>.5?'auto':'none';}
+  {const hx=lerp(HK[a][0],HK[b][0],f),hy=lerp(HK[a][1],HK[b][1],f);$('hyp').setAttribute('transform',`translate(${hx} ${hy})`);$('hyp').style.opacity=Math.max(...HS.map(k=>vis(pos,k))).toFixed(2);}
+  {const r=Math.round(pos);$('cap').textContent=CAP[Math.max(0,Math.min(13,r))];$('cap').style.opacity=(r===0?0:1);}
+  {const v=vis(pos,13),t=lp(pos,13);$('robot').setAttribute('transform',`translate(500 ${lerp(120,215,ease(clamp(t/.5)))})`);$('robot').style.opacity=(v*clamp(t/.3)).toFixed(2);}
+  $('phTxt').textContent=pos>2.5&&pos<5.5?'MODEL':(pos>11.5?'AGENT':'AI');
+  op('s0',vis(pos,0)*.8);
+
+  /* 1 */
+  op('s1',vis(pos,1));{const t=lp(pos,1),p=$('p1'),L=p.getTotalLength();p.style.strokeDasharray=L;p.style.strokeDashoffset=L*(1-ease(clamp(t/.6)));const pt=p.getPointAtLength(L*clamp((t-.5)/.5));$('dot1').setAttribute('cx',pt.x);$('dot1').setAttribute('cy',pt.y);$('dot1').setAttribute('opacity',t>.5?1:0);}
+
+  /* 2 */
+  op('s2',vis(pos,2));{const t=lp(pos,2),z=lerp(.55,1,ease(clamp((pos-1.5)/.5+.0)));$('chip').setAttribute('transform',`translate(500 360) scale(${clamp(z,.55,1)})`);
+    const n=ease(clamp((t-.25)/.5));$('chipHeat').setAttribute('opacity',(1-n).toFixed(2));$('npuGlow').setAttribute('opacity',n.toFixed(2));
+    $('bNPU').setAttribute('class',n>.5?'boxT':'box');['bCPU','bGPU'].forEach(id=>$(id).style.opacity=(1-.45*n).toFixed(2));$('npuNote').setAttribute('opacity',n.toFixed(2));}
+
+  /* 3 */
+  op('s3',vis(pos,3));{const t=ease(lp(pos,3));$('cOpen').setAttribute('transform',`translate(${lerp(500,280,t)} ${lerp(130,370,t)}) scale(${lerp(1,.75,t)})`);
+    $('cClosed').setAttribute('transform',`translate(${lerp(640,760,t)} ${lerp(130,195,t)}) scale(${lerp(1,.8,t)})`);$('lock3').setAttribute('opacity',clamp((t-.7)/.3).toFixed(2));}
+
+  /* 4 */
+  op('s4',vis(pos,4));{const t=lp(pos,4);const st=Math.min(4,Math.floor(t*5));const sizes=[100,50,25,12.5,6.25],nums=['0.371204','0.3712','0.37','0.4','0'],bits=['32-bit','16-bit','8-bit','4-bit','2-bit'];
+    const sc=sizes[st]/100;const w=Math.max(70,360*Math.sqrt(sc));const fit=st>=3;
+    $('shrBox').setAttribute('x',-w/2);$('shrBox').setAttribute('width',w);$('shrBox').setAttribute('height',Math.max(56,180*Math.sqrt(sc)));$('shrBox').setAttribute('y',-Math.max(56,180*Math.sqrt(sc))/2);
+    $('shrNum').textContent=nums[st];$('shrNum').style.fontSize=(st>=3?16:22)+'px';$('shrBits').textContent=bits[st];$('shrBits').setAttribute('y',st>=3?24:44);
+    const mv=ease(clamp((t-.55)/.2));$('shr').setAttribute('transform',`translate(${lerp(640,280,mv)} ${lerp(300,400,mv)})`);
+    $('sizeBar').setAttribute('width',360*sc);$('sizeTxt').textContent=sizes[st]+'%';$('sizeTxt').setAttribute('x',368*sc+8);
+    $('fitTxt').setAttribute('opacity',st===3?1:0);$('tooFar').setAttribute('opacity',st===4?1:0);$('cracks').setAttribute('opacity',st===4?1:0);
+    $('shrBox').setAttribute('class',st===4?'boxO':(fit?'boxT':'box'));$('slot').setAttribute('opacity',st<3?1:0);}
+
+  /* 5 */
+  op('s5',vis(pos,5));{const t=lp(pos,5);const o=$('p5out'),bk=$('p5back'),Lo=o.getTotalLength(),Lb=bk.getTotalLength();
+    let pt=t<.5?o.getPointAtLength(Lo*ease(t/.5)):bk.getPointAtLength(Lb*ease((t-.5)/.5));$('dot5').setAttribute('cx',pt.x);$('dot5').setAttribute('cy',pt.y);
+    const lt=clamp(t/.12);$('dotL').setAttribute('cx',220+Math.cos(lt*6.28)*30);$('dotL').setAttribute('cy',380+Math.sin(lt*6.28)*30);$('lblLocal').setAttribute('opacity',lt>=1?1:0);
+    document.querySelectorAll('#dollars .dl').forEach((d,i)=>d.setAttribute('opacity',t>[.2,.4,.65,.85][i]?1:0));}
+
+  /* 6 */
+  op('s6',vis(pos,6));{const t=lp(pos,6);a6.forEach((p,i)=>{const s=ease(clamp((t-i*.15)/.25));if(p.dataset.dash){p.style.opacity=s;}else{const L=+p.dataset.L;p.style.strokeDashoffset=L*(1-s);}});a6t.forEach((x,i)=>x.style.opacity=ease(clamp((t-[0,.3,.6][i]*1-.1)/.25)));}
+
+  /* axis 7 / 13 */
+  const v7=vis(pos,7),v13=vis(pos,13);op('axis',Math.max(v7,v13));
+  $('axis').setAttribute('transform',`translate(0 ${pos>10?330:330})`);
+  {const t=lp(pos,7);sg.forEach((g,i)=>g.style.opacity=pos>12.5?1:ease(clamp((t-i*.2)/.3)));wants.forEach(w=>w.style.opacity=pos>12.5?0:1);}
+  op('band',v13);{const t=lp(pos,13);$('band').style.transform=`translateY(${(1-ease(clamp(t/.5)))*30}px)`;}
+
+  /* fan 8 / 11 */
+  const v8=vis(pos,8),v11=vis(pos,11);op('fan',Math.max(v8,v11));
+  {const mod=pos>9.5;const t=mod?lp(pos,11):lp(pos,8);
+   const labs=mod?['QUALCOMM DEVICE','QUALCOMM SERVER','NVIDIA','OTHER CHIPS']:['QUALCOMM NPU','APPLE NPU','GOOGLE NPU','MEDIATEK NPU'];
+   tgtL.forEach((x,i)=>x.textContent=labs[i]);$('srcLbl').textContent=mod?'ONE CODEBASE':'ONE MODEL';$('srcBox').setAttribute('class',mod?'boxT':'box');
+   arms.forEach((p,i)=>{const s=ease(clamp((t-i*.12)/.3));p.style.strokeDashoffset=p.dataset.L*(1-s);p.style.stroke=mod?'var(--teal)':'var(--orange)';});
+   pills.forEach((g,i)=>{const s=clamp((t-i*.12-.25)/.15);g.style.opacity=s;g.querySelector('rect').setAttribute('class',mod?'boxT':'boxO');g.querySelector('text').textContent=mod?'RUNS':'REWORK';});
+   const open=mod?ease(clamp((t-.6)/.3)):0;$('shk').setAttribute('transform',`translate(0 ${-12*open}) rotate(${-25*open} 14 -4)`);$('lkb').setAttribute('class',mod?'t':'i');
+   $('cudaT').textContent=mod?'CUDA loses its grip':'CUDA: Nvidia only';$('cuda').style.opacity=ease(clamp((t-.35)/.3));}
+
+  /* 9 */
+  op('s9',vis(pos,9));{const t=lp(pos,9);$('L1').style.transform=`translateY(${-40*(1-ease(clamp(t/.3)))}px)`;$('L1').style.opacity=ease(clamp(t/.3));
+   $('L2').style.opacity=ease(clamp((t-.2)/.3));$('s9a').style.opacity=ease(clamp((t-.2)/.3));l3.forEach((g,i)=>{g.style.opacity=ease(clamp((t-.45-i*.1)/.2));});}
+
+  /* 10 */
+  op('s10',vis(pos,10));{const t=lp(pos,10);const w=clamp((t-.3)/.55)*14;devs.forEach(d=>d.setAttribute('class',(+d.dataset.o)<w?'dev boxT':'dev box'));$('ship').setAttribute('opacity',w>=13.5?1:0);$('tune').querySelector('rect').setAttribute('class',t>.2?'boxT':'box');}
+
+  /* 12 */
+  op('s12',vis(pos,12));{const t=lp(pos,12);ag.forEach((g,i)=>{const on=t>.15+i*.15;g.style.opacity=on?1:.35;g.querySelector('circle').setAttribute('class',on?'boxT':'box');g.querySelector('.agc').style.opacity=on?1:0;});}
+}
+
+const GL={"cpu": ["CPU", "Central processing unit. The general-purpose processor that runs the operating system and your apps. Versatile, but not efficient at AI's repetitive math.", "Qualcomm's CPU is called Oryon."], "gpu": ["GPU", "Graphics processing unit. Thousands of simple cores doing the same calculation at once, originally built to draw pixels. That design also makes it fast at AI math, which is why Nvidia's GPUs power most AI data centers. Fast, but power-hungry on a phone.", "Qualcomm's GPU is called Adreno."], "npu": ["NPU", "Neural processing unit. A processor built only for the multiply-and-add math inside AI models, so it does that work on far less power.", "Qualcomm's NPU is called Hexagon. NPU speed is quoted in TOPS (trillions of operations per second). Microsoft requires 40+ TOPS for a Copilot+ PC, and Snapdragon X chips were the first to qualify."], "invisible": ["Invisible AI", "Much of what the NPU does never gets called AI by the person using it.", "Examples: night-mode photos, portrait blur, live captions, call translation, background blur on video calls."], "model": ["AI model", "The trained system that does the answering. It's built by learning from huge amounts of data, and what's left after training is billions of numbers (called parameters) that encode what it learned.", "More parameters roughly means a bigger, more capable model that's harder to fit on a phone."], "open": ["Open models", "The company publishes the model itself, so anyone can download it and run it on their own hardware. Often called open-weight models.", "Examples: Meta's Llama, Google's Gemma, Mistral, Microsoft's Phi, Alibaba's Qwen."], "closed": ["Closed models", "The company keeps the model and decides where it runs. You reach it through their app or service.", "ChatGPT and Claude run on their makers' servers, which is why those apps leave your phone's NPU idle. A maker can still choose to ship a closed model onto devices: Google's Gemini Nano runs on some phones."], "rounding": ["Rounding the numbers", "The technical term is quantization: storing each of the model's numbers with less precision.", "Going from 32-bit to 8-bit numbers makes a model about 4 times smaller; 4-bit makes it about 8 times smaller. A different technique, distillation, trains a small model to mimic a big one."], "cloud": ["The cloud", "Computers in remote data centers that run AI for you over the internet.", "Cloud AI is usually priced per token, roughly a piece of a word, counting both what you send and what comes back. At massive scale, that bill adds up."], "device": ["On your device", "The AI runs on the chip inside your phone, laptop or car, with no trip to a data center. Also called edge AI.", "Qualcomm's pitch is hybrid AI: handle what you can on the device and send only the heavy work to the cloud."], "oem": ["Device makers", "Often called OEMs (original equipment manufacturers): the companies that build and sell the finished product.", "Qualcomm designs chips but doesn't manufacture them; factories like TSMC do. A company that designs chips without making them is called fabless."], "intel": ["Intel Inside", "The classic example of ingredient branding: marketing a component directly to the people who buy the finished product, so they ask for it by name.", "It gives the component maker leverage with device makers, because shoppers want it."], "snapdragon": ["Snapdragon", "Qualcomm's brand for personal devices: phones, laptops, cars, glasses and wearables.", "Examples: the Snapdragon 8 Elite Gen 6 phone chips and Snapdragon X laptop chips, like those in Microsoft Surface."], "dragonwing": ["Dragonwing", "Qualcomm's brand for industrial and networking chips, launched in 2025.", "Think factory robots, drones, smart cameras and network equipment. These buyers need the same part supported for many years, because their machines run that long."], "dragonfly": ["Dragonfly", "Qualcomm's brand for AI data centers, launched in June 2026: server processors, AI accelerators and networking.", "Tagline: \"efficient by design, scalable by nature.\" Data centers are increasingly limited by electricity, which is where efficiency matters."], "cuda": ["CUDA", "Compute Unified Device Architecture: Nvidia's software toolkit for running code on its GPUs, launched in 2006.", "Nearly 20 years of AI code, tutorials and habits assume it, so moving to other chips means rewriting and retesting."], "moat": ["Moat", "A business term for an advantage competitors can't easily cross.", "CUDA is often called Nvidia's moat: even when rivals build good chips, switching costs keep customers in place."], "aistack": ["Qualcomm AI Stack", "Announced in June 2022, it unified Qualcomm's AI tools that used to be split by product line.", "The main toolkit is the Qualcomm AI Runtime SDK (QAIRT). An SDK (software development kit) is a bundle of code libraries, tools and instructions. It takes models from common frameworks like PyTorch and ONNX and runs them on the CPU, GPU or NPU."], "aihub": ["Qualcomm AI Hub", "Qualcomm's website for getting AI models onto its chips. Tagline: \"Optimize, validate, and deploy any model in a few lines of code.\"", "The test devices are real Qualcomm hardware in Qualcomm's data centers, called a device farm. Developers get back speed, memory use and which processor ran the model."], "modular": ["Modular", "Founded in 2022 by Chris Lattner, who created the LLVM compiler technology and Apple's Swift language. Qualcomm closed the acquisition on July 29, 2026.", "Its products: Mojo, a programming language that reads like Python and runs fast on many chips (open-sourced in August 2026), and MAX, an engine for running AI models across hardware. Qualcomm says Modular's stack is coming to Snapdragon and Dragonfly."], "agent": ["AI agent", "AI that takes actions across your apps, in multiple steps, instead of just answering.", "At its September 2026 Snapdragon Summit, Qualcomm said its newest phone chip can build an on-device personal knowledge graph: a private map of your life for an agent to use."], "hybrid": ["Best of both worlds", "Qualcomm's term for this is hybrid AI: device and cloud working together.", "Qualcomm sells chips for both ends: Snapdragon in the device and Dragonfly in the data center."]};
+const pop=$('pop');let popFrom=null;
+function openTerm(k,el){const g=GL[k];if(!g)return;$('popT').textContent=g[0];$('popD').textContent=g[1];$('popE').textContent=g[2];pop.hidden=false;popFrom=el;
+  if(innerWidth>860&&el){const r=el.getBoundingClientRect();const w=pop.offsetWidth,h=pop.offsetHeight;let x=Math.min(innerWidth-w-16,Math.max(16,r.left));let y=r.bottom+10;if(y+h>innerHeight-16)y=Math.max(16,r.top-h-10);pop.style.left=x+'px';pop.style.top=y+'px';}
+  $('popX').focus({preventScroll:true});}
+function closeTerm(){if(pop.hidden)return;pop.hidden=true;if(popFrom&&popFrom.focus)popFrom.focus({preventScroll:true});}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-k]');if(b){e.preventDefault();openTerm(b.dataset.k,b);return;}if(!pop.contains(e.target))closeTerm();});
+$('popX').addEventListener('click',closeTerm);
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeTerm();});
+addEventListener('scroll',()=>{if(!pop.hidden&&innerWidth>860)closeTerm();},{passive:true});
+['bCPU','bGPU','bNPU'].forEach((id,i)=>$(id).setAttribute('data-k',['cpu','gpu','npu'][i]));
+$('server').setAttribute('data-k','cloud');$('lk').setAttribute('data-k','cuda');
+sg.forEach((g,i)=>g.setAttribute('data-k',['snapdragon','dragonwing','dragonfly'][i]));
+function badge(el){const isRect=el.tagName.toLowerCase()==='rect';const host=isRect?el.parentNode:el;let bb;try{bb=el.getBBox();}catch(e){return;}
+  const g=document.createElementNS(NS,'g');g.setAttribute('class','tapb');g.setAttribute('data-k',el.dataset.k);
+  const x=bb.x+bb.width-6,y=bb.y+6;
+  g.innerHTML=`<circle class="ring" cx="${x}" cy="${y}" r="12" fill="none" stroke="var(--teal)" stroke-width="2"/><circle cx="${x}" cy="${y}" r="12" fill="var(--teal)"/><text x="${x}" y="${y+5}" text-anchor="middle" style="font-size:16px;font-weight:700;fill:var(--panel)">+</text>`;
+  host.appendChild(g);}
+document.querySelectorAll('svg [data-k]').forEach(el=>{if(!el.classList.contains('tapb'))badge(el);});
+
+let last=-1;
+function tick(){const p=posAt(scrollY);if(Math.abs(p-last)>.0005){draw(p);last=p;}requestAnimationFrame(tick);}
+draw(0);requestAnimationFrame(tick);
+})();
+</script>
+</body>
+</html>
